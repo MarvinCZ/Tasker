@@ -24,5 +24,23 @@ class DynamicTest{
 		}
 		else
 			throw new Exception("Method undefined: ".$method, 1);
-    }
+  }
+
+  public function __get($var){
+  	if(array_key_exists($var, $this->data)){
+  		return $this->data[$var];
+  	}
+  	else{
+  		throw new Exception("Variable: " . $var . " does not exists", 1);  		
+  	}
+  }
+
+  public function __set($var, $value){
+  	if(array_key_exists($var, $this->data)){
+  		$this->data[$var] = $valu;
+  	}
+  	else{
+  		throw new Exception("Variable: " . $var . " does not exists", 1);  		
+  	}
+  }
 }
