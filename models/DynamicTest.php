@@ -37,7 +37,7 @@ class DynamicTest{
 
   public function __set($var, $value){
   	if(array_key_exists($var, $this->data)){
-  		$this->data[$var] = $valu;
+			$this->data[$var] = $value;
   	}
   	else{
   		throw new Exception("Variable: " . $var . " does not exists", 1);  		
