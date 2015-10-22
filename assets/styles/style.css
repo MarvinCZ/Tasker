@@ -15,10 +15,6 @@ body {
     right: 20px;
     top: 10px;
     font-size: 26px; }
-  .tab-select input[type="radio"] {
-    display: none; }
-  .tab-select input[type='checkbox'] {
-    display: none; }
   .tab-select .tab-closed {
     padding: 10px; }
 

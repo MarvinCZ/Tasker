@@ -18,7 +18,7 @@ $dt->b = "test";
 
 DbWrapper::connect();
 
-$options = options_for_select(array('School', 'Work', 'Personal', 'Other'),'School');
+$options = options_for_select(array('School', 'Work', 'Personal', 'Other'),'Personal');
 
 
 includeFile("views/template.phtml", array('test'=>$dt, 'array'=>$_SERVER['REQUEST_URI'], 'options' => $options));

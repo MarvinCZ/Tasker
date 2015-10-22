@@ -1,25 +1,25 @@
 <div class="tab-select <?= $multiple ? 'tab-multiselect' : 'tab-select-one' ?>">	
-	<h3><?= $name ?></h3>
+	<h3><?= $display_name ?></h3>
 	<i class="fa fa-chevron-down control control-show"></i>
 	<i class="fa fa-chevron-up control control-hide"></i>
-	<? foreach ($options as $option): ?>
+	<?php foreach ($options as $option): ?>
 		<div class="tab-opend">
-			<div class="tab-btn tab-active">
-				<? if($multiple): ?>
-					<input type="checkbox" name="<?= $name ?>['<?= $option['name'] ?>']"/>
-				<? else: ?>
-					<input type="radio" name="<?= $name ?>" value="<?= $option['name'] ?>" checked="<?= $option['selected'] ?>" />
-				<? endif ?>
+			<div class="tab-btn <?= $option['selected'] ? 'tab-active' : ''?>">
+				<?php if($multiple): ?>
+					<input type="checkbox" name="<?= $name ?>['<?= $option['name'] ?>']"  <?= $option['selected'] ? 'checked' : '' ?>/>
+				<?php else: ?>
+					<input type="radio" name="<?= $name ?>" value="<?= $option['name'] ?>" <?= $option['selected'] ? 'checked' : '' ?>/>
+				<?php endif ?>
 				<span class="text">
 					<?= $option['display_name'] ?>
 				</span>
 				<i class="fa fa-check selected"></i>
-				<? if($multiple): ?>
+				<?php if($multiple): ?>
 					<i class="fa fa-times unselected"></i>
-				<? endif ?>
+				<?php endif ?>
 			</div>
 		</div>
-	<? endforeach ?>
+	<?php endforeach ?>
 	<div class="tab-closed">
 	</div>
 </div>

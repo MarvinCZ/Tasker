@@ -13,7 +13,7 @@ function renderToString($file, $params){
 }
 
 function select($name, $multiple, $options){
-	$params = array('name' => $name, 'multiple' => $multiple, 'options' => $options);
+	$params = array('name' => strtolower($name), 'display_name' => ucfirst($name), 'multiple' => $multiple, 'options' => $options);
 	return renderToString('views/components/select.phtml',$params);
 }
 
