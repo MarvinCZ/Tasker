@@ -8,14 +8,96 @@
 		<title>Titulek</title>
 		<link rel="stylesheet" type="text/css" href="assets/styles/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="assets/styles/style.css" />
+		<link rel="stylesheet" type="text/css" href="assets/styles/font-awesome.min.css">
 		<script src="assets/scripts/jquery-1.11.3.js"></script>
 		<script src="assets/scripts/bootstrap.min.js"></script>
 		<script src="assets/scripts/app.js"></script>
 	</head>
 	<body>
-		<?= $array ?><br/>
-		<?= $test->getB() ?><br/>
-		<?= $test->b ?><br/>
-		<?= includeFile("views/partial.phtml", array('test'=>'t')); ?>
+		<form>
+			<?= select("Category", false, $options) ?>
+		<!--
+			<div class="tab-select tab-select-one">	
+				<h3>Category</h3>
+				<i class="fa fa-chevron-down control control-show"></i>
+				<i class="fa fa-chevron-up control control-hide"></i>
+				<div class="tab-opend">
+					<div class="tab-btn tab-active">
+						<input type="radio" name="category_one" value="school" checked="checked" />
+						<span class="text">
+							School
+						</span>
+						<i class="fa fa-check selected"></i>
+					</div>
+					<div class="tab-btn">
+						<input type="radio" name="category_one" value="work" />
+						<span class="text">
+							Work
+						</span>
+						<i class="fa fa-check selected"></i>
+					</div>
+					<div class="tab-btn">
+						<input type="radio" name="category_one" value="personal" />
+						<span class="text">
+							Personal
+						</span>
+						<i class="fa fa-check selected"></i>
+					</div>
+					<div class="tab-btn">
+						<input type="radio" name="category_one" value="other" />
+						<span class="text">
+							Other
+						</span>
+						<i class="fa fa-check selected"></i>
+					</div>
+				</div>
+				<div class="tab-closed">
+					Selected: School
+				</div>
+			</div>
+			<div class="tab-select tab-multiselect">	
+				<h3>Category</h3>
+				<i class="fa fa-chevron-down control control-show"></i>
+				<i class="fa fa-chevron-up control control-hide"></i>
+				<div class="tab-opend">
+					<div class="tab-btn">
+						<input type="checkbox" name="categories['school']"/>
+						<span class="text">
+							School
+						</span>
+						<i class="fa fa-check selected"></i>
+						<i class="fa fa-times unselected"></i>
+					</div>
+					<div class="tab-btn">
+						<input type="checkbox" name="categories['work']"/>
+						<span class="text">
+							Work
+						</span>
+						<i class="fa fa-check selected"></i>
+						<i class="fa fa-times unselected"></i>
+					</div>
+					<div class="tab-btn">
+						<input type="checkbox" name="categories['personal']"/>
+						<span class="text">
+							Personal
+						</span>
+						<i class="fa fa-check selected"></i>
+						<i class="fa fa-times unselected"></i>
+					</div>
+					<div class="tab-btn">
+						<input type="checkbox" name="categories['other']"/>
+						<span class="text">
+							Other
+						</span>
+						<i class="fa fa-check selected"></i>
+						<i class="fa fa-times unselected"></i>
+					</div>
+				</div>
+				<div class="tab-closed">
+					Nothing selected
+				</div>
+			</div>
+			-->
+		</form>
 	</body>
 </html>

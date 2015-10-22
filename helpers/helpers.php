@@ -5,6 +5,30 @@ function includeFile($file, $params){
 	include($file);
 }
 
+function renderToString($file, $params){
+	extract($params);
+	ob_start();
+    include $file;
+    return ob_get_clean();
+}
+
+function select($name, $multiple, $options){
+	$params = array('name' => $name, 'multiple' => $multiple, 'options' => $options);
+	return renderToString('views/components/select.phtml',$params);
+}
+
+function options_for_select($array, $selected = null){
+	$options = array();
+	foreach ($array as $value) {
+		array_push($options, array(
+			'name' => strtolower($value),
+			'display_name' => ucfirst($value),
+			'selected' => $value == $selected ? 'checked' : ''
+			));
+	}
+	return $options;
+}
+
 function link_to($link, $text, $title, $params){
 	$link = '<a href="' . $link . '" ';
 	if($title)

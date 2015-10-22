@@ -9,10 +9,16 @@ foreach (glob("helpers/*.php") as $helper)
 }
 
 include('models/DynamicTest.php');
+include('models/DbWrapper.php');
+include('models/User.php');
 
 $dt = new DynamicTest(array('b'=>'test'));
 $dt->setB("testovani");
 $dt->b = "test";
 
+DbWrapper::connect();
 
-includeFile("views/template.phtml", array('test'=>$dt, 'array'=>$_SERVER['REQUEST_URI']));
+$options = options_for_select(array('School', 'Work', 'Personal', 'Other'),'School');
+
+
+includeFile("views/template.phtml", array('test'=>$dt, 'array'=>$_SERVER['REQUEST_URI'], 'options' => $options));
