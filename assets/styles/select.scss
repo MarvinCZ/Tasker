@@ -1,0 +1,83 @@
+.tab-select{
+	box-sizing: border-box;
+	position: relative;
+	max-width: 600px;
+	background: white;
+	margin: 20px auto;
+	padding: 10px;
+	h3{
+		margin-top: 5px;
+		margin-left: 7px;
+	}
+	.control{
+		position: absolute;
+		right: 20px;
+		top: 10px;
+		font-size: 26px;
+	}
+	input[type="radio"]{
+		display: none;
+	}
+	input[type='checkbox']{
+		display: none;
+	}
+	.tab-closed{
+		padding: 10px;
+	}
+	.btn-all{
+		width: 49%;
+		float: left;
+	}
+	.btn-nothing{
+		width: 49%;
+		float: right;
+	}
+	.btn-all, .btn-nothing{
+		margin-bottom: 10px;
+		box-shadow: -2px 2px 5px rgba(0,0,0,0.2);
+		padding: 10px;
+		display: inline-block;		
+		box-sizing: border-box;
+		&:hover{
+			background: #F4F4F4;
+			cursor: pointer;
+		}
+	}
+	.tab-btn{
+		position: relative;
+		z-index: 20;
+		background: white;
+		padding: 10px;
+		box-shadow: -2px 2px 5px rgba(0,0,0,0.2);
+		border: 1px solid #F4F4F4;
+		&:hover{
+			background: #F4F4F4;
+			cursor: pointer;
+		}
+		.unselected{
+			margin-right: 5px;
+		}
+		.selected, .unselected{
+			float: right;
+		}
+		.selected{
+			display: none;
+		}
+		line-height: 18px;
+		.fa{
+			font-size: 18px;
+		}
+	}
+	.tab-active{
+		z-index: 15;
+		margin: 0 5px;
+		box-shadow: none;
+		background: #EEE;
+		.selected{
+			display: inline-block;
+		}
+		.unselected{
+			display: none;
+		}
+	}
+}
