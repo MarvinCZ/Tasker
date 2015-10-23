@@ -13,8 +13,8 @@ var main = function(){
 		$(this).find('input[type="checkbox"]').prop('checked',$(this).hasClass('tab-active')?'checked':'');
 		e.stopPropagation();
 	});
-	$('.control-show').hide();
-	$('.tab-closed').hide();
+	$('.tab-select .control-show').hide();
+	$('.tab-select .tab-closed').hide();
 	$('.tab-select').click(function(){
 		var parent = $(this);
 		parent.find('.control-show').toggle();
@@ -31,6 +31,18 @@ var main = function(){
 		else{
 			parent.find('.tab-closed').html('Nothing selected');
 		}		
+	});
+	$('.tab-select .btn-nothing').click(function(e){
+		var parent = $(this).closest('.tab-select');
+		parent.find('.tab-btn').removeClass('tab-active');
+		parent.find('input[type="checkbox"]').prop('checked','');
+		e.stopPropagation();
+	});
+	$('.tab-select .btn-all').click(function(e){
+		var parent = $(this).closest('.tab-select');
+		parent.find('.tab-btn').addClass('tab-active');
+		parent.find('input[type="checkbox"]').prop('checked','checked');
+		e.stopPropagation();
 	});
 };
 

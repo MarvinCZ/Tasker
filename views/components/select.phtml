@@ -2,8 +2,13 @@
 	<h3><?= $display_name ?></h3>
 	<i class="fa fa-chevron-down control control-show"></i>
 	<i class="fa fa-chevron-up control control-hide"></i>
+	<div class="tab-opend">
+	<?php if($multiple): ?>
+		<div class="btn-all">ALL</div>
+		<div class="btn-nothing">NOTHING</div>
+		<div class="clear"></div>
+	<?php endif ?>
 	<?php foreach ($options as $option): ?>
-		<div class="tab-opend">
 			<div class="tab-btn <?= $option['selected'] ? 'tab-active' : ''?>">
 				<?php if($multiple): ?>
 					<input type="checkbox" name="<?= $name ?>['<?= $option['name'] ?>']"  <?= $option['selected'] ? 'checked' : '' ?>/>
@@ -18,8 +23,8 @@
 					<i class="fa fa-times unselected"></i>
 				<?php endif ?>
 			</div>
-		</div>
 	<?php endforeach ?>
+	</div>
 	<div class="tab-closed">
 	</div>
 </div>
