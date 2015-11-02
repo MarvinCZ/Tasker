@@ -20,5 +20,9 @@ DbWrapper::connect();
 
 $options = options_for_select(array('School', 'Work', 'Personal', 'Other'),'Personal');
 
-
-includeFile("views/template.phtml", array('test'=>$dt, 'array'=>$_SERVER['REQUEST_URI'], 'options' => $options));
+if(isset($_GET['category'])){
+	print_r($_GET['category']);
+}
+else{
+	includeFile("views/template.phtml", array('test'=>$dt, 'array'=>$_SERVER['REQUEST_URI'], 'options' => $options));
+}
