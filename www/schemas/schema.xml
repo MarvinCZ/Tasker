@@ -9,8 +9,6 @@
         <column name="nick" type="varchar" size="50" required="true"/>
         <column name="email" type="varchar" size="100" required="true"/>
         <column name="rights" type="integer"/>
-        <column name="created_at" type="date"/>
-        <column name="updated_at" type="date"/>
         <column name="email_confirmed_at" type="date"/>
         <column name="password" type="varchar" size="50" required="true"/>
         <column name="password_reset_token" type="varchar" size="50"/>
@@ -18,5 +16,6 @@
         <column name="email_confirm_token" type="varchar" size="50"/>
         <column name="avatar_path" type="varchar" size="255"/>
         <column name="last_signin_at" type="date"/>
+        <behavior name="timestampable" />
     </table>
 </database>

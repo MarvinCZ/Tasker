@@ -92,16 +92,6 @@ class UserTableMap extends TableMap
     const COL_RIGHTS = 'user.rights';
 
     /**
-     * the column name for the created_at field
-     */
-    const COL_CREATED_AT = 'user.created_at';
-
-    /**
-     * the column name for the updated_at field
-     */
-    const COL_UPDATED_AT = 'user.updated_at';
-
-    /**
      * the column name for the email_confirmed_at field
      */
     const COL_EMAIL_CONFIRMED_AT = 'user.email_confirmed_at';
@@ -137,6 +127,16 @@ class UserTableMap extends TableMap
     const COL_LAST_SIGNIN_AT = 'user.last_signin_at';
 
     /**
+     * the column name for the created_at field
+     */
+    const COL_CREATED_AT = 'user.created_at';
+
+    /**
+     * the column name for the updated_at field
+     */
+    const COL_UPDATED_AT = 'user.updated_at';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -148,10 +148,10 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Nick', 'Email', 'Rights', 'CreatedAt', 'UpdatedAt', 'EmailConfirmedAt', 'Password', 'PasswordResetToken', 'SigninCount', 'EmailConfirmToken', 'AvatarPath', 'LastSigninAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'nick', 'email', 'rights', 'createdAt', 'updatedAt', 'emailConfirmedAt', 'password', 'passwordResetToken', 'signinCount', 'emailConfirmToken', 'avatarPath', 'lastSigninAt', ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_NICK, UserTableMap::COL_EMAIL, UserTableMap::COL_RIGHTS, UserTableMap::COL_CREATED_AT, UserTableMap::COL_UPDATED_AT, UserTableMap::COL_EMAIL_CONFIRMED_AT, UserTableMap::COL_PASSWORD, UserTableMap::COL_PASSWORD_RESET_TOKEN, UserTableMap::COL_SIGNIN_COUNT, UserTableMap::COL_EMAIL_CONFIRM_TOKEN, UserTableMap::COL_AVATAR_PATH, UserTableMap::COL_LAST_SIGNIN_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'nick', 'email', 'rights', 'created_at', 'updated_at', 'email_confirmed_at', 'password', 'password_reset_token', 'signin_count', 'email_confirm_token', 'avatar_path', 'last_signin_at', ),
+        self::TYPE_PHPNAME       => array('Id', 'Nick', 'Email', 'Rights', 'EmailConfirmedAt', 'Password', 'PasswordResetToken', 'SigninCount', 'EmailConfirmToken', 'AvatarPath', 'LastSigninAt', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'nick', 'email', 'rights', 'emailConfirmedAt', 'password', 'passwordResetToken', 'signinCount', 'emailConfirmToken', 'avatarPath', 'lastSigninAt', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_NICK, UserTableMap::COL_EMAIL, UserTableMap::COL_RIGHTS, UserTableMap::COL_EMAIL_CONFIRMED_AT, UserTableMap::COL_PASSWORD, UserTableMap::COL_PASSWORD_RESET_TOKEN, UserTableMap::COL_SIGNIN_COUNT, UserTableMap::COL_EMAIL_CONFIRM_TOKEN, UserTableMap::COL_AVATAR_PATH, UserTableMap::COL_LAST_SIGNIN_AT, UserTableMap::COL_CREATED_AT, UserTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'nick', 'email', 'rights', 'email_confirmed_at', 'password', 'password_reset_token', 'signin_count', 'email_confirm_token', 'avatar_path', 'last_signin_at', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, )
     );
 
@@ -162,10 +162,10 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Nick' => 1, 'Email' => 2, 'Rights' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, 'EmailConfirmedAt' => 6, 'Password' => 7, 'PasswordResetToken' => 8, 'SigninCount' => 9, 'EmailConfirmToken' => 10, 'AvatarPath' => 11, 'LastSigninAt' => 12, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'nick' => 1, 'email' => 2, 'rights' => 3, 'createdAt' => 4, 'updatedAt' => 5, 'emailConfirmedAt' => 6, 'password' => 7, 'passwordResetToken' => 8, 'signinCount' => 9, 'emailConfirmToken' => 10, 'avatarPath' => 11, 'lastSigninAt' => 12, ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_NICK => 1, UserTableMap::COL_EMAIL => 2, UserTableMap::COL_RIGHTS => 3, UserTableMap::COL_CREATED_AT => 4, UserTableMap::COL_UPDATED_AT => 5, UserTableMap::COL_EMAIL_CONFIRMED_AT => 6, UserTableMap::COL_PASSWORD => 7, UserTableMap::COL_PASSWORD_RESET_TOKEN => 8, UserTableMap::COL_SIGNIN_COUNT => 9, UserTableMap::COL_EMAIL_CONFIRM_TOKEN => 10, UserTableMap::COL_AVATAR_PATH => 11, UserTableMap::COL_LAST_SIGNIN_AT => 12, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'nick' => 1, 'email' => 2, 'rights' => 3, 'created_at' => 4, 'updated_at' => 5, 'email_confirmed_at' => 6, 'password' => 7, 'password_reset_token' => 8, 'signin_count' => 9, 'email_confirm_token' => 10, 'avatar_path' => 11, 'last_signin_at' => 12, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Nick' => 1, 'Email' => 2, 'Rights' => 3, 'EmailConfirmedAt' => 4, 'Password' => 5, 'PasswordResetToken' => 6, 'SigninCount' => 7, 'EmailConfirmToken' => 8, 'AvatarPath' => 9, 'LastSigninAt' => 10, 'CreatedAt' => 11, 'UpdatedAt' => 12, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'nick' => 1, 'email' => 2, 'rights' => 3, 'emailConfirmedAt' => 4, 'password' => 5, 'passwordResetToken' => 6, 'signinCount' => 7, 'emailConfirmToken' => 8, 'avatarPath' => 9, 'lastSigninAt' => 10, 'createdAt' => 11, 'updatedAt' => 12, ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_NICK => 1, UserTableMap::COL_EMAIL => 2, UserTableMap::COL_RIGHTS => 3, UserTableMap::COL_EMAIL_CONFIRMED_AT => 4, UserTableMap::COL_PASSWORD => 5, UserTableMap::COL_PASSWORD_RESET_TOKEN => 6, UserTableMap::COL_SIGNIN_COUNT => 7, UserTableMap::COL_EMAIL_CONFIRM_TOKEN => 8, UserTableMap::COL_AVATAR_PATH => 9, UserTableMap::COL_LAST_SIGNIN_AT => 10, UserTableMap::COL_CREATED_AT => 11, UserTableMap::COL_UPDATED_AT => 12, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'nick' => 1, 'email' => 2, 'rights' => 3, 'email_confirmed_at' => 4, 'password' => 5, 'password_reset_token' => 6, 'signin_count' => 7, 'email_confirm_token' => 8, 'avatar_path' => 9, 'last_signin_at' => 10, 'created_at' => 11, 'updated_at' => 12, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, )
     );
 
@@ -190,8 +190,6 @@ class UserTableMap extends TableMap
         $this->addColumn('nick', 'Nick', 'VARCHAR', true, 50, null);
         $this->addColumn('email', 'Email', 'VARCHAR', true, 100, null);
         $this->addColumn('rights', 'Rights', 'INTEGER', false, null, null);
-        $this->addColumn('created_at', 'CreatedAt', 'DATE', false, null, null);
-        $this->addColumn('updated_at', 'UpdatedAt', 'DATE', false, null, null);
         $this->addColumn('email_confirmed_at', 'EmailConfirmedAt', 'DATE', false, null, null);
         $this->addColumn('password', 'Password', 'VARCHAR', true, 50, null);
         $this->addColumn('password_reset_token', 'PasswordResetToken', 'VARCHAR', false, 50, null);
@@ -199,6 +197,8 @@ class UserTableMap extends TableMap
         $this->addColumn('email_confirm_token', 'EmailConfirmToken', 'VARCHAR', false, 50, null);
         $this->addColumn('avatar_path', 'AvatarPath', 'VARCHAR', false, 255, null);
         $this->addColumn('last_signin_at', 'LastSigninAt', 'DATE', false, null, null);
+        $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
+        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -207,6 +207,19 @@ class UserTableMap extends TableMap
     public function buildRelations()
     {
     } // buildRelations()
+
+    /**
+     *
+     * Gets the list of behaviors registered for this table
+     *
+     * @return array Associative array (name => parameters) of behaviors
+     */
+    public function getBehaviors()
+    {
+        return array(
+            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
+        );
+    } // getBehaviors()
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -353,8 +366,6 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn(UserTableMap::COL_NICK);
             $criteria->addSelectColumn(UserTableMap::COL_EMAIL);
             $criteria->addSelectColumn(UserTableMap::COL_RIGHTS);
-            $criteria->addSelectColumn(UserTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(UserTableMap::COL_UPDATED_AT);
             $criteria->addSelectColumn(UserTableMap::COL_EMAIL_CONFIRMED_AT);
             $criteria->addSelectColumn(UserTableMap::COL_PASSWORD);
             $criteria->addSelectColumn(UserTableMap::COL_PASSWORD_RESET_TOKEN);
@@ -362,13 +373,13 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn(UserTableMap::COL_EMAIL_CONFIRM_TOKEN);
             $criteria->addSelectColumn(UserTableMap::COL_AVATAR_PATH);
             $criteria->addSelectColumn(UserTableMap::COL_LAST_SIGNIN_AT);
+            $criteria->addSelectColumn(UserTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(UserTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.nick');
             $criteria->addSelectColumn($alias . '.email');
             $criteria->addSelectColumn($alias . '.rights');
-            $criteria->addSelectColumn($alias . '.created_at');
-            $criteria->addSelectColumn($alias . '.updated_at');
             $criteria->addSelectColumn($alias . '.email_confirmed_at');
             $criteria->addSelectColumn($alias . '.password');
             $criteria->addSelectColumn($alias . '.password_reset_token');
@@ -376,6 +387,8 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.email_confirm_token');
             $criteria->addSelectColumn($alias . '.avatar_path');
             $criteria->addSelectColumn($alias . '.last_signin_at');
+            $criteria->addSelectColumn($alias . '.created_at');
+            $criteria->addSelectColumn($alias . '.updated_at');
         }
     }
 

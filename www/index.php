@@ -26,11 +26,16 @@ foreach (glob("models/*.php") as $model)
 //$u->setPassword("hash");
 //$u->save();
 
+$q = new UserQuery();
+$user = $q->findPK(1);
+$user->setNick("Marvin");
+$user->save();
+
 $options = options_for_select(array('School', 'Work', 'Personal', 'Other'),'Personal');
 
 if(isset($_GET['category'])){
 	print_r($_GET['category']);
 }
 else{
-	includeFile("views/template.phtml", array('options' => $options));
+	includeFile("views/template.phtml", array('options' => $options, 'user' => $user->exportTO('JSON')));
 }
