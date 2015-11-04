@@ -1,12 +1,12 @@
 <?php
 
-namespace Base;
+namespace Models\Base;
 
-use \User as ChildUser;
-use \UserQuery as ChildUserQuery;
 use \Exception;
 use \PDO;
-use Map\UserTableMap;
+use Models\User as ChildUser;
+use Models\UserQuery as ChildUserQuery;
+use Models\Map\UserTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -111,13 +111,13 @@ abstract class UserQuery extends ModelCriteria
     protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \Base\UserQuery object.
+     * Initializes internal state of \Models\Base\UserQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'default', $modelName = '\\User', $modelAlias = null)
+    public function __construct($dbName = 'default', $modelName = '\\Models\\User', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }

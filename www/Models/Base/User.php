@@ -1,13 +1,13 @@
 <?php
 
-namespace Base;
+namespace Models\Base;
 
-use \User as ChildUser;
-use \UserQuery as ChildUserQuery;
 use \DateTime;
 use \Exception;
 use \PDO;
-use Map\UserTableMap;
+use Models\User as ChildUser;
+use Models\UserQuery as ChildUserQuery;
+use Models\Map\UserTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -26,14 +26,14 @@ use Propel\Runtime\Util\PropelDateTime;
  *
  *
  *
-* @package    propel.generator..Base
+* @package    propel.generator.Models.Base
 */
 abstract class User implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Map\\UserTableMap';
+    const TABLE_MAP = '\\Models\\Map\\UserTableMap';
 
 
     /**
@@ -162,7 +162,7 @@ abstract class User implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of Base\User object.
+     * Initializes internal state of Models\Base\User object.
      */
     public function __construct()
     {
@@ -557,7 +557,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -577,7 +577,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [nick] column.
      *
      * @param string $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setNick($v)
     {
@@ -597,7 +597,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [email] column.
      *
      * @param string $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setEmail($v)
     {
@@ -617,7 +617,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [rights] column.
      *
      * @param int $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setRights($v)
     {
@@ -638,7 +638,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setEmailConfirmedAt($v)
     {
@@ -657,7 +657,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [password] column.
      *
      * @param string $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setPassword($v)
     {
@@ -677,7 +677,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [password_reset_token] column.
      *
      * @param string $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setPasswordResetToken($v)
     {
@@ -697,7 +697,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [signin_count] column.
      *
      * @param int $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setSigninCount($v)
     {
@@ -717,7 +717,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [email_confirm_token] column.
      *
      * @param string $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setEmailConfirmToken($v)
     {
@@ -737,7 +737,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [avatar_path] column.
      *
      * @param string $v new value
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setAvatarPath($v)
     {
@@ -758,7 +758,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setLastSigninAt($v)
     {
@@ -778,7 +778,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -798,7 +798,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\User The current object (for fluent API support)
+     * @return $this|\Models\User The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -910,7 +910,7 @@ abstract class User implements ActiveRecordInterface
             return $startcol + 13; // 13 = UserTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\User'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\Models\\User'), 0, $e);
         }
     }
 
@@ -1383,7 +1383,7 @@ abstract class User implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\User
+     * @return $this|\Models\User
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
@@ -1398,7 +1398,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\User
+     * @return $this|\Models\User
      */
     public function setByPosition($pos, $value)
     {
@@ -1526,7 +1526,7 @@ abstract class User implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\User The current object, for fluid interface
+     * @return $this|\Models\User The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1666,7 +1666,7 @@ abstract class User implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \User (or compatible) type.
+     * @param      object $copyObj An object of \Models\User (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1700,7 +1700,7 @@ abstract class User implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \User Clone of current object.
+     * @return \Models\User Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)

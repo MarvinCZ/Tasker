@@ -1,6 +1,8 @@
 <?php
 
-use Base\User as BaseUser;
+namespace Models;
+
+use Models\Base\User as BaseUser;
 
 /**
  * Skeleton subclass for representing a row from the 'user' table.
