@@ -11,7 +11,7 @@ require_once '../vendor/autoload.php';
 
 include("generated-conf/config.php");
 
-foreach (glob("helpers/*.php") as $helper)
+foreach (glob("Helpers/*.php") as $helper)
 {
     include($helper);
 }
