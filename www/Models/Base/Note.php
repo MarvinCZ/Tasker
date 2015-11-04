@@ -11,13 +11,12 @@ use Models\Note as ChildNote;
 use Models\NoteQuery as ChildNoteQuery;
 use Models\User as ChildUser;
 use Models\UserQuery as ChildUserQuery;
-use Models\Map\UserTableMap;
+use Models\Map\NoteTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -27,18 +26,18 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'user' table.
+ * Base class that represents a row from the 'note' table.
  *
  *
  *
 * @package    propel.generator.Models.Base
 */
-abstract class User implements ActiveRecordInterface
+abstract class Note implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Models\\Map\\UserTableMap';
+    const TABLE_MAP = '\\Models\\Map\\NoteTableMap';
 
 
     /**
@@ -75,74 +74,76 @@ abstract class User implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the nick field.
-     *
-     * @var        string
-     */
-    protected $nick;
-
-    /**
-     * The value for the email field.
-     *
-     * @var        string
-     */
-    protected $email;
-
-    /**
-     * The value for the rights field.
+     * The value for the user_id field.
      *
      * @var        int
      */
-    protected $rights;
+    protected $user_id;
 
     /**
-     * The value for the email_confirmed_at field.
+     * The value for the importance field.
+     *
+     * Note: this column has a database default value of: -1
+     * @var        int
+     */
+    protected $importance;
+
+    /**
+     * The value for the title field.
+     *
+     * @var        string
+     */
+    protected $title;
+
+    /**
+     * The value for the deadline field.
      *
      * @var        \DateTime
      */
-    protected $email_confirmed_at;
+    protected $deadline;
 
     /**
-     * The value for the password field.
-     *
-     * @var        string
-     */
-    protected $password;
-
-    /**
-     * The value for the password_reset_token field.
-     *
-     * @var        string
-     */
-    protected $password_reset_token;
-
-    /**
-     * The value for the signin_count field.
+     * The value for the category_id field.
      *
      * @var        int
      */
-    protected $signin_count;
+    protected $category_id;
 
     /**
-     * The value for the email_confirm_token field.
+     * The value for the state field.
      *
-     * @var        string
+     * Note: this column has a database default value of: 0
+     * @var        int
      */
-    protected $email_confirm_token;
+    protected $state;
 
     /**
-     * The value for the avatar_path field.
+     * The value for the repeat_after field.
      *
-     * @var        string
+     * @var        int
      */
-    protected $avatar_path;
+    protected $repeat_after;
 
     /**
-     * The value for the last_signin_at field.
+     * The value for the done_at field.
      *
      * @var        \DateTime
      */
-    protected $last_signin_at;
+    protected $done_at;
+
+    /**
+     * The value for the public field.
+     *
+     * @var        boolean
+     */
+    protected $public;
+
+    /**
+     * The value for the description field.
+     *
+     * @var        string
+     */
+    protected $description;
 
     /**
      * The value for the created_at field.
@@ -159,16 +160,14 @@ abstract class User implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ObjectCollection|ChildNote[] Collection to store aggregation of ChildNote objects.
+     * @var        ChildUser
      */
-    protected $collNotes;
-    protected $collNotesPartial;
+    protected $aUser;
 
     /**
-     * @var        ObjectCollection|ChildCategory[] Collection to store aggregation of ChildCategory objects.
+     * @var        ChildCategory
      */
-    protected $collCategories;
-    protected $collCategoriesPartial;
+    protected $aCategory;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -179,22 +178,24 @@ abstract class User implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildNote[]
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
      */
-    protected $notesScheduledForDeletion = null;
+    public function applyDefaultValues()
+    {
+        $this->importance = -1;
+        $this->state = 0;
+    }
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildCategory[]
-     */
-    protected $categoriesScheduledForDeletion = null;
-
-    /**
-     * Initializes internal state of Models\Base\User object.
+     * Initializes internal state of Models\Base\Note object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -286,9 +287,9 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>User</code> instance.  If
-     * <code>obj</code> is an instance of <code>User</code>, delegates to
-     * <code>equals(User)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Note</code> instance.  If
+     * <code>obj</code> is an instance of <code>Note</code>, delegates to
+     * <code>equals(Note)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -354,7 +355,7 @@ abstract class User implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|User The current object, for fluid interface
+     * @return $this|Note The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -423,37 +424,37 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * Get the [nick] column value.
-     *
-     * @return string
-     */
-    public function getNick()
-    {
-        return $this->nick;
-    }
-
-    /**
-     * Get the [email] column value.
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Get the [rights] column value.
+     * Get the [user_id] column value.
      *
      * @return int
      */
-    public function getRights()
+    public function getUserId()
     {
-        return $this->rights;
+        return $this->user_id;
     }
 
     /**
-     * Get the [optionally formatted] temporal [email_confirmed_at] column value.
+     * Get the [importance] column value.
+     *
+     * @return int
+     */
+    public function getImportance()
+    {
+        return $this->importance;
+    }
+
+    /**
+     * Get the [title] column value.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [deadline] column value.
      *
      *
      * @param      string $format The date/time format string (either date()-style or strftime()-style).
@@ -463,67 +464,56 @@ abstract class User implements ActiveRecordInterface
      *
      * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getEmailConfirmedAt($format = NULL)
+    public function getDeadline($format = NULL)
     {
         if ($format === null) {
-            return $this->email_confirmed_at;
+            return $this->deadline;
         } else {
-            return $this->email_confirmed_at instanceof \DateTime ? $this->email_confirmed_at->format($format) : null;
+            return $this->deadline instanceof \DateTime ? $this->deadline->format($format) : null;
         }
     }
 
     /**
-     * Get the [password] column value.
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Get the [password_reset_token] column value.
-     *
-     * @return string
-     */
-    public function getPasswordResetToken()
-    {
-        return $this->password_reset_token;
-    }
-
-    /**
-     * Get the [signin_count] column value.
+     * Get the [category_id] column value.
      *
      * @return int
      */
-    public function getSigninCount()
+    public function getCategoryId()
     {
-        return $this->signin_count;
+        return $this->category_id;
     }
 
     /**
-     * Get the [email_confirm_token] column value.
+     * Get the [state] column value.
      *
      * @return string
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function getEmailConfirmToken()
+    public function getState()
     {
-        return $this->email_confirm_token;
+        if (null === $this->state) {
+            return null;
+        }
+        $valueSet = NoteTableMap::getValueSet(NoteTableMap::COL_STATE);
+        if (!isset($valueSet[$this->state])) {
+            throw new PropelException('Unknown stored enum key: ' . $this->state);
+        }
+
+        return $valueSet[$this->state];
     }
 
     /**
-     * Get the [avatar_path] column value.
+     * Get the [repeat_after] column value.
      *
-     * @return string
+     * @return int
      */
-    public function getAvatarPath()
+    public function getRepeatAfter()
     {
-        return $this->avatar_path;
+        return $this->repeat_after;
     }
 
     /**
-     * Get the [optionally formatted] temporal [last_signin_at] column value.
+     * Get the [optionally formatted] temporal [done_at] column value.
      *
      *
      * @param      string $format The date/time format string (either date()-style or strftime()-style).
@@ -533,13 +523,43 @@ abstract class User implements ActiveRecordInterface
      *
      * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getLastSigninAt($format = NULL)
+    public function getDoneAt($format = NULL)
     {
         if ($format === null) {
-            return $this->last_signin_at;
+            return $this->done_at;
         } else {
-            return $this->last_signin_at instanceof \DateTime ? $this->last_signin_at->format($format) : null;
+            return $this->done_at instanceof \DateTime ? $this->done_at->format($format) : null;
         }
+    }
+
+    /**
+     * Get the [public] column value.
+     *
+     * @return boolean
+     */
+    public function getPublic()
+    {
+        return $this->public;
+    }
+
+    /**
+     * Get the [public] column value.
+     *
+     * @return boolean
+     */
+    public function isPublic()
+    {
+        return $this->getPublic();
+    }
+
+    /**
+     * Get the [description] column value.
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**
@@ -586,7 +606,7 @@ abstract class User implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
+     * @return $this|\Models\Note The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -596,218 +616,239 @@ abstract class User implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[UserTableMap::COL_ID] = true;
+            $this->modifiedColumns[NoteTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [nick] column.
-     *
-     * @param string $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function setNick($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->nick !== $v) {
-            $this->nick = $v;
-            $this->modifiedColumns[UserTableMap::COL_NICK] = true;
-        }
-
-        return $this;
-    } // setNick()
-
-    /**
-     * Set the value of [email] column.
-     *
-     * @param string $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function setEmail($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->email !== $v) {
-            $this->email = $v;
-            $this->modifiedColumns[UserTableMap::COL_EMAIL] = true;
-        }
-
-        return $this;
-    } // setEmail()
-
-    /**
-     * Set the value of [rights] column.
+     * Set the value of [user_id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
+     * @return $this|\Models\Note The current object (for fluent API support)
      */
-    public function setRights($v)
+    public function setUserId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->rights !== $v) {
-            $this->rights = $v;
-            $this->modifiedColumns[UserTableMap::COL_RIGHTS] = true;
+        if ($this->user_id !== $v) {
+            $this->user_id = $v;
+            $this->modifiedColumns[NoteTableMap::COL_USER_ID] = true;
+        }
+
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
         }
 
         return $this;
-    } // setRights()
+    } // setUserId()
 
     /**
-     * Sets the value of [email_confirmed_at] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTime value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function setEmailConfirmedAt($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->email_confirmed_at !== null || $dt !== null) {
-            if ($this->email_confirmed_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->email_confirmed_at->format("Y-m-d H:i:s")) {
-                $this->email_confirmed_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[UserTableMap::COL_EMAIL_CONFIRMED_AT] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setEmailConfirmedAt()
-
-    /**
-     * Set the value of [password] column.
-     *
-     * @param string $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function setPassword($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->password !== $v) {
-            $this->password = $v;
-            $this->modifiedColumns[UserTableMap::COL_PASSWORD] = true;
-        }
-
-        return $this;
-    } // setPassword()
-
-    /**
-     * Set the value of [password_reset_token] column.
-     *
-     * @param string $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function setPasswordResetToken($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->password_reset_token !== $v) {
-            $this->password_reset_token = $v;
-            $this->modifiedColumns[UserTableMap::COL_PASSWORD_RESET_TOKEN] = true;
-        }
-
-        return $this;
-    } // setPasswordResetToken()
-
-    /**
-     * Set the value of [signin_count] column.
+     * Set the value of [importance] column.
      *
      * @param int $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
+     * @return $this|\Models\Note The current object (for fluent API support)
      */
-    public function setSigninCount($v)
+    public function setImportance($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->signin_count !== $v) {
-            $this->signin_count = $v;
-            $this->modifiedColumns[UserTableMap::COL_SIGNIN_COUNT] = true;
+        if ($this->importance !== $v) {
+            $this->importance = $v;
+            $this->modifiedColumns[NoteTableMap::COL_IMPORTANCE] = true;
         }
 
         return $this;
-    } // setSigninCount()
+    } // setImportance()
 
     /**
-     * Set the value of [email_confirm_token] column.
+     * Set the value of [title] column.
      *
      * @param string $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
+     * @return $this|\Models\Note The current object (for fluent API support)
      */
-    public function setEmailConfirmToken($v)
+    public function setTitle($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->email_confirm_token !== $v) {
-            $this->email_confirm_token = $v;
-            $this->modifiedColumns[UserTableMap::COL_EMAIL_CONFIRM_TOKEN] = true;
+        if ($this->title !== $v) {
+            $this->title = $v;
+            $this->modifiedColumns[NoteTableMap::COL_TITLE] = true;
         }
 
         return $this;
-    } // setEmailConfirmToken()
+    } // setTitle()
 
     /**
-     * Set the value of [avatar_path] column.
-     *
-     * @param string $v new value
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function setAvatarPath($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->avatar_path !== $v) {
-            $this->avatar_path = $v;
-            $this->modifiedColumns[UserTableMap::COL_AVATAR_PATH] = true;
-        }
-
-        return $this;
-    } // setAvatarPath()
-
-    /**
-     * Sets the value of [last_signin_at] column to a normalized version of the date/time value specified.
+     * Sets the value of [deadline] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\User The current object (for fluent API support)
+     * @return $this|\Models\Note The current object (for fluent API support)
      */
-    public function setLastSigninAt($v)
+    public function setDeadline($v)
     {
         $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->last_signin_at !== null || $dt !== null) {
-            if ($this->last_signin_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->last_signin_at->format("Y-m-d H:i:s")) {
-                $this->last_signin_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[UserTableMap::COL_LAST_SIGNIN_AT] = true;
+        if ($this->deadline !== null || $dt !== null) {
+            if ($this->deadline === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->deadline->format("Y-m-d H:i:s")) {
+                $this->deadline = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[NoteTableMap::COL_DEADLINE] = true;
             }
         } // if either are not null
 
         return $this;
-    } // setLastSigninAt()
+    } // setDeadline()
+
+    /**
+     * Set the value of [category_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function setCategoryId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->category_id !== $v) {
+            $this->category_id = $v;
+            $this->modifiedColumns[NoteTableMap::COL_CATEGORY_ID] = true;
+        }
+
+        if ($this->aCategory !== null && $this->aCategory->getId() !== $v) {
+            $this->aCategory = null;
+        }
+
+        return $this;
+    } // setCategoryId()
+
+    /**
+     * Set the value of [state] column.
+     *
+     * @param  string $v new value
+     * @return $this|\Models\Note The current object (for fluent API support)
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function setState($v)
+    {
+        if ($v !== null) {
+            $valueSet = NoteTableMap::getValueSet(NoteTableMap::COL_STATE);
+            if (!in_array($v, $valueSet)) {
+                throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $v));
+            }
+            $v = array_search($v, $valueSet);
+        }
+
+        if ($this->state !== $v) {
+            $this->state = $v;
+            $this->modifiedColumns[NoteTableMap::COL_STATE] = true;
+        }
+
+        return $this;
+    } // setState()
+
+    /**
+     * Set the value of [repeat_after] column.
+     *
+     * @param int $v new value
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function setRepeatAfter($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->repeat_after !== $v) {
+            $this->repeat_after = $v;
+            $this->modifiedColumns[NoteTableMap::COL_REPEAT_AFTER] = true;
+        }
+
+        return $this;
+    } // setRepeatAfter()
+
+    /**
+     * Sets the value of [done_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function setDoneAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->done_at !== null || $dt !== null) {
+            if ($this->done_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->done_at->format("Y-m-d H:i:s")) {
+                $this->done_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[NoteTableMap::COL_DONE_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setDoneAt()
+
+    /**
+     * Sets the value of the [public] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function setPublic($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->public !== $v) {
+            $this->public = $v;
+            $this->modifiedColumns[NoteTableMap::COL_PUBLIC] = true;
+        }
+
+        return $this;
+    } // setPublic()
+
+    /**
+     * Set the value of [description] column.
+     *
+     * @param string $v new value
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function setDescription($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->description !== $v) {
+            $this->description = $v;
+            $this->modifiedColumns[NoteTableMap::COL_DESCRIPTION] = true;
+        }
+
+        return $this;
+    } // setDescription()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\User The current object (for fluent API support)
+     * @return $this|\Models\Note The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -815,7 +856,7 @@ abstract class User implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($this->created_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->created_at->format("Y-m-d H:i:s")) {
                 $this->created_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[UserTableMap::COL_CREATED_AT] = true;
+                $this->modifiedColumns[NoteTableMap::COL_CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -827,7 +868,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\User The current object (for fluent API support)
+     * @return $this|\Models\Note The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -835,7 +876,7 @@ abstract class User implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->updated_at->format("Y-m-d H:i:s")) {
                 $this->updated_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[UserTableMap::COL_UPDATED_AT] = true;
+                $this->modifiedColumns[NoteTableMap::COL_UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -852,6 +893,14 @@ abstract class User implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->importance !== -1) {
+                return false;
+            }
+
+            if ($this->state !== 0) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -878,52 +927,52 @@ abstract class User implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : UserTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : NoteTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserTableMap::translateFieldName('Nick', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->nick = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : NoteTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->user_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserTableMap::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->email = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : NoteTableMap::translateFieldName('Importance', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->importance = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : UserTableMap::translateFieldName('Rights', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->rights = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : NoteTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->title = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : UserTableMap::translateFieldName('EmailConfirmedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : NoteTableMap::translateFieldName('Deadline', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
-            $this->email_confirmed_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+            $this->deadline = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : UserTableMap::translateFieldName('Password', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->password = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : NoteTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->category_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : UserTableMap::translateFieldName('PasswordResetToken', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->password_reset_token = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : NoteTableMap::translateFieldName('State', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->state = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('SigninCount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->signin_count = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : NoteTableMap::translateFieldName('RepeatAfter', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->repeat_after = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : UserTableMap::translateFieldName('EmailConfirmToken', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->email_confirm_token = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : UserTableMap::translateFieldName('AvatarPath', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->avatar_path = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : UserTableMap::translateFieldName('LastSigninAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : NoteTableMap::translateFieldName('DoneAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
-            $this->last_signin_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+            $this->done_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : UserTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : NoteTableMap::translateFieldName('Public', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->public = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : NoteTableMap::translateFieldName('Description', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->description = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : NoteTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : UserTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : NoteTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -936,10 +985,10 @@ abstract class User implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 13; // 13 = UserTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 13; // 13 = NoteTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Models\\User'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\Models\\Note'), 0, $e);
         }
     }
 
@@ -958,6 +1007,12 @@ abstract class User implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
+        }
+        if ($this->aCategory !== null && $this->category_id !== $this->aCategory->getId()) {
+            $this->aCategory = null;
+        }
     } // ensureConsistency
 
     /**
@@ -981,13 +1036,13 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(NoteTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildUserQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildNoteQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -997,10 +1052,8 @@ abstract class User implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->collNotes = null;
-
-            $this->collCategories = null;
-
+            $this->aUser = null;
+            $this->aCategory = null;
         } // if (deep)
     }
 
@@ -1010,8 +1063,8 @@ abstract class User implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see User::setDeleted()
-     * @see User::isDeleted()
+     * @see Note::setDeleted()
+     * @see Note::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -1020,11 +1073,11 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(NoteTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildUserQuery::create()
+            $deleteQuery = ChildNoteQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -1055,7 +1108,7 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(NoteTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -1065,16 +1118,16 @@ abstract class User implements ActiveRecordInterface
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
 
-                if (!$this->isColumnModified(UserTableMap::COL_CREATED_AT)) {
+                if (!$this->isColumnModified(NoteTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(UserTableMap::COL_UPDATED_AT)) {
+                if (!$this->isColumnModified(NoteTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(UserTableMap::COL_UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(NoteTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -1086,7 +1139,7 @@ abstract class User implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                UserTableMap::addInstanceToPool($this);
+                NoteTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -1112,6 +1165,25 @@ abstract class User implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
+                }
+                $this->setUser($this->aUser);
+            }
+
+            if ($this->aCategory !== null) {
+                if ($this->aCategory->isModified() || $this->aCategory->isNew()) {
+                    $affectedRows += $this->aCategory->save($con);
+                }
+                $this->setCategory($this->aCategory);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -1121,40 +1193,6 @@ abstract class User implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
-            }
-
-            if ($this->notesScheduledForDeletion !== null) {
-                if (!$this->notesScheduledForDeletion->isEmpty()) {
-                    \Models\NoteQuery::create()
-                        ->filterByPrimaryKeys($this->notesScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->notesScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collNotes !== null) {
-                foreach ($this->collNotes as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->categoriesScheduledForDeletion !== null) {
-                if (!$this->categoriesScheduledForDeletion->isEmpty()) {
-                    \Models\CategoryQuery::create()
-                        ->filterByPrimaryKeys($this->categoriesScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->categoriesScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collCategories !== null) {
-                foreach ($this->collCategories as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
             }
 
             $this->alreadyInSave = false;
@@ -1177,54 +1215,54 @@ abstract class User implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[UserTableMap::COL_ID] = true;
+        $this->modifiedColumns[NoteTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . UserTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . NoteTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(UserTableMap::COL_ID)) {
+        if ($this->isColumnModified(NoteTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(UserTableMap::COL_NICK)) {
-            $modifiedColumns[':p' . $index++]  = 'nick';
+        if ($this->isColumnModified(NoteTableMap::COL_USER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'user_id';
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL)) {
-            $modifiedColumns[':p' . $index++]  = 'email';
+        if ($this->isColumnModified(NoteTableMap::COL_IMPORTANCE)) {
+            $modifiedColumns[':p' . $index++]  = 'importance';
         }
-        if ($this->isColumnModified(UserTableMap::COL_RIGHTS)) {
-            $modifiedColumns[':p' . $index++]  = 'rights';
+        if ($this->isColumnModified(NoteTableMap::COL_TITLE)) {
+            $modifiedColumns[':p' . $index++]  = 'title';
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL_CONFIRMED_AT)) {
-            $modifiedColumns[':p' . $index++]  = 'email_confirmed_at';
+        if ($this->isColumnModified(NoteTableMap::COL_DEADLINE)) {
+            $modifiedColumns[':p' . $index++]  = 'deadline';
         }
-        if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
-            $modifiedColumns[':p' . $index++]  = 'password';
+        if ($this->isColumnModified(NoteTableMap::COL_CATEGORY_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'category_id';
         }
-        if ($this->isColumnModified(UserTableMap::COL_PASSWORD_RESET_TOKEN)) {
-            $modifiedColumns[':p' . $index++]  = 'password_reset_token';
+        if ($this->isColumnModified(NoteTableMap::COL_STATE)) {
+            $modifiedColumns[':p' . $index++]  = 'state';
         }
-        if ($this->isColumnModified(UserTableMap::COL_SIGNIN_COUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'signin_count';
+        if ($this->isColumnModified(NoteTableMap::COL_REPEAT_AFTER)) {
+            $modifiedColumns[':p' . $index++]  = 'repeat_after';
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL_CONFIRM_TOKEN)) {
-            $modifiedColumns[':p' . $index++]  = 'email_confirm_token';
+        if ($this->isColumnModified(NoteTableMap::COL_DONE_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'done_at';
         }
-        if ($this->isColumnModified(UserTableMap::COL_AVATAR_PATH)) {
-            $modifiedColumns[':p' . $index++]  = 'avatar_path';
+        if ($this->isColumnModified(NoteTableMap::COL_PUBLIC)) {
+            $modifiedColumns[':p' . $index++]  = 'public';
         }
-        if ($this->isColumnModified(UserTableMap::COL_LAST_SIGNIN_AT)) {
-            $modifiedColumns[':p' . $index++]  = 'last_signin_at';
+        if ($this->isColumnModified(NoteTableMap::COL_DESCRIPTION)) {
+            $modifiedColumns[':p' . $index++]  = 'description';
         }
-        if ($this->isColumnModified(UserTableMap::COL_CREATED_AT)) {
+        if ($this->isColumnModified(NoteTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
-        if ($this->isColumnModified(UserTableMap::COL_UPDATED_AT)) {
+        if ($this->isColumnModified(NoteTableMap::COL_UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
-            'INSERT INTO user (%s) VALUES (%s)',
+            'INSERT INTO note (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -1236,35 +1274,35 @@ abstract class User implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'nick':
-                        $stmt->bindValue($identifier, $this->nick, PDO::PARAM_STR);
+                    case 'user_id':
+                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
                         break;
-                    case 'email':
-                        $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
+                    case 'importance':
+                        $stmt->bindValue($identifier, $this->importance, PDO::PARAM_INT);
                         break;
-                    case 'rights':
-                        $stmt->bindValue($identifier, $this->rights, PDO::PARAM_INT);
+                    case 'title':
+                        $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
                         break;
-                    case 'email_confirmed_at':
-                        $stmt->bindValue($identifier, $this->email_confirmed_at ? $this->email_confirmed_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                    case 'deadline':
+                        $stmt->bindValue($identifier, $this->deadline ? $this->deadline->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
-                    case 'password':
-                        $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
+                    case 'category_id':
+                        $stmt->bindValue($identifier, $this->category_id, PDO::PARAM_INT);
                         break;
-                    case 'password_reset_token':
-                        $stmt->bindValue($identifier, $this->password_reset_token, PDO::PARAM_STR);
+                    case 'state':
+                        $stmt->bindValue($identifier, $this->state, PDO::PARAM_INT);
                         break;
-                    case 'signin_count':
-                        $stmt->bindValue($identifier, $this->signin_count, PDO::PARAM_INT);
+                    case 'repeat_after':
+                        $stmt->bindValue($identifier, $this->repeat_after, PDO::PARAM_INT);
                         break;
-                    case 'email_confirm_token':
-                        $stmt->bindValue($identifier, $this->email_confirm_token, PDO::PARAM_STR);
+                    case 'done_at':
+                        $stmt->bindValue($identifier, $this->done_at ? $this->done_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
-                    case 'avatar_path':
-                        $stmt->bindValue($identifier, $this->avatar_path, PDO::PARAM_STR);
+                    case 'public':
+                        $stmt->bindValue($identifier, (int) $this->public, PDO::PARAM_INT);
                         break;
-                    case 'last_signin_at':
-                        $stmt->bindValue($identifier, $this->last_signin_at ? $this->last_signin_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                    case 'description':
+                        $stmt->bindValue($identifier, $this->description, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1318,7 +1356,7 @@ abstract class User implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = UserTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = NoteTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -1338,34 +1376,34 @@ abstract class User implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getNick();
+                return $this->getUserId();
                 break;
             case 2:
-                return $this->getEmail();
+                return $this->getImportance();
                 break;
             case 3:
-                return $this->getRights();
+                return $this->getTitle();
                 break;
             case 4:
-                return $this->getEmailConfirmedAt();
+                return $this->getDeadline();
                 break;
             case 5:
-                return $this->getPassword();
+                return $this->getCategoryId();
                 break;
             case 6:
-                return $this->getPasswordResetToken();
+                return $this->getState();
                 break;
             case 7:
-                return $this->getSigninCount();
+                return $this->getRepeatAfter();
                 break;
             case 8:
-                return $this->getEmailConfirmToken();
+                return $this->getDoneAt();
                 break;
             case 9:
-                return $this->getAvatarPath();
+                return $this->getPublic();
                 break;
             case 10:
-                return $this->getLastSigninAt();
+                return $this->getDescription();
                 break;
             case 11:
                 return $this->getCreatedAt();
@@ -1397,23 +1435,23 @@ abstract class User implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['User'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['Note'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['User'][$this->hashCode()] = true;
-        $keys = UserTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Note'][$this->hashCode()] = true;
+        $keys = NoteTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getNick(),
-            $keys[2] => $this->getEmail(),
-            $keys[3] => $this->getRights(),
-            $keys[4] => $this->getEmailConfirmedAt(),
-            $keys[5] => $this->getPassword(),
-            $keys[6] => $this->getPasswordResetToken(),
-            $keys[7] => $this->getSigninCount(),
-            $keys[8] => $this->getEmailConfirmToken(),
-            $keys[9] => $this->getAvatarPath(),
-            $keys[10] => $this->getLastSigninAt(),
+            $keys[1] => $this->getUserId(),
+            $keys[2] => $this->getImportance(),
+            $keys[3] => $this->getTitle(),
+            $keys[4] => $this->getDeadline(),
+            $keys[5] => $this->getCategoryId(),
+            $keys[6] => $this->getState(),
+            $keys[7] => $this->getRepeatAfter(),
+            $keys[8] => $this->getDoneAt(),
+            $keys[9] => $this->getPublic(),
+            $keys[10] => $this->getDescription(),
             $keys[11] => $this->getCreatedAt(),
             $keys[12] => $this->getUpdatedAt(),
         );
@@ -1421,8 +1459,8 @@ abstract class User implements ActiveRecordInterface
             $result[$keys[4]] = $result[$keys[4]]->format('c');
         }
 
-        if ($result[$keys[10]] instanceof \DateTime) {
-            $result[$keys[10]] = $result[$keys[10]]->format('c');
+        if ($result[$keys[8]] instanceof \DateTime) {
+            $result[$keys[8]] = $result[$keys[8]]->format('c');
         }
 
         if ($result[$keys[11]] instanceof \DateTime) {
@@ -1439,35 +1477,35 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->collNotes) {
+            if (null !== $this->aUser) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'notes';
+                        $key = 'user';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'notes';
+                        $key = 'user';
                         break;
                     default:
-                        $key = 'Notes';
+                        $key = 'User';
                 }
 
-                $result[$key] = $this->collNotes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->collCategories) {
+            if (null !== $this->aCategory) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'categories';
+                        $key = 'category';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'categories';
+                        $key = 'category';
                         break;
                     default:
-                        $key = 'Categories';
+                        $key = 'Category';
                 }
 
-                $result[$key] = $this->collCategories->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1483,11 +1521,11 @@ abstract class User implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Models\User
+     * @return $this|\Models\Note
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = UserTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = NoteTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1498,7 +1536,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Models\User
+     * @return $this|\Models\Note
      */
     public function setByPosition($pos, $value)
     {
@@ -1507,34 +1545,38 @@ abstract class User implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setNick($value);
+                $this->setUserId($value);
                 break;
             case 2:
-                $this->setEmail($value);
+                $this->setImportance($value);
                 break;
             case 3:
-                $this->setRights($value);
+                $this->setTitle($value);
                 break;
             case 4:
-                $this->setEmailConfirmedAt($value);
+                $this->setDeadline($value);
                 break;
             case 5:
-                $this->setPassword($value);
+                $this->setCategoryId($value);
                 break;
             case 6:
-                $this->setPasswordResetToken($value);
+                $valueSet = NoteTableMap::getValueSet(NoteTableMap::COL_STATE);
+                if (isset($valueSet[$value])) {
+                    $value = $valueSet[$value];
+                }
+                $this->setState($value);
                 break;
             case 7:
-                $this->setSigninCount($value);
+                $this->setRepeatAfter($value);
                 break;
             case 8:
-                $this->setEmailConfirmToken($value);
+                $this->setDoneAt($value);
                 break;
             case 9:
-                $this->setAvatarPath($value);
+                $this->setPublic($value);
                 break;
             case 10:
-                $this->setLastSigninAt($value);
+                $this->setDescription($value);
                 break;
             case 11:
                 $this->setCreatedAt($value);
@@ -1566,40 +1608,40 @@ abstract class User implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = UserTableMap::getFieldNames($keyType);
+        $keys = NoteTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setNick($arr[$keys[1]]);
+            $this->setUserId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setEmail($arr[$keys[2]]);
+            $this->setImportance($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setRights($arr[$keys[3]]);
+            $this->setTitle($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setEmailConfirmedAt($arr[$keys[4]]);
+            $this->setDeadline($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setPassword($arr[$keys[5]]);
+            $this->setCategoryId($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setPasswordResetToken($arr[$keys[6]]);
+            $this->setState($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setSigninCount($arr[$keys[7]]);
+            $this->setRepeatAfter($arr[$keys[7]]);
         }
         if (array_key_exists($keys[8], $arr)) {
-            $this->setEmailConfirmToken($arr[$keys[8]]);
+            $this->setDoneAt($arr[$keys[8]]);
         }
         if (array_key_exists($keys[9], $arr)) {
-            $this->setAvatarPath($arr[$keys[9]]);
+            $this->setPublic($arr[$keys[9]]);
         }
         if (array_key_exists($keys[10], $arr)) {
-            $this->setLastSigninAt($arr[$keys[10]]);
+            $this->setDescription($arr[$keys[10]]);
         }
         if (array_key_exists($keys[11], $arr)) {
             $this->setCreatedAt($arr[$keys[11]]);
@@ -1626,7 +1668,7 @@ abstract class User implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Models\User The current object, for fluid interface
+     * @return $this|\Models\Note The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1646,46 +1688,46 @@ abstract class User implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(UserTableMap::DATABASE_NAME);
+        $criteria = new Criteria(NoteTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(UserTableMap::COL_ID)) {
-            $criteria->add(UserTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(NoteTableMap::COL_ID)) {
+            $criteria->add(NoteTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(UserTableMap::COL_NICK)) {
-            $criteria->add(UserTableMap::COL_NICK, $this->nick);
+        if ($this->isColumnModified(NoteTableMap::COL_USER_ID)) {
+            $criteria->add(NoteTableMap::COL_USER_ID, $this->user_id);
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL)) {
-            $criteria->add(UserTableMap::COL_EMAIL, $this->email);
+        if ($this->isColumnModified(NoteTableMap::COL_IMPORTANCE)) {
+            $criteria->add(NoteTableMap::COL_IMPORTANCE, $this->importance);
         }
-        if ($this->isColumnModified(UserTableMap::COL_RIGHTS)) {
-            $criteria->add(UserTableMap::COL_RIGHTS, $this->rights);
+        if ($this->isColumnModified(NoteTableMap::COL_TITLE)) {
+            $criteria->add(NoteTableMap::COL_TITLE, $this->title);
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL_CONFIRMED_AT)) {
-            $criteria->add(UserTableMap::COL_EMAIL_CONFIRMED_AT, $this->email_confirmed_at);
+        if ($this->isColumnModified(NoteTableMap::COL_DEADLINE)) {
+            $criteria->add(NoteTableMap::COL_DEADLINE, $this->deadline);
         }
-        if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
-            $criteria->add(UserTableMap::COL_PASSWORD, $this->password);
+        if ($this->isColumnModified(NoteTableMap::COL_CATEGORY_ID)) {
+            $criteria->add(NoteTableMap::COL_CATEGORY_ID, $this->category_id);
         }
-        if ($this->isColumnModified(UserTableMap::COL_PASSWORD_RESET_TOKEN)) {
-            $criteria->add(UserTableMap::COL_PASSWORD_RESET_TOKEN, $this->password_reset_token);
+        if ($this->isColumnModified(NoteTableMap::COL_STATE)) {
+            $criteria->add(NoteTableMap::COL_STATE, $this->state);
         }
-        if ($this->isColumnModified(UserTableMap::COL_SIGNIN_COUNT)) {
-            $criteria->add(UserTableMap::COL_SIGNIN_COUNT, $this->signin_count);
+        if ($this->isColumnModified(NoteTableMap::COL_REPEAT_AFTER)) {
+            $criteria->add(NoteTableMap::COL_REPEAT_AFTER, $this->repeat_after);
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL_CONFIRM_TOKEN)) {
-            $criteria->add(UserTableMap::COL_EMAIL_CONFIRM_TOKEN, $this->email_confirm_token);
+        if ($this->isColumnModified(NoteTableMap::COL_DONE_AT)) {
+            $criteria->add(NoteTableMap::COL_DONE_AT, $this->done_at);
         }
-        if ($this->isColumnModified(UserTableMap::COL_AVATAR_PATH)) {
-            $criteria->add(UserTableMap::COL_AVATAR_PATH, $this->avatar_path);
+        if ($this->isColumnModified(NoteTableMap::COL_PUBLIC)) {
+            $criteria->add(NoteTableMap::COL_PUBLIC, $this->public);
         }
-        if ($this->isColumnModified(UserTableMap::COL_LAST_SIGNIN_AT)) {
-            $criteria->add(UserTableMap::COL_LAST_SIGNIN_AT, $this->last_signin_at);
+        if ($this->isColumnModified(NoteTableMap::COL_DESCRIPTION)) {
+            $criteria->add(NoteTableMap::COL_DESCRIPTION, $this->description);
         }
-        if ($this->isColumnModified(UserTableMap::COL_CREATED_AT)) {
-            $criteria->add(UserTableMap::COL_CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(NoteTableMap::COL_CREATED_AT)) {
+            $criteria->add(NoteTableMap::COL_CREATED_AT, $this->created_at);
         }
-        if ($this->isColumnModified(UserTableMap::COL_UPDATED_AT)) {
-            $criteria->add(UserTableMap::COL_UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(NoteTableMap::COL_UPDATED_AT)) {
+            $criteria->add(NoteTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1703,8 +1745,8 @@ abstract class User implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildUserQuery::create();
-        $criteria->add(UserTableMap::COL_ID, $this->id);
+        $criteria = ChildNoteQuery::create();
+        $criteria->add(NoteTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1766,45 +1808,25 @@ abstract class User implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Models\User (or compatible) type.
+     * @param      object $copyObj An object of \Models\Note (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setNick($this->getNick());
-        $copyObj->setEmail($this->getEmail());
-        $copyObj->setRights($this->getRights());
-        $copyObj->setEmailConfirmedAt($this->getEmailConfirmedAt());
-        $copyObj->setPassword($this->getPassword());
-        $copyObj->setPasswordResetToken($this->getPasswordResetToken());
-        $copyObj->setSigninCount($this->getSigninCount());
-        $copyObj->setEmailConfirmToken($this->getEmailConfirmToken());
-        $copyObj->setAvatarPath($this->getAvatarPath());
-        $copyObj->setLastSigninAt($this->getLastSigninAt());
+        $copyObj->setUserId($this->getUserId());
+        $copyObj->setImportance($this->getImportance());
+        $copyObj->setTitle($this->getTitle());
+        $copyObj->setDeadline($this->getDeadline());
+        $copyObj->setCategoryId($this->getCategoryId());
+        $copyObj->setState($this->getState());
+        $copyObj->setRepeatAfter($this->getRepeatAfter());
+        $copyObj->setDoneAt($this->getDoneAt());
+        $copyObj->setPublic($this->getPublic());
+        $copyObj->setDescription($this->getDescription());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getNotes() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addNote($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getCategories() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addCategory($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1820,7 +1842,7 @@ abstract class User implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Models\User Clone of current object.
+     * @return \Models\Note Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1833,484 +1855,106 @@ abstract class User implements ActiveRecordInterface
         return $copyObj;
     }
 
-
     /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
+     * Declares an association between this object and a ChildUser object.
      *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('Note' == $relationName) {
-            return $this->initNotes();
-        }
-        if ('Category' == $relationName) {
-            return $this->initCategories();
-        }
-    }
-
-    /**
-     * Clears out the collNotes collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addNotes()
-     */
-    public function clearNotes()
-    {
-        $this->collNotes = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collNotes collection loaded partially.
-     */
-    public function resetPartialNotes($v = true)
-    {
-        $this->collNotesPartial = $v;
-    }
-
-    /**
-     * Initializes the collNotes collection.
-     *
-     * By default this just sets the collNotes collection to an empty array (like clearcollNotes());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initNotes($overrideExisting = true)
-    {
-        if (null !== $this->collNotes && !$overrideExisting) {
-            return;
-        }
-        $this->collNotes = new ObjectCollection();
-        $this->collNotes->setModel('\Models\Note');
-    }
-
-    /**
-     * Gets an array of ChildNote objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildUser is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
+     * @param  ChildUser $v
+     * @return $this|\Models\Note The current object (for fluent API support)
      * @throws PropelException
      */
-    public function getNotes(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function setUser(ChildUser $v = null)
     {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
-                // return empty collection
-                $this->initNotes();
-            } else {
-                $collNotes = ChildNoteQuery::create(null, $criteria)
-                    ->filterByUser($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collNotesPartial && count($collNotes)) {
-                        $this->initNotes(false);
-
-                        foreach ($collNotes as $obj) {
-                            if (false == $this->collNotes->contains($obj)) {
-                                $this->collNotes->append($obj);
-                            }
-                        }
-
-                        $this->collNotesPartial = true;
-                    }
-
-                    return $collNotes;
-                }
-
-                if ($partial && $this->collNotes) {
-                    foreach ($this->collNotes as $obj) {
-                        if ($obj->isNew()) {
-                            $collNotes[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collNotes = $collNotes;
-                $this->collNotesPartial = false;
-            }
+        if ($v === null) {
+            $this->setUserId(NULL);
+        } else {
+            $this->setUserId($v->getId());
         }
 
-        return $this->collNotes;
-    }
+        $this->aUser = $v;
 
-    /**
-     * Sets a collection of ChildNote objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $notes A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildUser The current object (for fluent API support)
-     */
-    public function setNotes(Collection $notes, ConnectionInterface $con = null)
-    {
-        /** @var ChildNote[] $notesToDelete */
-        $notesToDelete = $this->getNotes(new Criteria(), $con)->diff($notes);
-
-
-        $this->notesScheduledForDeletion = $notesToDelete;
-
-        foreach ($notesToDelete as $noteRemoved) {
-            $noteRemoved->setUser(null);
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildUser object, it will not be re-added.
+        if ($v !== null) {
+            $v->addNote($this);
         }
 
-        $this->collNotes = null;
-        foreach ($notes as $note) {
-            $this->addNote($note);
-        }
-
-        $this->collNotes = $notes;
-        $this->collNotesPartial = false;
 
         return $this;
     }
 
+
     /**
-     * Returns the number of related Note objects.
+     * Get the associated ChildUser object
      *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Note objects.
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildUser The associated ChildUser object.
      * @throws PropelException
      */
-    public function countNotes(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function getUser(ConnectionInterface $con = null)
     {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getNotes());
-            }
-
-            $query = ChildNoteQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByUser($this)
-                ->count($con);
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aUser->addNotes($this);
+             */
         }
 
-        return count($this->collNotes);
+        return $this->aUser;
     }
 
     /**
-     * Method called to associate a ChildNote object to this object
-     * through the ChildNote foreign key attribute.
+     * Declares an association between this object and a ChildCategory object.
      *
-     * @param  ChildNote $l ChildNote
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function addNote(ChildNote $l)
-    {
-        if ($this->collNotes === null) {
-            $this->initNotes();
-            $this->collNotesPartial = true;
-        }
-
-        if (!$this->collNotes->contains($l)) {
-            $this->doAddNote($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildNote $note The ChildNote object to add.
-     */
-    protected function doAddNote(ChildNote $note)
-    {
-        $this->collNotes[]= $note;
-        $note->setUser($this);
-    }
-
-    /**
-     * @param  ChildNote $note The ChildNote object to remove.
-     * @return $this|ChildUser The current object (for fluent API support)
-     */
-    public function removeNote(ChildNote $note)
-    {
-        if ($this->getNotes()->contains($note)) {
-            $pos = $this->collNotes->search($note);
-            $this->collNotes->remove($pos);
-            if (null === $this->notesScheduledForDeletion) {
-                $this->notesScheduledForDeletion = clone $this->collNotes;
-                $this->notesScheduledForDeletion->clear();
-            }
-            $this->notesScheduledForDeletion[]= clone $note;
-            $note->setUser(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this User is new, it will return
-     * an empty collection; or if this User has previously
-     * been saved, it will retrieve related Notes from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in User.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
-     */
-    public function getNotesJoinCategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildNoteQuery::create(null, $criteria);
-        $query->joinWith('Category', $joinBehavior);
-
-        return $this->getNotes($query, $con);
-    }
-
-    /**
-     * Clears out the collCategories collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addCategories()
-     */
-    public function clearCategories()
-    {
-        $this->collCategories = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collCategories collection loaded partially.
-     */
-    public function resetPartialCategories($v = true)
-    {
-        $this->collCategoriesPartial = $v;
-    }
-
-    /**
-     * Initializes the collCategories collection.
-     *
-     * By default this just sets the collCategories collection to an empty array (like clearcollCategories());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initCategories($overrideExisting = true)
-    {
-        if (null !== $this->collCategories && !$overrideExisting) {
-            return;
-        }
-        $this->collCategories = new ObjectCollection();
-        $this->collCategories->setModel('\Models\Category');
-    }
-
-    /**
-     * Gets an array of ChildCategory objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildUser is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildCategory[] List of ChildCategory objects
+     * @param  ChildCategory $v
+     * @return $this|\Models\Note The current object (for fluent API support)
      * @throws PropelException
      */
-    public function getCategories(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function setCategory(ChildCategory $v = null)
     {
-        $partial = $this->collCategoriesPartial && !$this->isNew();
-        if (null === $this->collCategories || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collCategories) {
-                // return empty collection
-                $this->initCategories();
-            } else {
-                $collCategories = ChildCategoryQuery::create(null, $criteria)
-                    ->filterByUser($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collCategoriesPartial && count($collCategories)) {
-                        $this->initCategories(false);
-
-                        foreach ($collCategories as $obj) {
-                            if (false == $this->collCategories->contains($obj)) {
-                                $this->collCategories->append($obj);
-                            }
-                        }
-
-                        $this->collCategoriesPartial = true;
-                    }
-
-                    return $collCategories;
-                }
-
-                if ($partial && $this->collCategories) {
-                    foreach ($this->collCategories as $obj) {
-                        if ($obj->isNew()) {
-                            $collCategories[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collCategories = $collCategories;
-                $this->collCategoriesPartial = false;
-            }
+        if ($v === null) {
+            $this->setCategoryId(NULL);
+        } else {
+            $this->setCategoryId($v->getId());
         }
 
-        return $this->collCategories;
-    }
+        $this->aCategory = $v;
 
-    /**
-     * Sets a collection of ChildCategory objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $categories A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildUser The current object (for fluent API support)
-     */
-    public function setCategories(Collection $categories, ConnectionInterface $con = null)
-    {
-        /** @var ChildCategory[] $categoriesToDelete */
-        $categoriesToDelete = $this->getCategories(new Criteria(), $con)->diff($categories);
-
-
-        $this->categoriesScheduledForDeletion = $categoriesToDelete;
-
-        foreach ($categoriesToDelete as $categoryRemoved) {
-            $categoryRemoved->setUser(null);
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        if ($v !== null) {
+            $v->addNote($this);
         }
 
-        $this->collCategories = null;
-        foreach ($categories as $category) {
-            $this->addCategory($category);
-        }
-
-        $this->collCategories = $categories;
-        $this->collCategoriesPartial = false;
 
         return $this;
     }
 
+
     /**
-     * Returns the number of related Category objects.
+     * Get the associated ChildCategory object
      *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Category objects.
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCategory The associated ChildCategory object.
      * @throws PropelException
      */
-    public function countCategories(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function getCategory(ConnectionInterface $con = null)
     {
-        $partial = $this->collCategoriesPartial && !$this->isNew();
-        if (null === $this->collCategories || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collCategories) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getCategories());
-            }
-
-            $query = ChildCategoryQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByUser($this)
-                ->count($con);
+        if ($this->aCategory === null && ($this->category_id !== null)) {
+            $this->aCategory = ChildCategoryQuery::create()->findPk($this->category_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCategory->addNotes($this);
+             */
         }
 
-        return count($this->collCategories);
-    }
-
-    /**
-     * Method called to associate a ChildCategory object to this object
-     * through the ChildCategory foreign key attribute.
-     *
-     * @param  ChildCategory $l ChildCategory
-     * @return $this|\Models\User The current object (for fluent API support)
-     */
-    public function addCategory(ChildCategory $l)
-    {
-        if ($this->collCategories === null) {
-            $this->initCategories();
-            $this->collCategoriesPartial = true;
-        }
-
-        if (!$this->collCategories->contains($l)) {
-            $this->doAddCategory($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildCategory $category The ChildCategory object to add.
-     */
-    protected function doAddCategory(ChildCategory $category)
-    {
-        $this->collCategories[]= $category;
-        $category->setUser($this);
-    }
-
-    /**
-     * @param  ChildCategory $category The ChildCategory object to remove.
-     * @return $this|ChildUser The current object (for fluent API support)
-     */
-    public function removeCategory(ChildCategory $category)
-    {
-        if ($this->getCategories()->contains($category)) {
-            $pos = $this->collCategories->search($category);
-            $this->collCategories->remove($pos);
-            if (null === $this->categoriesScheduledForDeletion) {
-                $this->categoriesScheduledForDeletion = clone $this->collCategories;
-                $this->categoriesScheduledForDeletion->clear();
-            }
-            $this->categoriesScheduledForDeletion[]= clone $category;
-            $category->setUser(null);
-        }
-
-        return $this;
+        return $this->aCategory;
     }
 
     /**
@@ -2320,21 +1964,28 @@ abstract class User implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aUser) {
+            $this->aUser->removeNote($this);
+        }
+        if (null !== $this->aCategory) {
+            $this->aCategory->removeNote($this);
+        }
         $this->id = null;
-        $this->nick = null;
-        $this->email = null;
-        $this->rights = null;
-        $this->email_confirmed_at = null;
-        $this->password = null;
-        $this->password_reset_token = null;
-        $this->signin_count = null;
-        $this->email_confirm_token = null;
-        $this->avatar_path = null;
-        $this->last_signin_at = null;
+        $this->user_id = null;
+        $this->importance = null;
+        $this->title = null;
+        $this->deadline = null;
+        $this->category_id = null;
+        $this->state = null;
+        $this->repeat_after = null;
+        $this->done_at = null;
+        $this->public = null;
+        $this->description = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -2351,20 +2002,10 @@ abstract class User implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collNotes) {
-                foreach ($this->collNotes as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collCategories) {
-                foreach ($this->collCategories as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collNotes = null;
-        $this->collCategories = null;
+        $this->aUser = null;
+        $this->aCategory = null;
     }
 
     /**
@@ -2374,7 +2015,7 @@ abstract class User implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(UserTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(NoteTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -2382,11 +2023,11 @@ abstract class User implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     $this|ChildUser The current object (for fluent API support)
+     * @return     $this|ChildNote The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[UserTableMap::COL_UPDATED_AT] = true;
+        $this->modifiedColumns[NoteTableMap::COL_UPDATED_AT] = true;
 
         return $this;
     }

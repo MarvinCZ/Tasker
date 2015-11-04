@@ -22,11 +22,11 @@ function select($name, $multiple, $options){
 
 function options_for_select($array, $selected = null){
 	$options = array();
-	foreach ($array as $value) {
+	for($i = 0; $i < count($array); $i++){
 		array_push($options, array(
-			'name' => strtolower($value),
-			'display_name' => ucfirst($value),
-			'selected' => $value == $selected ? 'checked' : ''
+			'name' => strtolower($array[$i]),
+			'display_name' => ucfirst($array[$i]),
+			'selected' => $array[$i] == $selected || ($selected == -1 && $i == 0) ? 'checked' : ''
 			));
 	}
 	return $options;

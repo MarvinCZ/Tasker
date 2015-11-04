@@ -9,13 +9,48 @@
         <column name="nick" type="varchar" size="50" required="true"/>
         <column name="email" type="varchar" size="100" required="true"/>
         <column name="rights" type="integer"/>
-        <column name="email_confirmed_at" type="date"/>
+        <column name="email_confirmed_at" type="timestamp"/>
         <column name="password" type="varchar" size="50" required="true"/>
         <column name="password_reset_token" type="varchar" size="50"/>
         <column name="signin_count" type="integer"/>
         <column name="email_confirm_token" type="varchar" size="50"/>
         <column name="avatar_path" type="varchar" size="255"/>
-        <column name="last_signin_at" type="date"/>
+        <column name="last_signin_at" type="timestamp"/>
+
         <behavior name="timestampable" />
+    </table>
+
+    <table name="note" phpName="Note">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" type="integer" required="true"/>
+        <column name="importance" type="integer" defaultValue="-1"/>
+        <column name="title" type="varchar" size="20"/>
+        <column name="deadline" type="timestamp"/>
+        <column name="category_id" type="integer"/>
+        <column name="state" type="enum" valueSet="opend, done, wip, closed" defaultValue="opend" required="true"/>
+        <column name="repeat_after" type="integer"/>
+        <column name="done_at" type="timestamp"/>
+        <column name="public" type="boolean"/>
+        <column name="description" type="varchar" size="120"/>
+
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="category">
+            <reference local="category_id" foreign="id"/>
+        </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="category" phpName="Category">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" type="integer" required="true"/>
+        <column name="name" type="varchar" size="20"/>
+        <column name="color" type="varchar" size="6" required="true"/>
+
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
     </table>
 </database>
