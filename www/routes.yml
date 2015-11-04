@@ -1,5 +1,5 @@
 base_path: /
 
 routes:
-  filter: [/filter, HomePageControler.filter, GET]
+  filter: [/filtr, HomePageControler.filtr, GET]
   index: [/, HomePageControler.index, GET]

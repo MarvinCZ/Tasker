@@ -16,12 +16,12 @@ class HomePageControler extends ApplicationControler{
 		$this->renderToTemplate();
 	}
 
-	public function filter(){
+	public function filtr(){
 		$user = UserQuery::create()->findPK(1);
 		$categories = CategoryQuery::create()->
 			select('name')->
 			filterByUser($user)->
-			find();	
+			find();
 		$options = options_for_select($categories, -1);
 		$this->renderToTemplate(array('options' => $options));
 	}

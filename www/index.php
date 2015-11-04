@@ -8,15 +8,20 @@ use PHPRouter\Config;
 
 mb_internal_encoding("UTF-8");
 
+//Register composers autoload
 require_once '../vendor/autoload.php';
 
+//Load config for Propel(ORM)
 include("generated-conf/config.php");
 
+//Load every helper class.
+//TODO: Make it more efficent
 foreach (glob("Helpers/*.php") as $helper)
 {
     include($helper);
 }
 
+//Load by namespace in thi project
 spl_autoload_register(function ($class) {
     $base_dir = __DIR__ ;
 
@@ -27,6 +32,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
+//And the magic comes
 $config = Config::loadFromFile(__DIR__.'/routes.yml');
 $router = Router::parseConfig($config);
 $router->matchCurrentRequest();

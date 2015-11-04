@@ -2,6 +2,9 @@
 
 namespace Controlers;
 
+//Parent controler
+//Handles rendering
+//TODO: Before After Filtr
 abstract class ApplicationControler{
 	protected $title = "Tasker";
 

@@ -1,10 +1,12 @@
 <?php
 
+//Extract params to be available for included file
 function includeFile($file, $params){
 	extract($params);
 	include($file);
 }
 
+//Same as includeFile, but insted of redering directli to output its redirected to string
 function renderToString($file, $params){
 	extract($params);
 	ob_start();
@@ -12,6 +14,7 @@ function renderToString($file, $params){
     return ob_get_clean();
 }
 
+//Returns string with html for select component
 function select($name, $multiple, $options){
 	$params = array('name' => strtolower($name),
 					'display_name' => ucfirst($name),
@@ -20,6 +23,7 @@ function select($name, $multiple, $options){
 	return renderToString('Views/Components/select.phtml',$params);
 }
 
+//Create array for select component
 function options_for_select($array, $selected = null){
 	$options = array();
 	for($i = 0; $i < count($array); $i++){
@@ -32,6 +36,8 @@ function options_for_select($array, $selected = null){
 	return $options;
 }
 
+
+//Smart link_to methond. Made to simplify views
 function link_to($link, $text, $title, $params){
 	$link = '<a href="' . $link . '" ';
 	if($title)
@@ -49,6 +55,8 @@ function link_to($link, $text, $title, $params){
 	$link .= '>' . $text . '</a>';
 	return $link;
 }
+
+//Parse paremetrs passed to link_to
 function parse_params($param) {
 	if($param[0] == "."){
 		$class = substr($param, 1, strlen($param));
