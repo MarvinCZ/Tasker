@@ -17,7 +17,7 @@ function select($name, $multiple, $options){
 					'display_name' => ucfirst($name),
 					'multiple' => $multiple,
 					'options' => $options);
-	return renderToString('views/components/select.phtml',$params);
+	return renderToString('Views/Components/select.phtml',$params);
 }
 
 function options_for_select($array, $selected = null){
