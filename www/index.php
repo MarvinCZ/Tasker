@@ -1,5 +1,13 @@
 <?php
+
+use Propel\Runtime\Propel;
+
+
 mb_internal_encoding("UTF-8");
+
+require_once '../vendor/autoload.php';
+
+include("generated-conf/config.php");
 
 $array = get_defined_vars();
 
@@ -7,16 +15,16 @@ foreach (glob("helpers/*.php") as $helper)
 {
     include($helper);
 }
+foreach (glob("models/*.php") as $model)
+{
+    include($model);
+}
 
-include('models/DynamicTest.php');
-include('models/DbWrapper.php');
-include('models/User.php');
-
-$dt = new DynamicTest(array('b'=>'test'));
-$dt->setB("testovani");
-$dt->b = "test";
-
-DbWrapper::connect();
+//$u = new User();
+//$u->setNick("test");
+//$u->setEmail("mbrunas.p@gmail.com");
+//$u->setPassword("hash");
+//$u->save();
 
 $options = options_for_select(array('School', 'Work', 'Personal', 'Other'),'Personal');
 
@@ -24,5 +32,5 @@ if(isset($_GET['category'])){
 	print_r($_GET['category']);
 }
 else{
-	includeFile("views/template.phtml", array('test'=>$dt, 'array'=>$_SERVER['REQUEST_URI'], 'options' => $options));
+	includeFile("views/template.phtml", array('options' => $options));
 }

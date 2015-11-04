@@ -1,2 +1,4 @@
 www/assets/styles/.sass-cache
+www/generated-conf/config.php
+www/propel.yml
 vendor
