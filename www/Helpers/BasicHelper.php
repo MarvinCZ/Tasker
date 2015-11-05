@@ -70,3 +70,12 @@ function parse_params($param) {
 		return ' target="' . $param . '"';
 	}
 }
+
+function array_keys_blacklist(array $array, array $keys) {
+   foreach($array as $key => $value){
+		if(in_array($key, $keys)){
+			unset($array[$key]);
+		}
+	}
+	return $array;
+}

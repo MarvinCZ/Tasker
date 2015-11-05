@@ -1,9 +1,6 @@
 <?php
 
-use PHPRouter\RouteCollection;
-use PHPRouter\Router;
-use PHPRouter\Route;
-use PHPRouter\Config;
+use Aura\Router\RouterFactory;
 
 use Controllers\HomePageController;
 
@@ -16,12 +13,8 @@ require_once '../vendor/autoload.php';
 //Load config for Propel(ORM)
 include("generated-conf/config.php");
 
-//Load every helper class.
-//TODO: Make it more efficent
-foreach (glob("Helpers/*.php") as $helper)
-{
-    require_once($helper);
-}
+//Load helper classes.
+require_once("Helpers/BasicHelper.php");
 
 //Load by namespace in thi project
 spl_autoload_register(function ($class) {
@@ -35,6 +28,26 @@ spl_autoload_register(function ($class) {
 });
 
 //And the magic comes
-$config = Config::loadFromFile(__DIR__.'/routes.yml');
-$router = Router::parseConfig($config);
-$router->matchCurrentRequest();
+$router_factory = new RouterFactory;
+$router = $router_factory->newInstance();
+
+//load routed from file
+require_once("routes.php");
+
+//get route
+$route = $router->match(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_SERVER);
+
+//dispatch route
+if (isset($route->params['action'])){
+	$params = $route->params;
+	$action = explode('.', $params['action']);
+	$controller = "Controllers\\".$action[0]."Controller";
+	$instance = new $controller;
+
+	//uset action so its not passed as first parametr probably use blacklist becaseof there can be some other params from route
+	unset($params['action']);
+
+	call_user_func_array(array($instance, $action[1]), $params);
+}
+
+//TODO: Handle Failure

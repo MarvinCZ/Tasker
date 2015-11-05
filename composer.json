@@ -1,6 +1,6 @@
 {
     "require": {
         "propel/propel": "~2.0@dev",
-        "dannyvankooten/php-router": "dev-master"
+        "aura/router": "2.x"
     }
 }

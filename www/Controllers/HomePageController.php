@@ -20,6 +20,10 @@ class HomePageController extends ApplicationController{
 
 	}
 	protected function index(){
+		//$a = "Text";
+		//$this->params = array_merge($this->params, get_defined_vars()); $a will be available in view
+		//$b = 35;
+		//$this->params['c'] = $b; $b will be available in view as $c
 	}
 
 	protected function filter(){
@@ -29,7 +33,7 @@ class HomePageController extends ApplicationController{
 			filterByUser($user)->
 			find();
 		$options = options_for_select($categories, -1);
-		$this->renderToTemplate(array('options' => $options));
+		$this->params['options'] = $options;
 	}
 
 }

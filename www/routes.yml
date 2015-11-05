@@ -1,5 +1,0 @@
-base_path: /
-
-routes:
-  filter: [/filter, HomePageController.filter, GET]
-  index: [/, HomePageController.index, GET]

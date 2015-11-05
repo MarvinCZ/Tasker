@@ -21,23 +21,21 @@ abstract class ApplicationController{
 
 	public function __construct(){
 		$this->params['title'] = "Tasker";
-		$this->beforeFilters['test'] = function(){
-			$this->params['test'] = "test";
-		};
 	}
 
-	protected function renderFileToTemplate($file, $params = array()){
+	//In case you want to render something else than View/Controller/action.phtml into a template
+	protected function renderFileToTemplate($file){
 		if($this->rendered)
 			throw new Exception("Render was already called", 1);
-			
-		$par = array_merge($this->params, $params);
 
-		includeFile("Views/template.phtml", array('params' => $par, 'inside' => "Views/".$file));
+		includeFile("Views/template.phtml", array('params' => $this->params, 'inside' => "Views/".$file));
 
 		$this->rendered = true;
 	}
 
-	protected function renderToTemplate($params = array()){
+	//Theres no need to call this function its preformed by default
+	//Renders View/Controller/action.phtml into a template
+	protected function renderToTemplate(){
 		if($this->rendered)
 			throw new Exception("Render was already called", 1);
 		
@@ -46,9 +44,7 @@ abstract class ApplicationController{
 		$controller = $back['class'];
 		$controller = substr($controller, 12, strlen($controller) - 22);
 
-		$par = array_merge($this->params, $params);
-
-		includeFile("Views/template.phtml", array('params' => $par, 'inside' => "Views/".$controller."/".$action.".phtml"));
+		includeFile("Views/template.phtml", array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
 
 		$this->rendered = true;
 	}
@@ -61,12 +57,15 @@ abstract class ApplicationController{
 		}
 	}
 
+	//Runs every before filter
 	protected function beforeFilter(){
 		foreach ($this->beforeFilters as $name => $method) {
 			$method();
 		}
 	}
 
+	//Runs every after filter
+	//Renders default view if nothing wasnt rendered yet
 	protected function afterFilter(){
 		foreach ($this->afterFilters as $name => $method) {
 			$method();

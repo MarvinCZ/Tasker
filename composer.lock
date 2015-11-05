@@ -4,59 +4,62 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d083ad90c140d46097812cf1ec6f66ff",
-    "content-hash": "4e9793eb5ce85556f8ba12d7ad5679b5",
+    "hash": "0e9ca2e17670a076fd0adbe73f453215",
+    "content-hash": "47a85e5741af5cfbd7603119e6145cff",
     "packages": [
         {
-            "name": "dannyvankooten/php-router",
-            "version": "dev-master",
+            "name": "aura/router",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dannyvankooten/PHP-Router.git",
-                "reference": "07c464f59c310166109cf670471b8957a9ddf686"
+                "url": "https://github.com/auraphp/Aura.Router.git",
+                "reference": "457efd185e4306fa671d659a66a2d9d28bf91a56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dannyvankooten/PHP-Router/zipball/07c464f59c310166109cf670471b8957a9ddf686",
-                "reference": "07c464f59c310166109cf670471b8957a9ddf686",
+                "url": "https://api.github.com/repos/auraphp/Aura.Router/zipball/457efd185e4306fa671d659a66a2d9d28bf91a56",
+                "reference": "457efd185e4306fa671d659a66a2d9d28bf91a56",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.8.*",
-                "squizlabs/php_codesniffer": "2.*"
+                "aura/di": "~2.0"
             },
             "type": "library",
+            "extra": {
+                "aura": {
+                    "type": "library",
+                    "config": {
+                        "common": "Aura\\Router\\_Config\\Common"
+                    }
+                }
+            },
             "autoload": {
-                "psr-0": {
-                    "PHPRouter": "src/"
+                "psr-4": {
+                    "Aura\\Router\\": "src/",
+                    "Aura\\Router\\_Config\\": "config/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-2-Clause"
             ],
             "authors": [
                 {
-                    "name": "Danny van Kooten",
-                    "email": "dannyvankooten@gmail.com",
-                    "homepage": "http://dannyvankooten.com/"
-                },
-                {
-                    "name": "Jefersson Nathan",
-                    "email": "malukenho@phpse.net"
+                    "name": "Aura.Router Contributors",
+                    "homepage": "https://github.com/auraphp/Aura.Router/contributors"
                 }
             ],
-            "description": "Simple PHP Router, supports REST and reverse routing.",
-            "homepage": "https://github.com/dannyvankooten/PHP-Router",
+            "description": "A web router implementation; given a URI path and a copy of $_SERVER, it will extract path-info parameter values for a specific route.",
+            "homepage": "https://github.com/auraphp/Aura.Router",
             "keywords": [
-                "rest",
+                "route",
                 "router",
                 "routing"
             ],
-            "time": "2015-10-07 14:14:17"
+            "time": "2015-07-17 15:55:37"
         },
         {
             "name": "propel/propel",
@@ -537,8 +540,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "propel/propel": 20,
-        "dannyvankooten/php-router": 20
+        "propel/propel": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
