@@ -1,8 +1,8 @@
 <?php
 
-namespace Controlers;
+namespace Controllers;
 
-use Controlers\ApplicationControler;
+use Controllers\ApplicationController;
 use Models\User;
 use Models\UserQuery;
 use Models\Note;
@@ -10,7 +10,7 @@ use Models\NoteQuery;
 use Models\Category;
 use Models\CategoryQuery;
 
-class HomePageControler extends ApplicationControler{
+class HomePageController extends ApplicationController{
 
 	public function __construct(){
 		parent::__construct();
@@ -20,7 +20,6 @@ class HomePageControler extends ApplicationControler{
 
 	}
 	protected function index(){
-		$this->renderToTemplate();
 	}
 
 	protected function filter(){

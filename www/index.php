@@ -5,6 +5,8 @@ use PHPRouter\Router;
 use PHPRouter\Route;
 use PHPRouter\Config;
 
+use Controllers\HomePageController;
+
 
 mb_internal_encoding("UTF-8");
 
@@ -18,7 +20,7 @@ include("generated-conf/config.php");
 //TODO: Make it more efficent
 foreach (glob("Helpers/*.php") as $helper)
 {
-    include($helper);
+    require_once($helper);
 }
 
 //Load by namespace in thi project
@@ -28,7 +30,7 @@ spl_autoload_register(function ($class) {
     $file = $base_dir . '/' . str_replace('\\', '/', $class) . '.php';
 
     if (file_exists($file)) {
-        require $file;
+        require_once($file);
     }
 });
 
