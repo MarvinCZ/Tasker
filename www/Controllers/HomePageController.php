@@ -14,10 +14,9 @@ class HomePageController extends ApplicationController{
 
 	public function __construct(){
 		parent::__construct();
-		$this->beforeFilters['findUser'] = function(){
-			$this->params['user'] = $user = UserQuery::create()->findPK(1);;
-		};
-
+		$this->addBeforeFilter(function(){
+			$this->params['user'] = UserQuery::create()->findPK(1);
+		});
 	}
 	protected function index(){
 		//$a = "Text";

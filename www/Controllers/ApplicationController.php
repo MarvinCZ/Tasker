@@ -51,24 +51,24 @@ abstract class ApplicationController{
 
 	public function __call($method,$arguments) {
 		if(method_exists($this, $method)) {
-			$this->beforeFilter();
+			$this->beforeFilter($method);
 			call_user_func_array(array($this,$method),$arguments);
-			$this->afterFilter();
+			$this->afterFilter($method);
 		}
 	}
 
 	//Runs every before filter
-	protected function beforeFilter(){
+	protected function beforeFilter($action){
 		foreach ($this->beforeFilters as $name => $method) {
-			$method();
+			$method($action);
 		}
 	}
 
 	//Runs every after filter
 	//Renders default view if nothing wasnt rendered yet
-	protected function afterFilter(){
+	protected function afterFilter($action){
 		foreach ($this->afterFilters as $name => $method) {
-			$method();
+			$method($action);
 		}
 
 		if(!$this->rendered){
@@ -78,6 +78,30 @@ abstract class ApplicationController{
 			$controller = substr($controller, 12, strlen($controller) - 22);
 
 			includeFile("Views/template.phtml", array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
+		}
+	}
+
+	public function addBeforeFilter(callable $function, $name = null){
+		if($name){
+			if(array_key_exists($name, $this->beforeFilters)){
+				throw new Exception("Before filter already exists");
+			}
+			$this->beforeFilters[$name] = $function;
+		}
+		else{
+			array_push($this->beforeFilters, $function);
+		}
+	}
+
+	public function addAfterFilter(callable $function, $name = null){
+		if($name){
+			if(array_key_exists($name, $this->afterFilters)){
+				throw new Exception("After filter already exists");
+			}
+			$this->beforeFilters[$name] = $function;
+		}
+		else{
+			array_push($this->afterFilters, $function);
 		}
 	}
 }

@@ -1,4 +1,9 @@
 <?php
+//redirect to location has to be called befor rendering (before controllers action ends, or before action calls render)
+function redirectTo($location){
+	header("Location: " . $location);
+	die();
+}
 
 //Extract params to be available for included file
 function includeFile($file, $params){
