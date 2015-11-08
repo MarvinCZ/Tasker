@@ -1,4 +1,4 @@
 <?php
 
-$router->add('HomePage.index', '/');
-$router->add('HomePage.filter', '/filter');
+$router->addGet('HomePage.index', '/');
+$router->addGet('HomePage.filter', '/filter');
