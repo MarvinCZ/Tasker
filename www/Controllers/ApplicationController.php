@@ -60,7 +60,10 @@ abstract class ApplicationController{
 	//Runs every before filter
 	protected function beforeFilter($action){
 		foreach ($this->beforeFilters as $name => $method) {
-			$method($action);
+			if(!(!empty($method['exeptions']) && in_array($action, $method['exeptions'])) &&
+				!(!empty($method['includes']) && !in_array($action, $method['includes']))){
+				$method['function']($action);
+			}
 		}
 	}
 
@@ -68,7 +71,10 @@ abstract class ApplicationController{
 	//Renders default view if nothing wasnt rendered yet
 	protected function afterFilter($action){
 		foreach ($this->afterFilters as $name => $method) {
-			$method($action);
+			if(!(isset($method['exeptions']) && in_array($action, $method['exeptions'])) &&
+				!(isset($method['includes']) && !in_array($action, $method['includes']))){
+				$method['function']($action);
+			}
 		}
 
 		if(!$this->rendered){
@@ -86,10 +92,10 @@ abstract class ApplicationController{
 			if(array_key_exists($name, $this->beforeFilters)){
 				throw new Exception("Before filter already exists");
 			}
-			$this->beforeFilters[$name] = $function;
+			$this->beforeFilters[$name] = array('function' => $function);
 		}
 		else{
-			array_push($this->beforeFilters, $function);
+			array_push($this->beforeFilters, array('function' => $function));
 		}
 	}
 
@@ -98,10 +104,47 @@ abstract class ApplicationController{
 			if(array_key_exists($name, $this->afterFilters)){
 				throw new Exception("After filter already exists");
 			}
-			$this->beforeFilters[$name] = $function;
+			$this->beforeFilters[$name] = array('function' => $function);
 		}
 		else{
-			array_push($this->afterFilters, $function);
+			array_push($this->afterFilters, array('function' => $function));
+		}
+	}
+
+	public function addBeforeFilterExeption($name, $exeption){
+		$this->addFilterExeption("before", "includes", $name, $exeption);
+	}
+
+	public function addBeforeFilterInclude($name, $include){
+		$this->addFilterExeption("before", "includes", $name, $include);
+	}
+
+	public function addAfterFilterExeption($name, $exeption){
+		$this->addFilterExeption("after", "includes", $name, $exeption);
+	}
+
+	public function addAfterFilterInclude($name, $include){
+		$this->addFilterExeption("after", "includes", $name, $include);
+	}
+
+	private function addFilterExeption($filter, $way, $name, $what){
+		$array;
+		if($filter == "before")
+			$array = &$this->beforeFilters;
+		else
+			$array = &$this->afterFilters;
+		if(array_key_exists($name, $array)){
+			$array[$name]['exeptions'] = array();
+			$array[$name]['includes'] = array();
+			if(!is_array($what))
+				$what = array($what);
+			if(array_key_exists($way, $array[$name]))
+				$array[$name][$way] = array_merge($array[$name][$way], $what);
+			else
+				$array[$name][$way] = $what;
+		}
+		else{
+			throw new Exception("Filter does not exists");
 		}
 	}
 }
