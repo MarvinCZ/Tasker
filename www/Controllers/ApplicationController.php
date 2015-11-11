@@ -112,36 +112,31 @@ abstract class ApplicationController{
 	}
 
 	public function addBeforeFilterExeption($name, $exeption){
-		$this->addFilterExeption("before", "includes", $name, $exeption);
+		$this->addFilterExeption($this->beforeFilters, "exeptions", $name, $exeption);
 	}
 
 	public function addBeforeFilterInclude($name, $include){
-		$this->addFilterExeption("before", "includes", $name, $include);
+		$this->addFilterExeption($this->beforeFilters, "exeptions", $name, $include);
 	}
 
 	public function addAfterFilterExeption($name, $exeption){
-		$this->addFilterExeption("after", "includes", $name, $exeption);
+		$this->addFilterExeption($this->afterFilters, "includes", $name, $exeption);
 	}
 
 	public function addAfterFilterInclude($name, $include){
-		$this->addFilterExeption("after", "includes", $name, $include);
+		$this->addFilterExeption($this->afterFilters, "includes", $name, $include);
 	}
 
-	private function addFilterExeption($filter, $way, $name, $what){
-		$array;
-		if($filter == "before")
-			$array = &$this->beforeFilters;
-		else
-			$array = &$this->afterFilters;
-		if(array_key_exists($name, $array)){
-			$array[$name]['exeptions'] = array();
-			$array[$name]['includes'] = array();
+	private function addFilterExeption(&$filter, $way, $name, $what){
+		if(array_key_exists($name, $filter)){
+			$filter[$name]['exeptions'] = array();
+			$filter[$name]['includes'] = array();
 			if(!is_array($what))
 				$what = array($what);
-			if(array_key_exists($way, $array[$name]))
-				$array[$name][$way] = array_merge($array[$name][$way], $what);
+			if(array_key_exists($way, $filter[$name]))
+				$filter[$name][$way] = array_merge($filter[$name][$way], $what);
 			else
-				$array[$name][$way] = $what;
+				$filter[$name][$way] = $what;
 		}
 		else{
 			throw new Exception("Filter does not exists");
