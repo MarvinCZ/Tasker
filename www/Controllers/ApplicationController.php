@@ -49,6 +49,24 @@ abstract class ApplicationController{
 		$this->rendered = true;
 	}
 
+	//Render just file
+	protected function renderFile($file){
+		incldeFile("Views/".$file, $this->params);
+		$this->rendered = true;
+	}
+
+	//Render file with type (View/Controller/action.+$type)
+	protected function renderType($type){
+		$back = debug_backtrace()[1];
+		$action = $back['function'];
+		$controller = $back['class'];
+		$controller = substr($controller, 12, strlen($controller) - 22);
+
+		includeFile("Views/".$controller."/".$action.".".$type, $this->params);
+
+		$this->rendered = true;
+	}
+
 	public function __call($method,$arguments) {
 		if(method_exists($this, $method)) {
 			$this->beforeFilter($method);
