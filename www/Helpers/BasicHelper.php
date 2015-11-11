@@ -84,3 +84,16 @@ function array_keys_blacklist(array $array, array $keys) {
 	}
 	return $array;
 }
+
+function snakeToCamel($val) {
+	return str_replace(' ', '', ucwords(str_replace('_', ' ', $val)));
+}
+
+function arrayKeysSnakeToCamel($array){
+	foreach (array_keys($array) as $key) {
+		$transformedKey = snakeToCamel($key);
+		$array[$transformedKey] = &$array[$key];
+        unset($array[$key]);
+	}
+	return $array;
+}
