@@ -19,4 +19,13 @@ $(document).ready(function(){
 	$('.page-middle').on( "swipeleft", show_right );
 	$('.page-middle').on( "swiperight", show_left );
 	$('.page-right').on( "swiperight", show_middle );
+	$('.page-show-middle').click(function(){
+		show_middle();
+	});
+	$('.page-show-left').click(function(){
+		show_left();
+	});
+	$('.page-show-right').click(function(){
+		show_right();
+	});
 });
