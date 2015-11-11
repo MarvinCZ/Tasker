@@ -166,10 +166,10 @@ abstract class ApplicationController{
 	}
 
 	protected function addFlash($type, $message){
-		$_SESSION['flashes'][$type] = $message;
+		array_push($_SESSION['flashes'], ['type' => $type, 'message' => $message]);
 	}
 
 	protected function addFlashNow($type, $message){
-		$this->params['flashes'][$type] = $message;
+		array_push($this->params['flashes'], ['type' => $type, 'message' => $message]);
 	}
 }

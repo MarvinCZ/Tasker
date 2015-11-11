@@ -6,13 +6,13 @@ function redirectTo($location){
 }
 
 //Extract params to be available for included file
-function includeFile($file, $params){
+function includeFile($file, $params = array()){
 	extract($params);
 	include($file);
 }
 
 //Same as includeFile, but insted of redering directli to output its redirected to string
-function renderToString($file, $params){
+function renderToString($file, $params = array()){
 	extract($params);
 	ob_start();
     include $file;
