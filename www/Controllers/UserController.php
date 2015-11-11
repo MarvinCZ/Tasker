@@ -19,6 +19,7 @@ class UserController extends ApplicationController{
 		$user = new User();
 		$user->fromArray($params);
 		$user->save();
+		$this->addFlash("success", "registered");
 		redirectTo("/");
 	}
 }

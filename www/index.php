@@ -4,6 +4,7 @@ use Aura\Router\RouterFactory;
 
 use Controllers\HomePageController;
 
+session_start();
 
 mb_internal_encoding("UTF-8");
 

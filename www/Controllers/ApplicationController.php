@@ -21,6 +21,10 @@ abstract class ApplicationController{
 
 	public function __construct(){
 		$this->params['title'] = "Tasker";
+		$this->addBeforeFilter(function(){
+			$this->params["flashes"] = isset($_SESSION['flashes']) ? $_SESSION['flashes'] : array();
+			$_SESSION['flashes'] = array();
+		}, "init_flashes");
 	}
 
 	//In case you want to render something else than View/Controller/action.phtml into a template
@@ -159,5 +163,13 @@ abstract class ApplicationController{
 		else{
 			throw new Exception("Filter does not exists");
 		}
+	}
+
+	protected function addFlash($type, $message){
+		$_SESSION['flashes'][$type] = $message;
+	}
+
+	protected function addFlashNow($type, $message){
+		$this->params['flashes'][$type] = $message;
 	}
 }
