@@ -6,25 +6,18 @@
 		<meta name="description" content="">
 		<meta name="author" content="MarvinCZ">
 		<title><?= $params['title'] ?></title>
+		<link rel="stylesheet" type="text/css" href="assets/styles/jquery.mobile-1.4.5.min.css">
 		<link rel="stylesheet" type="text/css" href="assets/styles/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="assets/styles/style.css" />
 		<link rel="stylesheet" type="text/css" href="assets/styles/select.css" />
 		<link rel="stylesheet" type="text/css" href="assets/styles/font-awesome.min.css">
 		<script src="assets/scripts/jquery-1.11.3.js"></script>
+		<script src="assets/scripts/jquery.mobile-1.4.5.min.js"></script>
 		<script src="assets/scripts/bootstrap.min.js"></script>
 		<script src="assets/scripts/app.js"></script>
 		<script src="assets/scripts/select.js"></script>
 	</head>
 	<body>
-		<?php if(!empty($params['flashes'])): ?>
-			<div class="container">
-				<?php foreach ($params['flashes'] as $key => $value): ?>
-					<div class="<?= $key ?>"><?= $value ?></div>
-				<?php endforeach ?>
-			</div>
-		<?php endif ?>
-		<div class="container">
-			<?php includeFile($inside, $params) ?>
-		</div>
+		<?php includeFile($inside, $params) ?>
 	</body>
 </html>

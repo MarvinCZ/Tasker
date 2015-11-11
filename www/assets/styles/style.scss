@@ -1,6 +1,19 @@
 body{
 	background: #EEE;
+	overflow: hidden;
 }
 .clear{
 	clear: both;
+}
+.page{
+	position: absolute;
+	width: 100%;
+	min-height: 100%;
+	transition: 300ms;
+}
+.page-left{
+	left: -100%;
+}
+.page-right{
+	left: 100%;
 }
