@@ -1,3 +1,6 @@
+* {
+  touch-action: pan-y; }
+
 body {
   background: #EEE;
   overflow: hidden; }
@@ -42,6 +45,9 @@ body {
 .page-right {
   left: 100%; }
 
+a.nounderline {
+  text-decoration: none; }
+
 .notes {
   margin-top: 10px; }
 
@@ -50,12 +56,16 @@ body {
   background-color: white;
   height: 140px;
   padding: 5px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: -5px 5px 8px rgba(0, 0, 0, 0.2);
   margin-bottom: 10px;
-  padding: 15px; }
+  padding: 15px;
+  color: #333; }
+  .note:hover {
+    box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2); }
   .note .title {
     font-size: 1.6em;
-    padding-right: 5px; }
+    padding-right: 5px;
+    text-decoration: none; }
   .note .stripe {
     position: absolute;
     right: 0;
@@ -63,7 +73,8 @@ body {
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 0 45px 45px 0; }
+    border-width: 0 45px 45px 0;
+    filter: drop-shadow(-1px 1px 2px rgba(0, 0, 0, 0.5)); }
     .note .stripe::after {
       content: "";
       display: block;
@@ -95,5 +106,12 @@ body {
     background-color: #FFEF8F; }
   .note .status-late {
     background-color: #FF9E8F; }
+
+.new-note {
+  background-color: #7D89CB;
+  line-height: 140px;
+  text-align: center;
+  font-size: 4em;
+  padding: 0; }
 
 /*# sourceMappingURL=style.css.map */

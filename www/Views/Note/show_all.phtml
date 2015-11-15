@@ -20,6 +20,13 @@
 	</div>
 	<div class="container">
 		<div class="row notes">
+			<div class="col-xs-6 col-sm-4 col-md-3">
+				<a href="/notes/add">
+				<div class="note new-note">
+					<i class="fa fa-plus-circle"></i>
+				</div>
+				</a>
+			</div>
 			<?php foreach ($notes as $note): ?>
 				<?php includeFile("Views/Note/_note.phtml",array('note' => $note)) ?>
 			<?php endforeach ?>
