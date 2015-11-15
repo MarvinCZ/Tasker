@@ -25,6 +25,16 @@ abstract class ApplicationController{
 			$this->params["flashes"] = isset($_SESSION['flashes']) ? $_SESSION['flashes'] : array();
 			$_SESSION['flashes'] = array();
 		}, "init_flashes");
+
+		$this->addBeforeFilter(function(){
+			if(isset($_SESSION['user'])){
+				$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
+				$this->params['user_logged'] = true;
+			}
+			else{
+				$this->params['user_logged'] = false;
+			}
+		},"load_user");
 	}
 
 	//In case you want to render something else than View/Controller/action.phtml into a template

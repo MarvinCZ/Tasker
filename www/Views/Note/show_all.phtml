@@ -6,12 +6,21 @@
 	<div class="inner">blablabla</div>
 </div>
 <div class="page page-middle">
-	<div class="header row text-center">
+	<header class="header hidden-xs">
+		<h1>Hlavicka</h1>
+		<div class="header-right">
+			<span class="user-name"><?= $user->getNick() ?></span>
+			<img src="<?= $user->getAvatarPath() ?>" class="header-img">
+		</div>
+	</header>
+	<div class="header row text-center visible-xs">
 		<div class="header-btn page-show-left pull-left"><i class="fa fa-chevron-left"></i></div>
 		Notes
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-chevron-right"></i></div>
 	</div>
-	<div class="inner-btn">Add Note</div>
+	<div class="container">
+		content
+	</div>
 </div>
 <div class="page page-right">
 	<div class="header row text-center">

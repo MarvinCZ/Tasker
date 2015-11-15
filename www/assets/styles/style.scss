@@ -11,12 +11,35 @@ body{
 	min-height: 100%;
 	transition: 300ms;
 	.header{
+		position: relative;
 		background-color: white;
 		padding: 10px;
 		font-size: 3em;
 		font-weight: bold;
 		box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 		margin: 0;
+		h1{
+			font-size: 1.1em;
+			font-weight: bold;
+			margin: 5px;
+		}
+		.header-img{
+			margin-top: 9px;
+			height: 65px;
+			img{
+				height: 100%;
+			}
+		}
+		.header-right{
+			position: absolute;
+			right: 10px;
+			top: 0;
+			height: 100%;
+		}
+		.user-name{
+			font-size: 0.5em;
+			line-height: 80.8px;
+		}
 	}
 }
 .page-left{

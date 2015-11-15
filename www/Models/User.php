@@ -16,5 +16,12 @@ use Models\Base\User as BaseUser;
  */
 class User extends BaseUser
 {
+	public function getAvatarPath(){
+		$path = parent::getAvatarPath();
+		if($path == null){
+			$path = "default.png";
+		}
+		return "Uploads/Avatars/".$path;
+	}
 
 }
