@@ -1,6 +1,7 @@
 {
     "require": {
         "propel/propel": "~2.0@dev",
-        "aura/router": "2.x"
+        "aura/router": "2.x",
+        "monolog/monolog": "^1.17"
     }
 }

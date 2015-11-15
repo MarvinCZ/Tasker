@@ -24,10 +24,10 @@
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="user_id" type="integer" required="true"/>
         <column name="importance" type="integer" defaultValue="-1"/>
-        <column name="title" type="varchar" size="20"/>
+        <column name="title" type="varchar" size="25"/>
         <column name="deadline" type="timestamp"/>
         <column name="category_id" type="integer"/>
-        <column name="state" type="enum" valueSet="opend, done, wip, closed" defaultValue="opend" required="true"/>
+        <column name="state" type="enum" valueSet="opened, done, wip, closed" defaultValue="opened" required="true"/>
         <column name="repeat_after" type="integer"/>
         <column name="done_at" type="timestamp"/>
         <column name="public" type="boolean"/>

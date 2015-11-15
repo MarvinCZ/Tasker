@@ -28,7 +28,7 @@ class HomePageController extends ApplicationController{
 			select('name')->
 			filterByUser($user)->
 			find();
-		$options = options_for_select($categories, -1);
+		$options = options_for_select($categories);
 		$this->params['options'] = $options;
 	}
 

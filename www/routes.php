@@ -8,3 +8,5 @@ $router->addGet('User.add', '/register');
 $router->addPost('User.create', '/register');
 
 $router->addGet('Note.show_all', '/notes');
+$router->addGet('Note.add', '/notes/add');
+$router->addPost('Note.create', '/notes/create');

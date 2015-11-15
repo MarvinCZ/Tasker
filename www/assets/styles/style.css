@@ -42,4 +42,58 @@ body {
 .page-right {
   left: 100%; }
 
+.notes {
+  margin-top: 10px; }
+
+.note {
+  position: relative;
+  background-color: white;
+  height: 140px;
+  padding: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+  padding: 15px; }
+  .note .title {
+    font-size: 1.6em;
+    padding-right: 5px; }
+  .note .stripe {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 45px 45px 0; }
+    .note .stripe::after {
+      content: "";
+      display: block;
+      position: absolute;
+      right: -45px;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 25px 25px 0;
+      border-color: transparent white transparent transparent; }
+  .note .stripe-red {
+    border-color: transparent #CC3018 transparent transparent; }
+  .note .stripe-blue {
+    border-color: transparent #20318B transparent transparent; }
+  .note .stripe-green {
+    border-color: transparent #12973A transparent transparent; }
+  .note .status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px; }
+  .note .status-ok {
+    background-color: #77D593; }
+  .note .status-closed {
+    background-color: grey; }
+  .note .status-soon {
+    background-color: #FFEF8F; }
+  .note .status-late {
+    background-color: #FF9E8F; }
+
 /*# sourceMappingURL=style.css.map */

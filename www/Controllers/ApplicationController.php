@@ -33,6 +33,9 @@ abstract class ApplicationController{
 			}
 			else{
 				$this->params['user_logged'] = false;
+				$_SESSION['user'] = 1;
+				$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
+				$this->params['user_logged'] = true;
 			}
 		},"load_user");
 	}

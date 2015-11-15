@@ -144,7 +144,7 @@ class CategoryTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', false, 20, null);
-        $this->addColumn('color', 'Color', 'VARCHAR', false, 6, null);
+        $this->addColumn('color', 'Color', 'VARCHAR', true, 6, null);
     } // initialize()
 
     /**

@@ -142,7 +142,7 @@ class NoteTableMap extends TableMap
     const DEFAULT_STRING_FORMAT = 'YAML';
 
     /** The enumerated values for the state field */
-    const COL_STATE_OPEND = 'opend';
+    const COL_STATE_OPENED = 'opened';
     const COL_STATE_DONE = 'done';
     const COL_STATE_WIP = 'wip';
     const COL_STATE_CLOSED = 'closed';
@@ -178,7 +178,7 @@ class NoteTableMap extends TableMap
     /** The enumerated values for this table */
     protected static $enumValueSets = array(
                 NoteTableMap::COL_STATE => array(
-                            self::COL_STATE_OPEND,
+                            self::COL_STATE_OPENED,
             self::COL_STATE_DONE,
             self::COL_STATE_WIP,
             self::COL_STATE_CLOSED,
@@ -229,9 +229,9 @@ class NoteTableMap extends TableMap
         $this->addColumn('title', 'Title', 'VARCHAR', false, 20, null);
         $this->addColumn('deadline', 'Deadline', 'TIMESTAMP', false, null, null);
         $this->addForeignKey('category_id', 'CategoryId', 'INTEGER', 'category', 'id', false, null, null);
-        $this->addColumn('state', 'State', 'ENUM', true, null, 'opend');
+        $this->addColumn('state', 'State', 'ENUM', true, null, 'opened');
         $this->getColumn('state')->setValueSet(array (
-  0 => 'opend',
+  0 => 'opened',
   1 => 'done',
   2 => 'wip',
   3 => 'closed',

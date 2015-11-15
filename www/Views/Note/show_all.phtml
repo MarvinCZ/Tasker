@@ -19,7 +19,11 @@
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-chevron-right"></i></div>
 	</div>
 	<div class="container">
-		content
+		<div class="row notes">
+			<?php foreach ($notes as $note): ?>
+				<?php includeFile("Views/Note/_note.phtml",array('note' => $note)) ?>
+			<?php endforeach ?>
+		</div>
 	</div>
 </div>
 <div class="page page-right">
