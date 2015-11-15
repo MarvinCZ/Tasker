@@ -15,10 +15,13 @@ var show_right = function(){
 	$('.page-right').css("left", "0");
 }
 $(document).ready(function(){
-	$('.page-left').on( "swipeleft", show_middle );
-	$('.page-middle').on( "swipeleft", show_right );
-	$('.page-middle').on( "swiperight", show_left );
-	$('.page-right').on( "swiperight", show_middle );
+	var left = new Hammer($('.page-left')[0]);
+	var middle = new Hammer($('.page-middle')[0]);
+	var right = new Hammer($('.page-right')[0]);
+	left.on( "swipeleft", show_middle );
+	middle.on( "swipeleft", show_right );
+	middle.on( "swiperight", show_left );
+	right.on( "swiperight", show_middle );
 	$('.page-show-middle').click(function(){
 		show_middle();
 	});
