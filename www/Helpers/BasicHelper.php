@@ -20,9 +20,9 @@ function renderToString($file, $params = array()){
 }
 
 //Returns string with html for select component
-function select($name, $multiple, $options){
+function select($title, $name, $multiple, $options){
 	$params = array('name' => strtolower($name),
-					'display_name' => ucfirst($name),
+					'display_name' => $title,
 					'multiple' => $multiple,
 					'options' => $options);
 	return renderToString('Views/Components/select.phtml',$params);

@@ -19,6 +19,13 @@ class NoteController extends ApplicationController{
 			find();
 	}
 
+	protected function show($id){
+		$this->params['note'] = NoteQuery::create()->
+			filterByUser($this->params['user'])->
+			leftJoinWith('Note.Category')->
+			findPK($id);
+	}
+
 	protected function add(){
 		$user = $this->params['user'];
 		$categories = CategoryQuery::create()->
@@ -32,7 +39,7 @@ class NoteController extends ApplicationController{
 		$params = arrayKeysSnakeToCamel($_POST['note']);
 		$note = new Note();
 		$note->fromArray($params);
-		$category = $_POST['categories'];
+		$category = $_POST['category'];
 		$category = CategoryQuery::create()->
 			filterByUser($this->params['user'])->
 			filterByName($category)->
