@@ -76,7 +76,57 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildNoteQuery rightJoinWithCategory() Adds a RIGHT JOIN clause and with to the query using the Category relation
  * @method     ChildNoteQuery innerJoinWithCategory() Adds a INNER JOIN clause and with to the query using the Category relation
  *
- * @method     \Models\UserQuery|\Models\CategoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildNoteQuery leftJoinSubNote($relationAlias = null) Adds a LEFT JOIN clause to the query using the SubNote relation
+ * @method     ChildNoteQuery rightJoinSubNote($relationAlias = null) Adds a RIGHT JOIN clause to the query using the SubNote relation
+ * @method     ChildNoteQuery innerJoinSubNote($relationAlias = null) Adds a INNER JOIN clause to the query using the SubNote relation
+ *
+ * @method     ChildNoteQuery joinWithSubNote($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the SubNote relation
+ *
+ * @method     ChildNoteQuery leftJoinWithSubNote() Adds a LEFT JOIN clause and with to the query using the SubNote relation
+ * @method     ChildNoteQuery rightJoinWithSubNote() Adds a RIGHT JOIN clause and with to the query using the SubNote relation
+ * @method     ChildNoteQuery innerJoinWithSubNote() Adds a INNER JOIN clause and with to the query using the SubNote relation
+ *
+ * @method     ChildNoteQuery leftJoinFile($relationAlias = null) Adds a LEFT JOIN clause to the query using the File relation
+ * @method     ChildNoteQuery rightJoinFile($relationAlias = null) Adds a RIGHT JOIN clause to the query using the File relation
+ * @method     ChildNoteQuery innerJoinFile($relationAlias = null) Adds a INNER JOIN clause to the query using the File relation
+ *
+ * @method     ChildNoteQuery joinWithFile($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the File relation
+ *
+ * @method     ChildNoteQuery leftJoinWithFile() Adds a LEFT JOIN clause and with to the query using the File relation
+ * @method     ChildNoteQuery rightJoinWithFile() Adds a RIGHT JOIN clause and with to the query using the File relation
+ * @method     ChildNoteQuery innerJoinWithFile() Adds a INNER JOIN clause and with to the query using the File relation
+ *
+ * @method     ChildNoteQuery leftJoinNotification($relationAlias = null) Adds a LEFT JOIN clause to the query using the Notification relation
+ * @method     ChildNoteQuery rightJoinNotification($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Notification relation
+ * @method     ChildNoteQuery innerJoinNotification($relationAlias = null) Adds a INNER JOIN clause to the query using the Notification relation
+ *
+ * @method     ChildNoteQuery joinWithNotification($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Notification relation
+ *
+ * @method     ChildNoteQuery leftJoinWithNotification() Adds a LEFT JOIN clause and with to the query using the Notification relation
+ * @method     ChildNoteQuery rightJoinWithNotification() Adds a RIGHT JOIN clause and with to the query using the Notification relation
+ * @method     ChildNoteQuery innerJoinWithNotification() Adds a INNER JOIN clause and with to the query using the Notification relation
+ *
+ * @method     ChildNoteQuery leftJoinComment($relationAlias = null) Adds a LEFT JOIN clause to the query using the Comment relation
+ * @method     ChildNoteQuery rightJoinComment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Comment relation
+ * @method     ChildNoteQuery innerJoinComment($relationAlias = null) Adds a INNER JOIN clause to the query using the Comment relation
+ *
+ * @method     ChildNoteQuery joinWithComment($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Comment relation
+ *
+ * @method     ChildNoteQuery leftJoinWithComment() Adds a LEFT JOIN clause and with to the query using the Comment relation
+ * @method     ChildNoteQuery rightJoinWithComment() Adds a RIGHT JOIN clause and with to the query using the Comment relation
+ * @method     ChildNoteQuery innerJoinWithComment() Adds a INNER JOIN clause and with to the query using the Comment relation
+ *
+ * @method     ChildNoteQuery leftJoinShared($relationAlias = null) Adds a LEFT JOIN clause to the query using the Shared relation
+ * @method     ChildNoteQuery rightJoinShared($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Shared relation
+ * @method     ChildNoteQuery innerJoinShared($relationAlias = null) Adds a INNER JOIN clause to the query using the Shared relation
+ *
+ * @method     ChildNoteQuery joinWithShared($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Shared relation
+ *
+ * @method     ChildNoteQuery leftJoinWithShared() Adds a LEFT JOIN clause and with to the query using the Shared relation
+ * @method     ChildNoteQuery rightJoinWithShared() Adds a RIGHT JOIN clause and with to the query using the Shared relation
+ * @method     ChildNoteQuery innerJoinWithShared() Adds a INNER JOIN clause and with to the query using the Shared relation
+ *
+ * @method     \Models\UserQuery|\Models\CategoryQuery|\Models\SubNoteQuery|\Models\FileQuery|\Models\NotificationQuery|\Models\CommentQuery|\Models\SharedQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildNote findOne(ConnectionInterface $con = null) Return the first ChildNote matching the query
  * @method     ChildNote findOneOrCreate(ConnectionInterface $con = null) Return the first ChildNote matching the query, or a new ChildNote object populated from the query conditions when no match is found
@@ -959,6 +1009,363 @@ abstract class NoteQuery extends ModelCriteria
         return $this
             ->joinCategory($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Category', '\Models\CategoryQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\SubNote object
+     *
+     * @param \Models\SubNote|ObjectCollection $subNote the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildNoteQuery The current query, for fluid interface
+     */
+    public function filterBySubNote($subNote, $comparison = null)
+    {
+        if ($subNote instanceof \Models\SubNote) {
+            return $this
+                ->addUsingAlias(NoteTableMap::COL_ID, $subNote->getNoteId(), $comparison);
+        } elseif ($subNote instanceof ObjectCollection) {
+            return $this
+                ->useSubNoteQuery()
+                ->filterByPrimaryKeys($subNote->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterBySubNote() only accepts arguments of type \Models\SubNote or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the SubNote relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildNoteQuery The current query, for fluid interface
+     */
+    public function joinSubNote($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('SubNote');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'SubNote');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the SubNote relation SubNote object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\SubNoteQuery A secondary query class using the current class as primary query
+     */
+    public function useSubNoteQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinSubNote($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'SubNote', '\Models\SubNoteQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\File object
+     *
+     * @param \Models\File|ObjectCollection $file the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildNoteQuery The current query, for fluid interface
+     */
+    public function filterByFile($file, $comparison = null)
+    {
+        if ($file instanceof \Models\File) {
+            return $this
+                ->addUsingAlias(NoteTableMap::COL_ID, $file->getNoteId(), $comparison);
+        } elseif ($file instanceof ObjectCollection) {
+            return $this
+                ->useFileQuery()
+                ->filterByPrimaryKeys($file->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByFile() only accepts arguments of type \Models\File or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the File relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildNoteQuery The current query, for fluid interface
+     */
+    public function joinFile($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('File');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'File');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the File relation File object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\FileQuery A secondary query class using the current class as primary query
+     */
+    public function useFileQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinFile($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'File', '\Models\FileQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Notification object
+     *
+     * @param \Models\Notification|ObjectCollection $notification the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildNoteQuery The current query, for fluid interface
+     */
+    public function filterByNotification($notification, $comparison = null)
+    {
+        if ($notification instanceof \Models\Notification) {
+            return $this
+                ->where("'note' = ?", $notification->getOriginType(), 2)
+                ->addUsingAlias(NoteTableMap::COL_ID, $notification->getOriginId(), $comparison);
+        } else {
+            throw new PropelException('filterByNotification() only accepts arguments of type \Models\Notification');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Notification relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildNoteQuery The current query, for fluid interface
+     */
+    public function joinNotification($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Notification');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Notification');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Notification relation Notification object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\NotificationQuery A secondary query class using the current class as primary query
+     */
+    public function useNotificationQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinNotification($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Notification', '\Models\NotificationQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Comment object
+     *
+     * @param \Models\Comment|ObjectCollection $comment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildNoteQuery The current query, for fluid interface
+     */
+    public function filterByComment($comment, $comparison = null)
+    {
+        if ($comment instanceof \Models\Comment) {
+            return $this
+                ->addUsingAlias(NoteTableMap::COL_ID, $comment->getNoteId(), $comparison);
+        } elseif ($comment instanceof ObjectCollection) {
+            return $this
+                ->useCommentQuery()
+                ->filterByPrimaryKeys($comment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByComment() only accepts arguments of type \Models\Comment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Comment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildNoteQuery The current query, for fluid interface
+     */
+    public function joinComment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Comment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Comment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Comment relation Comment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\CommentQuery A secondary query class using the current class as primary query
+     */
+    public function useCommentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinComment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Comment', '\Models\CommentQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Shared object
+     *
+     * @param \Models\Shared|ObjectCollection $shared the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildNoteQuery The current query, for fluid interface
+     */
+    public function filterByShared($shared, $comparison = null)
+    {
+        if ($shared instanceof \Models\Shared) {
+            return $this
+                ->where("'note' = ?", $shared->getWhatType(), 2)
+                ->addUsingAlias(NoteTableMap::COL_ID, $shared->getWhatId(), $comparison);
+        } else {
+            throw new PropelException('filterByShared() only accepts arguments of type \Models\Shared');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Shared relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildNoteQuery The current query, for fluid interface
+     */
+    public function joinShared($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Shared');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Shared');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Shared relation Shared object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\SharedQuery A secondary query class using the current class as primary query
+     */
+    public function useSharedQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinShared($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Shared', '\Models\SharedQuery');
     }
 
     /**

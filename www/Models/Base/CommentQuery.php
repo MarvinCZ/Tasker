@@ -4,9 +4,9 @@ namespace Models\Base;
 
 use \Exception;
 use \PDO;
-use Models\Category as ChildCategory;
-use Models\CategoryQuery as ChildCategoryQuery;
-use Models\Map\CategoryTableMap;
+use Models\Comment as ChildComment;
+use Models\CommentQuery as ChildCommentQuery;
+use Models\Map\CommentTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -16,124 +16,114 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
 
 /**
- * Base class that represents a query for the 'category' table.
+ * Base class that represents a query for the 'comment' table.
  *
  *
  *
- * @method     ChildCategoryQuery orderById($order = Criteria::ASC) Order by the id column
- * @method     ChildCategoryQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
- * @method     ChildCategoryQuery orderByName($order = Criteria::ASC) Order by the name column
- * @method     ChildCategoryQuery orderByColor($order = Criteria::ASC) Order by the color column
- * @method     ChildCategoryQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
- * @method     ChildCategoryQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
+ * @method     ChildCommentQuery orderById($order = Criteria::ASC) Order by the id column
+ * @method     ChildCommentQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
+ * @method     ChildCommentQuery orderByNoteId($order = Criteria::ASC) Order by the note_id column
+ * @method     ChildCommentQuery orderByText($order = Criteria::ASC) Order by the text column
+ * @method     ChildCommentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
+ * @method     ChildCommentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
- * @method     ChildCategoryQuery groupById() Group by the id column
- * @method     ChildCategoryQuery groupByUserId() Group by the user_id column
- * @method     ChildCategoryQuery groupByName() Group by the name column
- * @method     ChildCategoryQuery groupByColor() Group by the color column
- * @method     ChildCategoryQuery groupByCreatedAt() Group by the created_at column
- * @method     ChildCategoryQuery groupByUpdatedAt() Group by the updated_at column
+ * @method     ChildCommentQuery groupById() Group by the id column
+ * @method     ChildCommentQuery groupByUserId() Group by the user_id column
+ * @method     ChildCommentQuery groupByNoteId() Group by the note_id column
+ * @method     ChildCommentQuery groupByText() Group by the text column
+ * @method     ChildCommentQuery groupByCreatedAt() Group by the created_at column
+ * @method     ChildCommentQuery groupByUpdatedAt() Group by the updated_at column
  *
- * @method     ChildCategoryQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
- * @method     ChildCategoryQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
- * @method     ChildCategoryQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ * @method     ChildCommentQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
+ * @method     ChildCommentQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
+ * @method     ChildCommentQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     ChildCategoryQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
- * @method     ChildCategoryQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
- * @method     ChildCategoryQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ * @method     ChildCommentQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
+ * @method     ChildCommentQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
+ * @method     ChildCommentQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildCategoryQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
- * @method     ChildCategoryQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
- * @method     ChildCategoryQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ * @method     ChildCommentQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildCommentQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildCommentQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
- * @method     ChildCategoryQuery joinWithUser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the User relation
+ * @method     ChildCommentQuery joinWithUser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the User relation
  *
- * @method     ChildCategoryQuery leftJoinWithUser() Adds a LEFT JOIN clause and with to the query using the User relation
- * @method     ChildCategoryQuery rightJoinWithUser() Adds a RIGHT JOIN clause and with to the query using the User relation
- * @method     ChildCategoryQuery innerJoinWithUser() Adds a INNER JOIN clause and with to the query using the User relation
+ * @method     ChildCommentQuery leftJoinWithUser() Adds a LEFT JOIN clause and with to the query using the User relation
+ * @method     ChildCommentQuery rightJoinWithUser() Adds a RIGHT JOIN clause and with to the query using the User relation
+ * @method     ChildCommentQuery innerJoinWithUser() Adds a INNER JOIN clause and with to the query using the User relation
  *
- * @method     ChildCategoryQuery leftJoinNote($relationAlias = null) Adds a LEFT JOIN clause to the query using the Note relation
- * @method     ChildCategoryQuery rightJoinNote($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Note relation
- * @method     ChildCategoryQuery innerJoinNote($relationAlias = null) Adds a INNER JOIN clause to the query using the Note relation
+ * @method     ChildCommentQuery leftJoinNote($relationAlias = null) Adds a LEFT JOIN clause to the query using the Note relation
+ * @method     ChildCommentQuery rightJoinNote($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Note relation
+ * @method     ChildCommentQuery innerJoinNote($relationAlias = null) Adds a INNER JOIN clause to the query using the Note relation
  *
- * @method     ChildCategoryQuery joinWithNote($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Note relation
+ * @method     ChildCommentQuery joinWithNote($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Note relation
  *
- * @method     ChildCategoryQuery leftJoinWithNote() Adds a LEFT JOIN clause and with to the query using the Note relation
- * @method     ChildCategoryQuery rightJoinWithNote() Adds a RIGHT JOIN clause and with to the query using the Note relation
- * @method     ChildCategoryQuery innerJoinWithNote() Adds a INNER JOIN clause and with to the query using the Note relation
+ * @method     ChildCommentQuery leftJoinWithNote() Adds a LEFT JOIN clause and with to the query using the Note relation
+ * @method     ChildCommentQuery rightJoinWithNote() Adds a RIGHT JOIN clause and with to the query using the Note relation
+ * @method     ChildCommentQuery innerJoinWithNote() Adds a INNER JOIN clause and with to the query using the Note relation
  *
- * @method     ChildCategoryQuery leftJoinShared($relationAlias = null) Adds a LEFT JOIN clause to the query using the Shared relation
- * @method     ChildCategoryQuery rightJoinShared($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Shared relation
- * @method     ChildCategoryQuery innerJoinShared($relationAlias = null) Adds a INNER JOIN clause to the query using the Shared relation
+ * @method     \Models\UserQuery|\Models\NoteQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
- * @method     ChildCategoryQuery joinWithShared($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Shared relation
+ * @method     ChildComment findOne(ConnectionInterface $con = null) Return the first ChildComment matching the query
+ * @method     ChildComment findOneOrCreate(ConnectionInterface $con = null) Return the first ChildComment matching the query, or a new ChildComment object populated from the query conditions when no match is found
  *
- * @method     ChildCategoryQuery leftJoinWithShared() Adds a LEFT JOIN clause and with to the query using the Shared relation
- * @method     ChildCategoryQuery rightJoinWithShared() Adds a RIGHT JOIN clause and with to the query using the Shared relation
- * @method     ChildCategoryQuery innerJoinWithShared() Adds a INNER JOIN clause and with to the query using the Shared relation
- *
- * @method     \Models\UserQuery|\Models\NoteQuery|\Models\SharedQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
- *
- * @method     ChildCategory findOne(ConnectionInterface $con = null) Return the first ChildCategory matching the query
- * @method     ChildCategory findOneOrCreate(ConnectionInterface $con = null) Return the first ChildCategory matching the query, or a new ChildCategory object populated from the query conditions when no match is found
- *
- * @method     ChildCategory findOneById(int $id) Return the first ChildCategory filtered by the id column
- * @method     ChildCategory findOneByUserId(int $user_id) Return the first ChildCategory filtered by the user_id column
- * @method     ChildCategory findOneByName(string $name) Return the first ChildCategory filtered by the name column
- * @method     ChildCategory findOneByColor(string $color) Return the first ChildCategory filtered by the color column
- * @method     ChildCategory findOneByCreatedAt(string $created_at) Return the first ChildCategory filtered by the created_at column
- * @method     ChildCategory findOneByUpdatedAt(string $updated_at) Return the first ChildCategory filtered by the updated_at column *
+ * @method     ChildComment findOneById(int $id) Return the first ChildComment filtered by the id column
+ * @method     ChildComment findOneByUserId(int $user_id) Return the first ChildComment filtered by the user_id column
+ * @method     ChildComment findOneByNoteId(int $note_id) Return the first ChildComment filtered by the note_id column
+ * @method     ChildComment findOneByText(string $text) Return the first ChildComment filtered by the text column
+ * @method     ChildComment findOneByCreatedAt(string $created_at) Return the first ChildComment filtered by the created_at column
+ * @method     ChildComment findOneByUpdatedAt(string $updated_at) Return the first ChildComment filtered by the updated_at column *
 
- * @method     ChildCategory requirePk($key, ConnectionInterface $con = null) Return the ChildCategory by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildCategory requireOne(ConnectionInterface $con = null) Return the first ChildCategory matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requirePk($key, ConnectionInterface $con = null) Return the ChildComment by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requireOne(ConnectionInterface $con = null) Return the first ChildComment matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
- * @method     ChildCategory requireOneById(int $id) Return the first ChildCategory filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildCategory requireOneByUserId(int $user_id) Return the first ChildCategory filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildCategory requireOneByName(string $name) Return the first ChildCategory filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildCategory requireOneByColor(string $color) Return the first ChildCategory filtered by the color column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildCategory requireOneByCreatedAt(string $created_at) Return the first ChildCategory filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildCategory requireOneByUpdatedAt(string $updated_at) Return the first ChildCategory filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requireOneById(int $id) Return the first ChildComment filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requireOneByUserId(int $user_id) Return the first ChildComment filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requireOneByNoteId(int $note_id) Return the first ChildComment filtered by the note_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requireOneByText(string $text) Return the first ChildComment filtered by the text column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requireOneByCreatedAt(string $created_at) Return the first ChildComment filtered by the created_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildComment requireOneByUpdatedAt(string $updated_at) Return the first ChildComment filtered by the updated_at column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
- * @method     ChildCategory[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildCategory objects based on current ModelCriteria
- * @method     ChildCategory[]|ObjectCollection findById(int $id) Return ChildCategory objects filtered by the id column
- * @method     ChildCategory[]|ObjectCollection findByUserId(int $user_id) Return ChildCategory objects filtered by the user_id column
- * @method     ChildCategory[]|ObjectCollection findByName(string $name) Return ChildCategory objects filtered by the name column
- * @method     ChildCategory[]|ObjectCollection findByColor(string $color) Return ChildCategory objects filtered by the color column
- * @method     ChildCategory[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildCategory objects filtered by the created_at column
- * @method     ChildCategory[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildCategory objects filtered by the updated_at column
- * @method     ChildCategory[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
+ * @method     ChildComment[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildComment objects based on current ModelCriteria
+ * @method     ChildComment[]|ObjectCollection findById(int $id) Return ChildComment objects filtered by the id column
+ * @method     ChildComment[]|ObjectCollection findByUserId(int $user_id) Return ChildComment objects filtered by the user_id column
+ * @method     ChildComment[]|ObjectCollection findByNoteId(int $note_id) Return ChildComment objects filtered by the note_id column
+ * @method     ChildComment[]|ObjectCollection findByText(string $text) Return ChildComment objects filtered by the text column
+ * @method     ChildComment[]|ObjectCollection findByCreatedAt(string $created_at) Return ChildComment objects filtered by the created_at column
+ * @method     ChildComment[]|ObjectCollection findByUpdatedAt(string $updated_at) Return ChildComment objects filtered by the updated_at column
+ * @method     ChildComment[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
-abstract class CategoryQuery extends ModelCriteria
+abstract class CommentQuery extends ModelCriteria
 {
     protected $entityNotFoundExceptionClass = '\\Propel\\Runtime\\Exception\\EntityNotFoundException';
 
     /**
-     * Initializes internal state of \Models\Base\CategoryQuery object.
+     * Initializes internal state of \Models\Base\CommentQuery object.
      *
      * @param     string $dbName The database name
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'default', $modelName = '\\Models\\Category', $modelAlias = null)
+    public function __construct($dbName = 'default', $modelName = '\\Models\\Comment', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
 
     /**
-     * Returns a new ChildCategoryQuery object.
+     * Returns a new ChildCommentQuery object.
      *
      * @param     string $modelAlias The alias of a model in the query
      * @param     Criteria $criteria Optional Criteria to build the query from
      *
-     * @return ChildCategoryQuery
+     * @return ChildCommentQuery
      */
     public static function create($modelAlias = null, Criteria $criteria = null)
     {
-        if ($criteria instanceof ChildCategoryQuery) {
+        if ($criteria instanceof ChildCommentQuery) {
             return $criteria;
         }
-        $query = new ChildCategoryQuery();
+        $query = new ChildCommentQuery();
         if (null !== $modelAlias) {
             $query->setModelAlias($modelAlias);
         }
@@ -156,19 +146,19 @@ abstract class CategoryQuery extends ModelCriteria
      * @param mixed $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
-     * @return ChildCategory|array|mixed the result, formatted by the current formatter
+     * @return ChildComment|array|mixed the result, formatted by the current formatter
      */
     public function findPk($key, ConnectionInterface $con = null)
     {
         if ($key === null) {
             return null;
         }
-        if ((null !== ($obj = CategoryTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
+        if ((null !== ($obj = CommentTableMap::getInstanceFromPool((string) $key))) && !$this->formatter) {
             // the object is already in the instance pool
             return $obj;
         }
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(CommentTableMap::DATABASE_NAME);
         }
         $this->basePreSelect($con);
         if ($this->formatter || $this->modelAlias || $this->with || $this->select
@@ -189,11 +179,11 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @throws \Propel\Runtime\Exception\PropelException
      *
-     * @return ChildCategory A model object, or null if the key is not found
+     * @return ChildComment A model object, or null if the key is not found
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, user_id, name, color, created_at, updated_at FROM category WHERE id = :p0';
+        $sql = 'SELECT id, user_id, note_id, text, created_at, updated_at FROM comment WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -204,10 +194,10 @@ abstract class CategoryQuery extends ModelCriteria
         }
         $obj = null;
         if ($row = $stmt->fetch(\PDO::FETCH_NUM)) {
-            /** @var ChildCategory $obj */
-            $obj = new ChildCategory();
+            /** @var ChildComment $obj */
+            $obj = new ChildComment();
             $obj->hydrate($row);
-            CategoryTableMap::addInstanceToPool($obj, (string) $key);
+            CommentTableMap::addInstanceToPool($obj, (string) $key);
         }
         $stmt->closeCursor();
 
@@ -220,7 +210,7 @@ abstract class CategoryQuery extends ModelCriteria
      * @param     mixed $key Primary key to use for the query
      * @param     ConnectionInterface $con A connection object
      *
-     * @return ChildCategory|array|mixed the result, formatted by the current formatter
+     * @return ChildComment|array|mixed the result, formatted by the current formatter
      */
     protected function findPkComplex($key, ConnectionInterface $con)
     {
@@ -262,12 +252,12 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @param     mixed $key Primary key to use for the query
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
     public function filterByPrimaryKey($key)
     {
 
-        return $this->addUsingAlias(CategoryTableMap::COL_ID, $key, Criteria::EQUAL);
+        return $this->addUsingAlias(CommentTableMap::COL_ID, $key, Criteria::EQUAL);
     }
 
     /**
@@ -275,12 +265,12 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @param     array $keys The list of primary key to use for the query
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
     public function filterByPrimaryKeys($keys)
     {
 
-        return $this->addUsingAlias(CategoryTableMap::COL_ID, $keys, Criteria::IN);
+        return $this->addUsingAlias(CommentTableMap::COL_ID, $keys, Criteria::IN);
     }
 
     /**
@@ -299,18 +289,18 @@ abstract class CategoryQuery extends ModelCriteria
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
     public function filterById($id = null, $comparison = null)
     {
         if (is_array($id)) {
             $useMinMax = false;
             if (isset($id['min'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_ID, $id['min'], Criteria::GREATER_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_ID, $id['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
             if (isset($id['max'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_ID, $id['max'], Criteria::LESS_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_ID, $id['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -321,7 +311,7 @@ abstract class CategoryQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(CategoryTableMap::COL_ID, $id, $comparison);
+        return $this->addUsingAlias(CommentTableMap::COL_ID, $id, $comparison);
     }
 
     /**
@@ -342,18 +332,18 @@ abstract class CategoryQuery extends ModelCriteria
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
     public function filterByUserId($userId = null, $comparison = null)
     {
         if (is_array($userId)) {
             $useMinMax = false;
             if (isset($userId['min'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
             if (isset($userId['max'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -364,65 +354,79 @@ abstract class CategoryQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(CategoryTableMap::COL_USER_ID, $userId, $comparison);
+        return $this->addUsingAlias(CommentTableMap::COL_USER_ID, $userId, $comparison);
     }
 
     /**
-     * Filter the query on the name column
+     * Filter the query on the note_id column
      *
      * Example usage:
      * <code>
-     * $query->filterByName('fooValue');   // WHERE name = 'fooValue'
-     * $query->filterByName('%fooValue%'); // WHERE name LIKE '%fooValue%'
+     * $query->filterByNoteId(1234); // WHERE note_id = 1234
+     * $query->filterByNoteId(array(12, 34)); // WHERE note_id IN (12, 34)
+     * $query->filterByNoteId(array('min' => 12)); // WHERE note_id > 12
      * </code>
      *
-     * @param     string $name The value to use as filter.
+     * @see       filterByNote()
+     *
+     * @param     mixed $noteId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByNoteId($noteId = null, $comparison = null)
+    {
+        if (is_array($noteId)) {
+            $useMinMax = false;
+            if (isset($noteId['min'])) {
+                $this->addUsingAlias(CommentTableMap::COL_NOTE_ID, $noteId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($noteId['max'])) {
+                $this->addUsingAlias(CommentTableMap::COL_NOTE_ID, $noteId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::COL_NOTE_ID, $noteId, $comparison);
+    }
+
+    /**
+     * Filter the query on the text column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByText('fooValue');   // WHERE text = 'fooValue'
+     * $query->filterByText('%fooValue%'); // WHERE text LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $text The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
-    public function filterByName($name = null, $comparison = null)
+    public function filterByText($text = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($name)) {
+            if (is_array($text)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $name)) {
-                $name = str_replace('*', '%', $name);
+            } elseif (preg_match('/[\%\*]/', $text)) {
+                $text = str_replace('*', '%', $text);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(CategoryTableMap::COL_NAME, $name, $comparison);
-    }
-
-    /**
-     * Filter the query on the color column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByColor('fooValue');   // WHERE color = 'fooValue'
-     * $query->filterByColor('%fooValue%'); // WHERE color LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $color The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
-     */
-    public function filterByColor($color = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($color)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $color)) {
-                $color = str_replace('*', '%', $color);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(CategoryTableMap::COL_COLOR, $color, $comparison);
+        return $this->addUsingAlias(CommentTableMap::COL_TEXT, $text, $comparison);
     }
 
     /**
@@ -443,18 +447,18 @@ abstract class CategoryQuery extends ModelCriteria
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
     public function filterByCreatedAt($createdAt = null, $comparison = null)
     {
         if (is_array($createdAt)) {
             $useMinMax = false;
             if (isset($createdAt['min'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_CREATED_AT, $createdAt['min'], Criteria::GREATER_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_CREATED_AT, $createdAt['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
             if (isset($createdAt['max'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_CREATED_AT, $createdAt['max'], Criteria::LESS_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_CREATED_AT, $createdAt['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -465,7 +469,7 @@ abstract class CategoryQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(CategoryTableMap::COL_CREATED_AT, $createdAt, $comparison);
+        return $this->addUsingAlias(CommentTableMap::COL_CREATED_AT, $createdAt, $comparison);
     }
 
     /**
@@ -486,18 +490,18 @@ abstract class CategoryQuery extends ModelCriteria
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
     public function filterByUpdatedAt($updatedAt = null, $comparison = null)
     {
         if (is_array($updatedAt)) {
             $useMinMax = false;
             if (isset($updatedAt['min'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_UPDATED_AT, $updatedAt['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
             if (isset($updatedAt['max'])) {
-                $this->addUsingAlias(CategoryTableMap::COL_UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
+                $this->addUsingAlias(CommentTableMap::COL_UPDATED_AT, $updatedAt['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -508,7 +512,7 @@ abstract class CategoryQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(CategoryTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
+        return $this->addUsingAlias(CommentTableMap::COL_UPDATED_AT, $updatedAt, $comparison);
     }
 
     /**
@@ -519,20 +523,20 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @throws \Propel\Runtime\Exception\PropelException
      *
-     * @return ChildCategoryQuery The current query, for fluid interface
+     * @return ChildCommentQuery The current query, for fluid interface
      */
     public function filterByUser($user, $comparison = null)
     {
         if ($user instanceof \Models\User) {
             return $this
-                ->addUsingAlias(CategoryTableMap::COL_USER_ID, $user->getId(), $comparison);
+                ->addUsingAlias(CommentTableMap::COL_USER_ID, $user->getId(), $comparison);
         } elseif ($user instanceof ObjectCollection) {
             if (null === $comparison) {
                 $comparison = Criteria::IN;
             }
 
             return $this
-                ->addUsingAlias(CategoryTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
+                ->addUsingAlias(CommentTableMap::COL_USER_ID, $user->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
             throw new PropelException('filterByUser() only accepts arguments of type \Models\User or Collection');
         }
@@ -544,7 +548,7 @@ abstract class CategoryQuery extends ModelCriteria
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
     public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
@@ -591,21 +595,25 @@ abstract class CategoryQuery extends ModelCriteria
     /**
      * Filter the query by a related \Models\Note object
      *
-     * @param \Models\Note|ObjectCollection $note the related object to use as filter
+     * @param \Models\Note|ObjectCollection $note The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return ChildCategoryQuery The current query, for fluid interface
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
      */
     public function filterByNote($note, $comparison = null)
     {
         if ($note instanceof \Models\Note) {
             return $this
-                ->addUsingAlias(CategoryTableMap::COL_ID, $note->getCategoryId(), $comparison);
+                ->addUsingAlias(CommentTableMap::COL_NOTE_ID, $note->getId(), $comparison);
         } elseif ($note instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
             return $this
-                ->useNoteQuery()
-                ->filterByPrimaryKeys($note->getPrimaryKeys())
-                ->endUse();
+                ->addUsingAlias(CommentTableMap::COL_NOTE_ID, $note->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
             throw new PropelException('filterByNote() only accepts arguments of type \Models\Note or Collection');
         }
@@ -617,9 +625,9 @@ abstract class CategoryQuery extends ModelCriteria
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
-    public function joinNote($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinNote($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
         $relationMap = $tableMap->getRelation('Note');
@@ -654,7 +662,7 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @return \Models\NoteQuery A secondary query class using the current class as primary query
      */
-    public function useNoteQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useNoteQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinNote($relationAlias, $joinType)
@@ -662,92 +670,23 @@ abstract class CategoryQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \Models\Shared object
-     *
-     * @param \Models\Shared|ObjectCollection $shared the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ChildCategoryQuery The current query, for fluid interface
-     */
-    public function filterByShared($shared, $comparison = null)
-    {
-        if ($shared instanceof \Models\Shared) {
-            return $this
-                ->where("'category' = ?", $shared->getWhatType(), 2)
-                ->addUsingAlias(CategoryTableMap::COL_ID, $shared->getWhatId(), $comparison);
-        } else {
-            throw new PropelException('filterByShared() only accepts arguments of type \Models\Shared');
-        }
-    }
-
-    /**
-     * Adds a JOIN clause to the query using the Shared relation
-     *
-     * @param     string $relationAlias optional alias for the relation
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
-     */
-    public function joinShared($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
-    {
-        $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('Shared');
-
-        // create a ModelJoin object for this join
-        $join = new ModelJoin();
-        $join->setJoinType($joinType);
-        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-        if ($previousJoin = $this->getPreviousJoin()) {
-            $join->setPreviousJoin($previousJoin);
-        }
-
-        // add the ModelJoin to the current object
-        if ($relationAlias) {
-            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-            $this->addJoinObject($join, $relationAlias);
-        } else {
-            $this->addJoinObject($join, 'Shared');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use the Shared relation Shared object
-     *
-     * @see useQuery()
-     *
-     * @param     string $relationAlias optional alias for the relation,
-     *                                   to be used as main alias in the secondary query
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return \Models\SharedQuery A secondary query class using the current class as primary query
-     */
-    public function useSharedQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
-    {
-        return $this
-            ->joinShared($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Shared', '\Models\SharedQuery');
-    }
-
-    /**
      * Exclude object from result
      *
-     * @param   ChildCategory $category Object to remove from the list of results
+     * @param   ChildComment $comment Object to remove from the list of results
      *
-     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     * @return $this|ChildCommentQuery The current query, for fluid interface
      */
-    public function prune($category = null)
+    public function prune($comment = null)
     {
-        if ($category) {
-            $this->addUsingAlias(CategoryTableMap::COL_ID, $category->getId(), Criteria::NOT_EQUAL);
+        if ($comment) {
+            $this->addUsingAlias(CommentTableMap::COL_ID, $comment->getId(), Criteria::NOT_EQUAL);
         }
 
         return $this;
     }
 
     /**
-     * Deletes all rows from the category table.
+     * Deletes all rows from the comment table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
@@ -755,7 +694,7 @@ abstract class CategoryQuery extends ModelCriteria
     public function doDeleteAll(ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
         }
 
         // use transaction because $criteria could contain info
@@ -766,8 +705,8 @@ abstract class CategoryQuery extends ModelCriteria
             // Because this db requires some delete cascade/set null emulation, we have to
             // clear the cached instance *after* the emulation has happened (since
             // instances get re-added by the select statement contained therein).
-            CategoryTableMap::clearInstancePool();
-            CategoryTableMap::clearRelatedInstancePool();
+            CommentTableMap::clearInstancePool();
+            CommentTableMap::clearRelatedInstancePool();
 
             return $affectedRows;
         });
@@ -785,23 +724,23 @@ abstract class CategoryQuery extends ModelCriteria
     public function delete(ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
         }
 
         $criteria = $this;
 
         // Set the correct dbName
-        $criteria->setDbName(CategoryTableMap::DATABASE_NAME);
+        $criteria->setDbName(CommentTableMap::DATABASE_NAME);
 
         // use transaction because $criteria could contain info
         // for more than one table or we could emulating ON DELETE CASCADE, etc.
         return $con->transaction(function () use ($con, $criteria) {
             $affectedRows = 0; // initialize var to track total num of affected rows
 
-            CategoryTableMap::removeInstanceFromPool($criteria);
+            CommentTableMap::removeInstanceFromPool($criteria);
 
             $affectedRows += ModelCriteria::delete($con);
-            CategoryTableMap::clearRelatedInstancePool();
+            CommentTableMap::clearRelatedInstancePool();
 
             return $affectedRows;
         });
@@ -814,41 +753,41 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @param      int $nbDays Maximum age of the latest update in days
      *
-     * @return     $this|ChildCategoryQuery The current query, for fluid interface
+     * @return     $this|ChildCommentQuery The current query, for fluid interface
      */
     public function recentlyUpdated($nbDays = 7)
     {
-        return $this->addUsingAlias(CategoryTableMap::COL_UPDATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+        return $this->addUsingAlias(CommentTableMap::COL_UPDATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
     }
 
     /**
      * Order by update date desc
      *
-     * @return     $this|ChildCategoryQuery The current query, for fluid interface
+     * @return     $this|ChildCommentQuery The current query, for fluid interface
      */
     public function lastUpdatedFirst()
     {
-        return $this->addDescendingOrderByColumn(CategoryTableMap::COL_UPDATED_AT);
+        return $this->addDescendingOrderByColumn(CommentTableMap::COL_UPDATED_AT);
     }
 
     /**
      * Order by update date asc
      *
-     * @return     $this|ChildCategoryQuery The current query, for fluid interface
+     * @return     $this|ChildCommentQuery The current query, for fluid interface
      */
     public function firstUpdatedFirst()
     {
-        return $this->addAscendingOrderByColumn(CategoryTableMap::COL_UPDATED_AT);
+        return $this->addAscendingOrderByColumn(CommentTableMap::COL_UPDATED_AT);
     }
 
     /**
      * Order by create date desc
      *
-     * @return     $this|ChildCategoryQuery The current query, for fluid interface
+     * @return     $this|ChildCommentQuery The current query, for fluid interface
      */
     public function lastCreatedFirst()
     {
-        return $this->addDescendingOrderByColumn(CategoryTableMap::COL_CREATED_AT);
+        return $this->addDescendingOrderByColumn(CommentTableMap::COL_CREATED_AT);
     }
 
     /**
@@ -856,21 +795,21 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @param      int $nbDays Maximum age of in days
      *
-     * @return     $this|ChildCategoryQuery The current query, for fluid interface
+     * @return     $this|ChildCommentQuery The current query, for fluid interface
      */
     public function recentlyCreated($nbDays = 7)
     {
-        return $this->addUsingAlias(CategoryTableMap::COL_CREATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
+        return $this->addUsingAlias(CommentTableMap::COL_CREATED_AT, time() - $nbDays * 24 * 60 * 60, Criteria::GREATER_EQUAL);
     }
 
     /**
      * Order by create date asc
      *
-     * @return     $this|ChildCategoryQuery The current query, for fluid interface
+     * @return     $this|ChildCommentQuery The current query, for fluid interface
      */
     public function firstCreatedFirst()
     {
-        return $this->addAscendingOrderByColumn(CategoryTableMap::COL_CREATED_AT);
+        return $this->addAscendingOrderByColumn(CommentTableMap::COL_CREATED_AT);
     }
 
-} // CategoryQuery
+} // CommentQuery

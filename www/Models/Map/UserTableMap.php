@@ -220,6 +220,59 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'Categories', false);
+        $this->addRelation('NotificationRelatedByUserId', '\\Models\\Notification', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'NotificationsRelatedByUserId', false);
+        $this->addRelation('NotificationRelatedByOriginTypeOriginId', '\\Models\\Notification', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':origin_type',
+    1 => 'user',
+  ),
+  1 =>
+  array (
+    0 => ':origin_id',
+    1 => ':id',
+  ),
+), null, null, 'NotificationsRelatedByOriginTypeOriginId', true);
+        $this->addRelation('Comment', '\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'Comments', false);
+        $this->addRelation('Identity', '\\Models\\Identity', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'Identities', false);
+        $this->addRelation('UserGroup', '\\Models\\UserGroup', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'UserGroups', false);
+        $this->addRelation('Shared', '\\Models\\Shared', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':to_type',
+    1 => 'user',
+  ),
+  1 =>
+  array (
+    0 => ':to_id',
+    1 => ':id',
+  ),
+), null, null, 'Shareds', true);
+        $this->addRelation('Group', '\\Models\\Group', RelationMap::MANY_TO_MANY, array(), null, null, 'Groups');
     } // buildRelations()
 
     /**

@@ -2,8 +2,8 @@
 
 namespace Models\Map;
 
-use Models\Category;
-use Models\CategoryQuery;
+use Models\SubNote;
+use Models\SubNoteQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'category' table.
+ * This class defines the structure of the 'sub_note' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class CategoryTableMap extends TableMap
+class SubNoteTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class CategoryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'Models.Map.CategoryTableMap';
+    const CLASS_NAME = 'Models.Map.SubNoteTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class CategoryTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'category';
+    const TABLE_NAME = 'sub_note';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Models\\Category';
+    const OM_CLASS = '\\Models\\SubNote';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Models.Category';
+    const CLASS_DEFAULT = 'Models.SubNote';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,42 +69,53 @@ class CategoryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'category.id';
+    const COL_ID = 'sub_note.id';
 
     /**
-     * the column name for the user_id field
+     * the column name for the note_id field
      */
-    const COL_USER_ID = 'category.user_id';
+    const COL_NOTE_ID = 'sub_note.note_id';
 
     /**
-     * the column name for the name field
+     * the column name for the text field
      */
-    const COL_NAME = 'category.name';
+    const COL_TEXT = 'sub_note.text';
 
     /**
-     * the column name for the color field
+     * the column name for the state field
      */
-    const COL_COLOR = 'category.color';
+    const COL_STATE = 'sub_note.state';
+
+    /**
+     * the column name for the done_at field
+     */
+    const COL_DONE_AT = 'sub_note.done_at';
 
     /**
      * the column name for the created_at field
      */
-    const COL_CREATED_AT = 'category.created_at';
+    const COL_CREATED_AT = 'sub_note.created_at';
 
     /**
      * the column name for the updated_at field
      */
-    const COL_UPDATED_AT = 'category.updated_at';
+    const COL_UPDATED_AT = 'sub_note.updated_at';
 
     /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
+
+    /** The enumerated values for the state field */
+    const COL_STATE_OPENED = 'opened';
+    const COL_STATE_DONE = 'done';
+    const COL_STATE_WIP = 'wip';
+    const COL_STATE_CLOSED = 'closed';
 
     /**
      * holds an array of fieldnames
@@ -113,11 +124,11 @@ class CategoryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'UserId', 'Name', 'Color', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'userId', 'name', 'color', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(CategoryTableMap::COL_ID, CategoryTableMap::COL_USER_ID, CategoryTableMap::COL_NAME, CategoryTableMap::COL_COLOR, CategoryTableMap::COL_CREATED_AT, CategoryTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'user_id', 'name', 'color', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'NoteId', 'Text', 'State', 'DoneAt', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'noteId', 'text', 'state', 'doneAt', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(SubNoteTableMap::COL_ID, SubNoteTableMap::COL_NOTE_ID, SubNoteTableMap::COL_TEXT, SubNoteTableMap::COL_STATE, SubNoteTableMap::COL_DONE_AT, SubNoteTableMap::COL_CREATED_AT, SubNoteTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'note_id', 'text', 'state', 'done_at', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,12 +138,43 @@ class CategoryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'UserId' => 1, 'Name' => 2, 'Color' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'userId' => 1, 'name' => 2, 'color' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(CategoryTableMap::COL_ID => 0, CategoryTableMap::COL_USER_ID => 1, CategoryTableMap::COL_NAME => 2, CategoryTableMap::COL_COLOR => 3, CategoryTableMap::COL_CREATED_AT => 4, CategoryTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'name' => 2, 'color' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'NoteId' => 1, 'Text' => 2, 'State' => 3, 'DoneAt' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'noteId' => 1, 'text' => 2, 'state' => 3, 'doneAt' => 4, 'createdAt' => 5, 'updatedAt' => 6, ),
+        self::TYPE_COLNAME       => array(SubNoteTableMap::COL_ID => 0, SubNoteTableMap::COL_NOTE_ID => 1, SubNoteTableMap::COL_TEXT => 2, SubNoteTableMap::COL_STATE => 3, SubNoteTableMap::COL_DONE_AT => 4, SubNoteTableMap::COL_CREATED_AT => 5, SubNoteTableMap::COL_UPDATED_AT => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'note_id' => 1, 'text' => 2, 'state' => 3, 'done_at' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
+
+    /** The enumerated values for this table */
+    protected static $enumValueSets = array(
+                SubNoteTableMap::COL_STATE => array(
+                            self::COL_STATE_OPENED,
+            self::COL_STATE_DONE,
+            self::COL_STATE_WIP,
+            self::COL_STATE_CLOSED,
+        ),
+    );
+
+    /**
+     * Gets the list of values for all ENUM columns
+     * @return array
+     */
+    public static function getValueSets()
+    {
+      return static::$enumValueSets;
+    }
+
+    /**
+     * Gets the list of values for an ENUM column
+     * @param string $colname
+     * @return array list of possible values for the column
+     */
+    public static function getValueSet($colname)
+    {
+        $valueSets = self::getValueSets();
+
+        return $valueSets[$colname];
+    }
 
     /**
      * Initialize the table attributes and columns
@@ -144,17 +186,24 @@ class CategoryTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('category');
-        $this->setPhpName('Category');
+        $this->setName('sub_note');
+        $this->setPhpName('SubNote');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Models\\Category');
+        $this->setClassName('\\Models\\SubNote');
         $this->setPackage('Models');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', false, 20, null);
-        $this->addColumn('color', 'Color', 'VARCHAR', true, 6, null);
+        $this->addForeignKey('note_id', 'NoteId', 'INTEGER', 'note', 'id', true, null, null);
+        $this->addColumn('text', 'Text', 'VARCHAR', false, 100, null);
+        $this->addColumn('state', 'State', 'ENUM', true, null, 'opened');
+        $this->getColumn('state')->setValueSet(array (
+  0 => 'opened',
+  1 => 'done',
+  2 => 'wip',
+  3 => 'closed',
+));
+        $this->addColumn('done_at', 'DoneAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -164,32 +213,13 @@ class CategoryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('User', '\\Models\\User', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Note', '\\Models\\Note', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':user_id',
+    0 => ':note_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('Note', '\\Models\\Note', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':category_id',
-    1 => ':id',
-  ),
-), null, null, 'Notes', false);
-        $this->addRelation('Shared', '\\Models\\Shared', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':what_type',
-    1 => 'category',
-  ),
-  1 =>
-  array (
-    0 => ':what_id',
-    1 => ':id',
-  ),
-), null, null, 'Shareds', true);
     } // buildRelations()
 
     /**
@@ -262,7 +292,7 @@ class CategoryTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? CategoryTableMap::CLASS_DEFAULT : CategoryTableMap::OM_CLASS;
+        return $withPrefix ? SubNoteTableMap::CLASS_DEFAULT : SubNoteTableMap::OM_CLASS;
     }
 
     /**
@@ -276,22 +306,22 @@ class CategoryTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Category object, last column rank)
+     * @return array           (SubNote object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = CategoryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = CategoryTableMap::getInstanceFromPool($key))) {
+        $key = SubNoteTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = SubNoteTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + CategoryTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + SubNoteTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = CategoryTableMap::OM_CLASS;
-            /** @var Category $obj */
+            $cls = SubNoteTableMap::OM_CLASS;
+            /** @var SubNote $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            CategoryTableMap::addInstanceToPool($obj, $key);
+            SubNoteTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -314,18 +344,18 @@ class CategoryTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = CategoryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = CategoryTableMap::getInstanceFromPool($key))) {
+            $key = SubNoteTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = SubNoteTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Category $obj */
+                /** @var SubNote $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                CategoryTableMap::addInstanceToPool($obj, $key);
+                SubNoteTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -346,17 +376,19 @@ class CategoryTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(CategoryTableMap::COL_ID);
-            $criteria->addSelectColumn(CategoryTableMap::COL_USER_ID);
-            $criteria->addSelectColumn(CategoryTableMap::COL_NAME);
-            $criteria->addSelectColumn(CategoryTableMap::COL_COLOR);
-            $criteria->addSelectColumn(CategoryTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(CategoryTableMap::COL_UPDATED_AT);
+            $criteria->addSelectColumn(SubNoteTableMap::COL_ID);
+            $criteria->addSelectColumn(SubNoteTableMap::COL_NOTE_ID);
+            $criteria->addSelectColumn(SubNoteTableMap::COL_TEXT);
+            $criteria->addSelectColumn(SubNoteTableMap::COL_STATE);
+            $criteria->addSelectColumn(SubNoteTableMap::COL_DONE_AT);
+            $criteria->addSelectColumn(SubNoteTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(SubNoteTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.user_id');
-            $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.color');
+            $criteria->addSelectColumn($alias . '.note_id');
+            $criteria->addSelectColumn($alias . '.text');
+            $criteria->addSelectColumn($alias . '.state');
+            $criteria->addSelectColumn($alias . '.done_at');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }
@@ -371,7 +403,7 @@ class CategoryTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(CategoryTableMap::DATABASE_NAME)->getTable(CategoryTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(SubNoteTableMap::DATABASE_NAME)->getTable(SubNoteTableMap::TABLE_NAME);
     }
 
     /**
@@ -379,16 +411,16 @@ class CategoryTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(CategoryTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(CategoryTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new CategoryTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(SubNoteTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(SubNoteTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new SubNoteTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Category or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a SubNote or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Category object or primary key or array of primary keys
+     * @param mixed               $values Criteria or SubNote object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -399,27 +431,27 @@ class CategoryTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SubNoteTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Models\Category) { // it's a model object
+        } elseif ($values instanceof \Models\SubNote) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
-            $criteria->add(CategoryTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(SubNoteTableMap::DATABASE_NAME);
+            $criteria->add(SubNoteTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = CategoryQuery::create()->mergeWith($criteria);
+        $query = SubNoteQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            CategoryTableMap::clearInstancePool();
+            SubNoteTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                CategoryTableMap::removeInstanceFromPool($singleval);
+                SubNoteTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -427,20 +459,20 @@ class CategoryTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the category table.
+     * Deletes all rows from the sub_note table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return CategoryQuery::create()->doDeleteAll($con);
+        return SubNoteQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Category or Criteria object.
+     * Performs an INSERT on the database, given a SubNote or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Category object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or SubNote object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -449,22 +481,22 @@ class CategoryTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SubNoteTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Category object
+            $criteria = $criteria->buildCriteria(); // build Criteria from SubNote object
         }
 
-        if ($criteria->containsKey(CategoryTableMap::COL_ID) && $criteria->keyContainsValue(CategoryTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.CategoryTableMap::COL_ID.')');
+        if ($criteria->containsKey(SubNoteTableMap::COL_ID) && $criteria->keyContainsValue(SubNoteTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.SubNoteTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = CategoryQuery::create()->mergeWith($criteria);
+        $query = SubNoteQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -473,7 +505,7 @@ class CategoryTableMap extends TableMap
         });
     }
 
-} // CategoryTableMap
+} // SubNoteTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-CategoryTableMap::buildTableMap();
+SubNoteTableMap::buildTableMap();

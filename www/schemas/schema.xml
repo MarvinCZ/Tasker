@@ -31,13 +31,39 @@
         <column name="repeat_after" type="integer"/>
         <column name="done_at" type="timestamp"/>
         <column name="public" type="boolean"/>
-        <column name="description" type="varchar" size="120"/>
+        <column name="description" type="varchar" size="300"/>
 
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id"/>
         </foreign-key>
         <foreign-key foreignTable="category">
             <reference local="category_id" foreign="id"/>
+        </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="sub_note" phpName="SubNote">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="note_id" type="integer" required="true"/>
+        <column name="text" type="varchar" size="100"/>
+        <column name="state" type="enum" valueSet="opened, done, wip, closed" defaultValue="opened" required="true"/>
+        <column name="done_at" type="timestamp"/>
+
+        <foreign-key foreignTable="note">
+            <reference local="note_id" foreign="id"/>
+        </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="file" phpName="File">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="note_id" type="integer" required="true"/>
+        <column name="path" type="varchar" size="150"/>
+
+        <foreign-key foreignTable="note">
+            <reference local="note_id" foreign="id"/>
         </foreign-key>
 
         <behavior name="timestampable" />
@@ -52,5 +78,108 @@
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id"/>
         </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="notification" phpName="Notification">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" type="integer" required="true"/>
+        <column name="origin_id" type="integer" />
+        <column name="origin_type" type="varchar" size="55" />
+        <column name="type" type="enum" valueSet="info, warning, request, success" defaultValue="info" required="true"/>
+        <column name="text" type="varchar" size="50"/>
+
+        <foreign-key foreignTable="user" phpName="User">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="user" phpName="OriginUser">
+            <reference local="origin_type" value="user" />
+            <reference local="origin_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="note">
+            <reference local="origin_type" value="note" />
+            <reference local="origin_id" foreign="id" />
+        </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="comment" phpName="Comment">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" type="integer" required="true"/>
+        <column name="note_id" type="integer" required="true"/>
+        <column name="text" type="varchar" size="150" required="true"/>
+
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="note">
+            <reference local="note_id" foreign="id"/>
+        </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="identity" phpName="Identity">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="user_id" type="integer" required="true"/>
+        <column name="provider" type="varchar" size="15"  required="true"/>
+        <column name="uid" type="integer" required="true"/>
+
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="group" phpName="Group">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="50"/>
+
+        <behavior name="timestampable" />
+    </table>
+    
+    <table name="user_group" isCrossRef="true">
+        <column name="user_id" type="integer" primaryKey="true"/>
+        <column name="group_id" type="integer" primaryKey="true"/>
+        <column name="rights" type="integer" defaultValue="0" required="true"/>
+
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="group">
+            <reference local="group_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="shared" phpName="Shared">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="what_id" type="integer" />
+        <column name="what_type" type="varchar" size="55" />
+        <column name="to_id" type="integer" />
+        <column name="to_type" type="varchar" size="55" />
+        <column name="rights" type="integer" defaultValue="0" required="true"/>
+
+        <foreign-key foreignTable="note">
+            <reference local="what_type" value="note" />
+            <reference local="what_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="category">
+            <reference local="what_type" value="category" />
+            <reference local="what_id" foreign="id" />
+        </foreign-key>
+
+        <foreign-key foreignTable="user">
+            <reference local="to_type" value="user" />
+            <reference local="to_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="group">
+            <reference local="to_type" value="group" />
+            <reference local="to_id" foreign="id" />
+        </foreign-key>
+
+        <behavior name="timestampable" />
     </table>
 </database>

@@ -226,7 +226,7 @@ class NoteTableMap extends TableMap
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
         $this->addColumn('importance', 'Importance', 'INTEGER', false, null, -1);
-        $this->addColumn('title', 'Title', 'VARCHAR', false, 20, null);
+        $this->addColumn('title', 'Title', 'VARCHAR', false, 25, null);
         $this->addColumn('deadline', 'Deadline', 'TIMESTAMP', false, null, null);
         $this->addForeignKey('category_id', 'CategoryId', 'INTEGER', 'category', 'id', false, null, null);
         $this->addColumn('state', 'State', 'ENUM', true, null, 'opened');
@@ -239,7 +239,7 @@ class NoteTableMap extends TableMap
         $this->addColumn('repeat_after', 'RepeatAfter', 'INTEGER', false, null, null);
         $this->addColumn('done_at', 'DoneAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('public', 'Public', 'BOOLEAN', false, 1, null);
-        $this->addColumn('description', 'Description', 'VARCHAR', false, 120, null);
+        $this->addColumn('description', 'Description', 'VARCHAR', false, 300, null);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -263,6 +263,51 @@ class NoteTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, null, false);
+        $this->addRelation('SubNote', '\\Models\\SubNote', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':note_id',
+    1 => ':id',
+  ),
+), null, null, 'SubNotes', false);
+        $this->addRelation('File', '\\Models\\File', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':note_id',
+    1 => ':id',
+  ),
+), null, null, 'Files', false);
+        $this->addRelation('Notification', '\\Models\\Notification', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':origin_type',
+    1 => 'note',
+  ),
+  1 =>
+  array (
+    0 => ':origin_id',
+    1 => ':id',
+  ),
+), null, null, 'Notifications', true);
+        $this->addRelation('Comment', '\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':note_id',
+    1 => ':id',
+  ),
+), null, null, 'Comments', false);
+        $this->addRelation('Shared', '\\Models\\Shared', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':what_type',
+    1 => 'note',
+  ),
+  1 =>
+  array (
+    0 => ':what_id',
+    1 => ':id',
+  ),
+), null, null, 'Shareds', true);
     } // buildRelations()
 
     /**

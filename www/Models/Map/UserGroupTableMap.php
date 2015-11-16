@@ -2,8 +2,8 @@
 
 namespace Models\Map;
 
-use Models\Category;
-use Models\CategoryQuery;
+use Models\UserGroup;
+use Models\UserGroupQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'category' table.
+ * This class defines the structure of the 'user_group' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class CategoryTableMap extends TableMap
+class UserGroupTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class CategoryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'Models.Map.CategoryTableMap';
+    const CLASS_NAME = 'Models.Map.UserGroupTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class CategoryTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'category';
+    const TABLE_NAME = 'user_group';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Models\\Category';
+    const OM_CLASS = '\\Models\\UserGroup';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Models.Category';
+    const CLASS_DEFAULT = 'Models.UserGroup';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -69,37 +69,22 @@ class CategoryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
-
-    /**
-     * the column name for the id field
-     */
-    const COL_ID = 'category.id';
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
      * the column name for the user_id field
      */
-    const COL_USER_ID = 'category.user_id';
+    const COL_USER_ID = 'user_group.user_id';
 
     /**
-     * the column name for the name field
+     * the column name for the group_id field
      */
-    const COL_NAME = 'category.name';
+    const COL_GROUP_ID = 'user_group.group_id';
 
     /**
-     * the column name for the color field
+     * the column name for the rights field
      */
-    const COL_COLOR = 'category.color';
-
-    /**
-     * the column name for the created_at field
-     */
-    const COL_CREATED_AT = 'category.created_at';
-
-    /**
-     * the column name for the updated_at field
-     */
-    const COL_UPDATED_AT = 'category.updated_at';
+    const COL_RIGHTS = 'user_group.rights';
 
     /**
      * The default string format for model objects of the related table
@@ -113,11 +98,11 @@ class CategoryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'UserId', 'Name', 'Color', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'userId', 'name', 'color', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(CategoryTableMap::COL_ID, CategoryTableMap::COL_USER_ID, CategoryTableMap::COL_NAME, CategoryTableMap::COL_COLOR, CategoryTableMap::COL_CREATED_AT, CategoryTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'user_id', 'name', 'color', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('UserId', 'GroupId', 'Rights', ),
+        self::TYPE_CAMELNAME     => array('userId', 'groupId', 'rights', ),
+        self::TYPE_COLNAME       => array(UserGroupTableMap::COL_USER_ID, UserGroupTableMap::COL_GROUP_ID, UserGroupTableMap::COL_RIGHTS, ),
+        self::TYPE_FIELDNAME     => array('user_id', 'group_id', 'rights', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -127,11 +112,11 @@ class CategoryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'UserId' => 1, 'Name' => 2, 'Color' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'userId' => 1, 'name' => 2, 'color' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(CategoryTableMap::COL_ID => 0, CategoryTableMap::COL_USER_ID => 1, CategoryTableMap::COL_NAME => 2, CategoryTableMap::COL_COLOR => 3, CategoryTableMap::COL_CREATED_AT => 4, CategoryTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'name' => 2, 'color' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('UserId' => 0, 'GroupId' => 1, 'Rights' => 2, ),
+        self::TYPE_CAMELNAME     => array('userId' => 0, 'groupId' => 1, 'rights' => 2, ),
+        self::TYPE_COLNAME       => array(UserGroupTableMap::COL_USER_ID => 0, UserGroupTableMap::COL_GROUP_ID => 1, UserGroupTableMap::COL_RIGHTS => 2, ),
+        self::TYPE_FIELDNAME     => array('user_id' => 0, 'group_id' => 1, 'rights' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -144,19 +129,17 @@ class CategoryTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('category');
-        $this->setPhpName('Category');
+        $this->setName('user_group');
+        $this->setPhpName('UserGroup');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Models\\Category');
+        $this->setClassName('\\Models\\UserGroup');
         $this->setPackage('Models');
-        $this->setUseIdGenerator(true);
+        $this->setUseIdGenerator(false);
+        $this->setIsCrossRef(true);
         // columns
-        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', false, 20, null);
-        $this->addColumn('color', 'Color', 'VARCHAR', true, 6, null);
-        $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
-        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
+        $this->addForeignPrimaryKey('user_id', 'UserId', 'INTEGER' , 'user', 'id', true, null, null);
+        $this->addForeignPrimaryKey('group_id', 'GroupId', 'INTEGER' , 'group', 'id', true, null, null);
+        $this->addColumn('rights', 'Rights', 'INTEGER', true, null, 0);
     } // initialize()
 
     /**
@@ -171,39 +154,67 @@ class CategoryTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('Note', '\\Models\\Note', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('Group', '\\Models\\Group', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':category_id',
+    0 => ':group_id',
     1 => ':id',
   ),
-), null, null, 'Notes', false);
-        $this->addRelation('Shared', '\\Models\\Shared', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':what_type',
-    1 => 'category',
-  ),
-  1 =>
-  array (
-    0 => ':what_id',
-    1 => ':id',
-  ),
-), null, null, 'Shareds', true);
+), null, null, null, false);
     } // buildRelations()
 
     /**
+     * Adds an object to the instance pool.
      *
-     * Gets the list of behaviors registered for this table
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database. In some cases you may need to explicitly add objects
+     * to the cache in order to ensure that the same objects are always returned by find*()
+     * and findPk*() calls.
      *
-     * @return array Associative array (name => parameters) of behaviors
+     * @param \Models\UserGroup $obj A \Models\UserGroup object.
+     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
-    public function getBehaviors()
+    public static function addInstanceToPool($obj, $key = null)
     {
-        return array(
-            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
-        );
-    } // getBehaviors()
+        if (Propel::isInstancePoolingEnabled()) {
+            if (null === $key) {
+                $key = serialize(array((string) $obj->getUserId(), (string) $obj->getGroupId()));
+            } // if key === null
+            self::$instances[$key] = $obj;
+        }
+    }
+
+    /**
+     * Removes an object from the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database.  In some cases -- especially when you override doDelete
+     * methods in your stub classes -- you may need to explicitly remove objects
+     * from the cache in order to prevent returning objects that no longer exist.
+     *
+     * @param mixed $value A \Models\UserGroup object or a primary key value.
+     */
+    public static function removeInstanceFromPool($value)
+    {
+        if (Propel::isInstancePoolingEnabled() && null !== $value) {
+            if (is_object($value) && $value instanceof \Models\UserGroup) {
+                $key = serialize(array((string) $value->getUserId(), (string) $value->getGroupId()));
+
+            } elseif (is_array($value) && count($value) === 2) {
+                // assume we've been passed a primary key";
+                $key = serialize(array((string) $value[0], (string) $value[1]));
+            } elseif ($value instanceof Criteria) {
+                self::$instances = [];
+
+                return;
+            } else {
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \Models\UserGroup object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                throw $e;
+            }
+
+            unset(self::$instances[$key]);
+        }
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -221,11 +232,11 @@ class CategoryTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('GroupId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('GroupId', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -242,11 +253,20 @@ class CategoryTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (int) $row[
+            $pks = [];
+
+        $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)
         ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 1 + $offset
+                : self::translateFieldName('GroupId', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+
+        return $pks;
     }
 
     /**
@@ -262,7 +282,7 @@ class CategoryTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? CategoryTableMap::CLASS_DEFAULT : CategoryTableMap::OM_CLASS;
+        return $withPrefix ? UserGroupTableMap::CLASS_DEFAULT : UserGroupTableMap::OM_CLASS;
     }
 
     /**
@@ -276,22 +296,22 @@ class CategoryTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Category object, last column rank)
+     * @return array           (UserGroup object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = CategoryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = CategoryTableMap::getInstanceFromPool($key))) {
+        $key = UserGroupTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = UserGroupTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + CategoryTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + UserGroupTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = CategoryTableMap::OM_CLASS;
-            /** @var Category $obj */
+            $cls = UserGroupTableMap::OM_CLASS;
+            /** @var UserGroup $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            CategoryTableMap::addInstanceToPool($obj, $key);
+            UserGroupTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -314,18 +334,18 @@ class CategoryTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = CategoryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = CategoryTableMap::getInstanceFromPool($key))) {
+            $key = UserGroupTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = UserGroupTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Category $obj */
+                /** @var UserGroup $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                CategoryTableMap::addInstanceToPool($obj, $key);
+                UserGroupTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -346,19 +366,13 @@ class CategoryTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(CategoryTableMap::COL_ID);
-            $criteria->addSelectColumn(CategoryTableMap::COL_USER_ID);
-            $criteria->addSelectColumn(CategoryTableMap::COL_NAME);
-            $criteria->addSelectColumn(CategoryTableMap::COL_COLOR);
-            $criteria->addSelectColumn(CategoryTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(CategoryTableMap::COL_UPDATED_AT);
+            $criteria->addSelectColumn(UserGroupTableMap::COL_USER_ID);
+            $criteria->addSelectColumn(UserGroupTableMap::COL_GROUP_ID);
+            $criteria->addSelectColumn(UserGroupTableMap::COL_RIGHTS);
         } else {
-            $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.user_id');
-            $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.color');
-            $criteria->addSelectColumn($alias . '.created_at');
-            $criteria->addSelectColumn($alias . '.updated_at');
+            $criteria->addSelectColumn($alias . '.group_id');
+            $criteria->addSelectColumn($alias . '.rights');
         }
     }
 
@@ -371,7 +385,7 @@ class CategoryTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(CategoryTableMap::DATABASE_NAME)->getTable(CategoryTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(UserGroupTableMap::DATABASE_NAME)->getTable(UserGroupTableMap::TABLE_NAME);
     }
 
     /**
@@ -379,16 +393,16 @@ class CategoryTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(CategoryTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(CategoryTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new CategoryTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UserGroupTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(UserGroupTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new UserGroupTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Category or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a UserGroup or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Category object or primary key or array of primary keys
+     * @param mixed               $values Criteria or UserGroup object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -399,27 +413,37 @@ class CategoryTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UserGroupTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Models\Category) { // it's a model object
+        } elseif ($values instanceof \Models\UserGroup) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
-            $criteria->add(CategoryTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(UserGroupTableMap::DATABASE_NAME);
+            // primary key is composite; we therefore, expect
+            // the primary key passed to be an array of pkey values
+            if (count($values) == count($values, COUNT_RECURSIVE)) {
+                // array is not multi-dimensional
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                $criterion = $criteria->getNewCriterion(UserGroupTableMap::COL_USER_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(UserGroupTableMap::COL_GROUP_ID, $value[1]));
+                $criteria->addOr($criterion);
+            }
         }
 
-        $query = CategoryQuery::create()->mergeWith($criteria);
+        $query = UserGroupQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            CategoryTableMap::clearInstancePool();
+            UserGroupTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                CategoryTableMap::removeInstanceFromPool($singleval);
+                UserGroupTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -427,20 +451,20 @@ class CategoryTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the category table.
+     * Deletes all rows from the user_group table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return CategoryQuery::create()->doDeleteAll($con);
+        return UserGroupQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Category or Criteria object.
+     * Performs an INSERT on the database, given a UserGroup or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Category object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or UserGroup object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -449,22 +473,18 @@ class CategoryTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UserGroupTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Category object
-        }
-
-        if ($criteria->containsKey(CategoryTableMap::COL_ID) && $criteria->keyContainsValue(CategoryTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.CategoryTableMap::COL_ID.')');
+            $criteria = $criteria->buildCriteria(); // build Criteria from UserGroup object
         }
 
 
         // Set the correct dbName
-        $query = CategoryQuery::create()->mergeWith($criteria);
+        $query = UserGroupQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -473,7 +493,7 @@ class CategoryTableMap extends TableMap
         });
     }
 
-} // CategoryTableMap
+} // UserGroupTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-CategoryTableMap::buildTableMap();
+UserGroupTableMap::buildTableMap();

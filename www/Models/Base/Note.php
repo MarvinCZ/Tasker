@@ -7,8 +7,18 @@ use \Exception;
 use \PDO;
 use Models\Category as ChildCategory;
 use Models\CategoryQuery as ChildCategoryQuery;
+use Models\Comment as ChildComment;
+use Models\CommentQuery as ChildCommentQuery;
+use Models\File as ChildFile;
+use Models\FileQuery as ChildFileQuery;
 use Models\Note as ChildNote;
 use Models\NoteQuery as ChildNoteQuery;
+use Models\Notification as ChildNotification;
+use Models\NotificationQuery as ChildNotificationQuery;
+use Models\Shared as ChildShared;
+use Models\SharedQuery as ChildSharedQuery;
+use Models\SubNote as ChildSubNote;
+use Models\SubNoteQuery as ChildSubNoteQuery;
 use Models\User as ChildUser;
 use Models\UserQuery as ChildUserQuery;
 use Models\Map\NoteTableMap;
@@ -17,6 +27,7 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -170,12 +181,72 @@ abstract class Note implements ActiveRecordInterface
     protected $aCategory;
 
     /**
+     * @var        ObjectCollection|ChildSubNote[] Collection to store aggregation of ChildSubNote objects.
+     */
+    protected $collSubNotes;
+    protected $collSubNotesPartial;
+
+    /**
+     * @var        ObjectCollection|ChildFile[] Collection to store aggregation of ChildFile objects.
+     */
+    protected $collFiles;
+    protected $collFilesPartial;
+
+    /**
+     * @var        ObjectCollection|ChildNotification[] Collection to store aggregation of ChildNotification objects.
+     */
+    protected $collNotifications;
+    protected $collNotificationsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildComment[] Collection to store aggregation of ChildComment objects.
+     */
+    protected $collComments;
+    protected $collCommentsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildShared[] Collection to store aggregation of ChildShared objects.
+     */
+    protected $collShareds;
+    protected $collSharedsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildSubNote[]
+     */
+    protected $subNotesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildFile[]
+     */
+    protected $filesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildNotification[]
+     */
+    protected $notificationsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildComment[]
+     */
+    protected $commentsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildShared[]
+     */
+    protected $sharedsScheduledForDeletion = null;
 
     /**
      * Applies default values to this object.
@@ -1054,6 +1125,16 @@ abstract class Note implements ActiveRecordInterface
 
             $this->aUser = null;
             $this->aCategory = null;
+            $this->collSubNotes = null;
+
+            $this->collFiles = null;
+
+            $this->collNotifications = null;
+
+            $this->collComments = null;
+
+            $this->collShareds = null;
+
         } // if (deep)
     }
 
@@ -1193,6 +1274,93 @@ abstract class Note implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->subNotesScheduledForDeletion !== null) {
+                if (!$this->subNotesScheduledForDeletion->isEmpty()) {
+                    \Models\SubNoteQuery::create()
+                        ->filterByPrimaryKeys($this->subNotesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->subNotesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collSubNotes !== null) {
+                foreach ($this->collSubNotes as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->filesScheduledForDeletion !== null) {
+                if (!$this->filesScheduledForDeletion->isEmpty()) {
+                    \Models\FileQuery::create()
+                        ->filterByPrimaryKeys($this->filesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->filesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collFiles !== null) {
+                foreach ($this->collFiles as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->notificationsScheduledForDeletion !== null) {
+                if (!$this->notificationsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->notificationsScheduledForDeletion as $notification) {
+                        // need to save related object because we set the relation to null
+                        $notification->save($con);
+                    }
+                    $this->notificationsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collNotifications !== null) {
+                foreach ($this->collNotifications as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->commentsScheduledForDeletion !== null) {
+                if (!$this->commentsScheduledForDeletion->isEmpty()) {
+                    \Models\CommentQuery::create()
+                        ->filterByPrimaryKeys($this->commentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->commentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collComments !== null) {
+                foreach ($this->collComments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->sharedsScheduledForDeletion !== null) {
+                if (!$this->sharedsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->sharedsScheduledForDeletion as $shared) {
+                        // need to save related object because we set the relation to null
+                        $shared->save($con);
+                    }
+                    $this->sharedsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collShareds !== null) {
+                foreach ($this->collShareds as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             $this->alreadyInSave = false;
@@ -1506,6 +1674,81 @@ abstract class Note implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collSubNotes) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'subNotes';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'sub_notes';
+                        break;
+                    default:
+                        $key = 'SubNotes';
+                }
+
+                $result[$key] = $this->collSubNotes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collFiles) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'files';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'files';
+                        break;
+                    default:
+                        $key = 'Files';
+                }
+
+                $result[$key] = $this->collFiles->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collNotifications) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'notifications';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'notifications';
+                        break;
+                    default:
+                        $key = 'Notifications';
+                }
+
+                $result[$key] = $this->collNotifications->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collComments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'comments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'comments';
+                        break;
+                    default:
+                        $key = 'Comments';
+                }
+
+                $result[$key] = $this->collComments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collShareds) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'shareds';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'shareds';
+                        break;
+                    default:
+                        $key = 'Shareds';
+                }
+
+                $result[$key] = $this->collShareds->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1827,6 +2070,44 @@ abstract class Note implements ActiveRecordInterface
         $copyObj->setDescription($this->getDescription());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getSubNotes() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addSubNote($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getFiles() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addFile($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getNotifications() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addNotification($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getComments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addComment($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getShareds() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addShared($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1957,6 +2238,1274 @@ abstract class Note implements ActiveRecordInterface
         return $this->aCategory;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('SubNote' == $relationName) {
+            return $this->initSubNotes();
+        }
+        if ('File' == $relationName) {
+            return $this->initFiles();
+        }
+        if ('Notification' == $relationName) {
+            return $this->initNotifications();
+        }
+        if ('Comment' == $relationName) {
+            return $this->initComments();
+        }
+        if ('Shared' == $relationName) {
+            return $this->initShareds();
+        }
+    }
+
+    /**
+     * Clears out the collSubNotes collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addSubNotes()
+     */
+    public function clearSubNotes()
+    {
+        $this->collSubNotes = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collSubNotes collection loaded partially.
+     */
+    public function resetPartialSubNotes($v = true)
+    {
+        $this->collSubNotesPartial = $v;
+    }
+
+    /**
+     * Initializes the collSubNotes collection.
+     *
+     * By default this just sets the collSubNotes collection to an empty array (like clearcollSubNotes());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initSubNotes($overrideExisting = true)
+    {
+        if (null !== $this->collSubNotes && !$overrideExisting) {
+            return;
+        }
+        $this->collSubNotes = new ObjectCollection();
+        $this->collSubNotes->setModel('\Models\SubNote');
+    }
+
+    /**
+     * Gets an array of ChildSubNote objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildNote is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildSubNote[] List of ChildSubNote objects
+     * @throws PropelException
+     */
+    public function getSubNotes(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collSubNotesPartial && !$this->isNew();
+        if (null === $this->collSubNotes || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collSubNotes) {
+                // return empty collection
+                $this->initSubNotes();
+            } else {
+                $collSubNotes = ChildSubNoteQuery::create(null, $criteria)
+                    ->filterByNote($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collSubNotesPartial && count($collSubNotes)) {
+                        $this->initSubNotes(false);
+
+                        foreach ($collSubNotes as $obj) {
+                            if (false == $this->collSubNotes->contains($obj)) {
+                                $this->collSubNotes->append($obj);
+                            }
+                        }
+
+                        $this->collSubNotesPartial = true;
+                    }
+
+                    return $collSubNotes;
+                }
+
+                if ($partial && $this->collSubNotes) {
+                    foreach ($this->collSubNotes as $obj) {
+                        if ($obj->isNew()) {
+                            $collSubNotes[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collSubNotes = $collSubNotes;
+                $this->collSubNotesPartial = false;
+            }
+        }
+
+        return $this->collSubNotes;
+    }
+
+    /**
+     * Sets a collection of ChildSubNote objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $subNotes A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function setSubNotes(Collection $subNotes, ConnectionInterface $con = null)
+    {
+        /** @var ChildSubNote[] $subNotesToDelete */
+        $subNotesToDelete = $this->getSubNotes(new Criteria(), $con)->diff($subNotes);
+
+
+        $this->subNotesScheduledForDeletion = $subNotesToDelete;
+
+        foreach ($subNotesToDelete as $subNoteRemoved) {
+            $subNoteRemoved->setNote(null);
+        }
+
+        $this->collSubNotes = null;
+        foreach ($subNotes as $subNote) {
+            $this->addSubNote($subNote);
+        }
+
+        $this->collSubNotes = $subNotes;
+        $this->collSubNotesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related SubNote objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related SubNote objects.
+     * @throws PropelException
+     */
+    public function countSubNotes(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collSubNotesPartial && !$this->isNew();
+        if (null === $this->collSubNotes || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collSubNotes) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getSubNotes());
+            }
+
+            $query = ChildSubNoteQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByNote($this)
+                ->count($con);
+        }
+
+        return count($this->collSubNotes);
+    }
+
+    /**
+     * Method called to associate a ChildSubNote object to this object
+     * through the ChildSubNote foreign key attribute.
+     *
+     * @param  ChildSubNote $l ChildSubNote
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function addSubNote(ChildSubNote $l)
+    {
+        if ($this->collSubNotes === null) {
+            $this->initSubNotes();
+            $this->collSubNotesPartial = true;
+        }
+
+        if (!$this->collSubNotes->contains($l)) {
+            $this->doAddSubNote($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildSubNote $subNote The ChildSubNote object to add.
+     */
+    protected function doAddSubNote(ChildSubNote $subNote)
+    {
+        $this->collSubNotes[]= $subNote;
+        $subNote->setNote($this);
+    }
+
+    /**
+     * @param  ChildSubNote $subNote The ChildSubNote object to remove.
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function removeSubNote(ChildSubNote $subNote)
+    {
+        if ($this->getSubNotes()->contains($subNote)) {
+            $pos = $this->collSubNotes->search($subNote);
+            $this->collSubNotes->remove($pos);
+            if (null === $this->subNotesScheduledForDeletion) {
+                $this->subNotesScheduledForDeletion = clone $this->collSubNotes;
+                $this->subNotesScheduledForDeletion->clear();
+            }
+            $this->subNotesScheduledForDeletion[]= clone $subNote;
+            $subNote->setNote(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collFiles collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addFiles()
+     */
+    public function clearFiles()
+    {
+        $this->collFiles = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collFiles collection loaded partially.
+     */
+    public function resetPartialFiles($v = true)
+    {
+        $this->collFilesPartial = $v;
+    }
+
+    /**
+     * Initializes the collFiles collection.
+     *
+     * By default this just sets the collFiles collection to an empty array (like clearcollFiles());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initFiles($overrideExisting = true)
+    {
+        if (null !== $this->collFiles && !$overrideExisting) {
+            return;
+        }
+        $this->collFiles = new ObjectCollection();
+        $this->collFiles->setModel('\Models\File');
+    }
+
+    /**
+     * Gets an array of ChildFile objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildNote is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildFile[] List of ChildFile objects
+     * @throws PropelException
+     */
+    public function getFiles(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collFilesPartial && !$this->isNew();
+        if (null === $this->collFiles || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collFiles) {
+                // return empty collection
+                $this->initFiles();
+            } else {
+                $collFiles = ChildFileQuery::create(null, $criteria)
+                    ->filterByNote($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collFilesPartial && count($collFiles)) {
+                        $this->initFiles(false);
+
+                        foreach ($collFiles as $obj) {
+                            if (false == $this->collFiles->contains($obj)) {
+                                $this->collFiles->append($obj);
+                            }
+                        }
+
+                        $this->collFilesPartial = true;
+                    }
+
+                    return $collFiles;
+                }
+
+                if ($partial && $this->collFiles) {
+                    foreach ($this->collFiles as $obj) {
+                        if ($obj->isNew()) {
+                            $collFiles[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collFiles = $collFiles;
+                $this->collFilesPartial = false;
+            }
+        }
+
+        return $this->collFiles;
+    }
+
+    /**
+     * Sets a collection of ChildFile objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $files A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function setFiles(Collection $files, ConnectionInterface $con = null)
+    {
+        /** @var ChildFile[] $filesToDelete */
+        $filesToDelete = $this->getFiles(new Criteria(), $con)->diff($files);
+
+
+        $this->filesScheduledForDeletion = $filesToDelete;
+
+        foreach ($filesToDelete as $fileRemoved) {
+            $fileRemoved->setNote(null);
+        }
+
+        $this->collFiles = null;
+        foreach ($files as $file) {
+            $this->addFile($file);
+        }
+
+        $this->collFiles = $files;
+        $this->collFilesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related File objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related File objects.
+     * @throws PropelException
+     */
+    public function countFiles(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collFilesPartial && !$this->isNew();
+        if (null === $this->collFiles || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collFiles) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getFiles());
+            }
+
+            $query = ChildFileQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByNote($this)
+                ->count($con);
+        }
+
+        return count($this->collFiles);
+    }
+
+    /**
+     * Method called to associate a ChildFile object to this object
+     * through the ChildFile foreign key attribute.
+     *
+     * @param  ChildFile $l ChildFile
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function addFile(ChildFile $l)
+    {
+        if ($this->collFiles === null) {
+            $this->initFiles();
+            $this->collFilesPartial = true;
+        }
+
+        if (!$this->collFiles->contains($l)) {
+            $this->doAddFile($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildFile $file The ChildFile object to add.
+     */
+    protected function doAddFile(ChildFile $file)
+    {
+        $this->collFiles[]= $file;
+        $file->setNote($this);
+    }
+
+    /**
+     * @param  ChildFile $file The ChildFile object to remove.
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function removeFile(ChildFile $file)
+    {
+        if ($this->getFiles()->contains($file)) {
+            $pos = $this->collFiles->search($file);
+            $this->collFiles->remove($pos);
+            if (null === $this->filesScheduledForDeletion) {
+                $this->filesScheduledForDeletion = clone $this->collFiles;
+                $this->filesScheduledForDeletion->clear();
+            }
+            $this->filesScheduledForDeletion[]= clone $file;
+            $file->setNote(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collNotifications collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addNotifications()
+     */
+    public function clearNotifications()
+    {
+        $this->collNotifications = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collNotifications collection loaded partially.
+     */
+    public function resetPartialNotifications($v = true)
+    {
+        $this->collNotificationsPartial = $v;
+    }
+
+    /**
+     * Initializes the collNotifications collection.
+     *
+     * By default this just sets the collNotifications collection to an empty array (like clearcollNotifications());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initNotifications($overrideExisting = true)
+    {
+        if (null !== $this->collNotifications && !$overrideExisting) {
+            return;
+        }
+        $this->collNotifications = new ObjectCollection();
+        $this->collNotifications->setModel('\Models\Notification');
+    }
+
+    /**
+     * Gets an array of ChildNotification objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildNote is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildNotification[] List of ChildNotification objects
+     * @throws PropelException
+     */
+    public function getNotifications(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collNotificationsPartial && !$this->isNew();
+        if (null === $this->collNotifications || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collNotifications) {
+                // return empty collection
+                $this->initNotifications();
+            } else {
+                $collNotifications = ChildNotificationQuery::create(null, $criteria)
+                    ->filterByNote($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collNotificationsPartial && count($collNotifications)) {
+                        $this->initNotifications(false);
+
+                        foreach ($collNotifications as $obj) {
+                            if (false == $this->collNotifications->contains($obj)) {
+                                $this->collNotifications->append($obj);
+                            }
+                        }
+
+                        $this->collNotificationsPartial = true;
+                    }
+
+                    return $collNotifications;
+                }
+
+                if ($partial && $this->collNotifications) {
+                    foreach ($this->collNotifications as $obj) {
+                        if ($obj->isNew()) {
+                            $collNotifications[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collNotifications = $collNotifications;
+                $this->collNotificationsPartial = false;
+            }
+        }
+
+        return $this->collNotifications;
+    }
+
+    /**
+     * Sets a collection of ChildNotification objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $notifications A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function setNotifications(Collection $notifications, ConnectionInterface $con = null)
+    {
+        /** @var ChildNotification[] $notificationsToDelete */
+        $notificationsToDelete = $this->getNotifications(new Criteria(), $con)->diff($notifications);
+
+
+        $this->notificationsScheduledForDeletion = $notificationsToDelete;
+
+        foreach ($notificationsToDelete as $notificationRemoved) {
+            $notificationRemoved->setNote(null);
+        }
+
+        $this->collNotifications = null;
+        foreach ($notifications as $notification) {
+            $this->addNotification($notification);
+        }
+
+        $this->collNotifications = $notifications;
+        $this->collNotificationsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Notification objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Notification objects.
+     * @throws PropelException
+     */
+    public function countNotifications(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collNotificationsPartial && !$this->isNew();
+        if (null === $this->collNotifications || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collNotifications) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getNotifications());
+            }
+
+            $query = ChildNotificationQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByNote($this)
+                ->count($con);
+        }
+
+        return count($this->collNotifications);
+    }
+
+    /**
+     * Method called to associate a ChildNotification object to this object
+     * through the ChildNotification foreign key attribute.
+     *
+     * @param  ChildNotification $l ChildNotification
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function addNotification(ChildNotification $l)
+    {
+        if ($this->collNotifications === null) {
+            $this->initNotifications();
+            $this->collNotificationsPartial = true;
+        }
+
+        if (!$this->collNotifications->contains($l)) {
+            $this->doAddNotification($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildNotification $notification The ChildNotification object to add.
+     */
+    protected function doAddNotification(ChildNotification $notification)
+    {
+        $this->collNotifications[]= $notification;
+        $notification->setNote($this);
+    }
+
+    /**
+     * @param  ChildNotification $notification The ChildNotification object to remove.
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function removeNotification(ChildNotification $notification)
+    {
+        if ($this->getNotifications()->contains($notification)) {
+            $pos = $this->collNotifications->search($notification);
+            $this->collNotifications->remove($pos);
+            if (null === $this->notificationsScheduledForDeletion) {
+                $this->notificationsScheduledForDeletion = clone $this->collNotifications;
+                $this->notificationsScheduledForDeletion->clear();
+            }
+            $this->notificationsScheduledForDeletion[]= clone $notification;
+            $notification->setNote(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Note is new, it will return
+     * an empty collection; or if this Note has previously
+     * been saved, it will retrieve related Notifications from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Note.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildNotification[] List of ChildNotification objects
+     */
+    public function getNotificationsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildNotificationQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getNotifications($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Note is new, it will return
+     * an empty collection; or if this Note has previously
+     * been saved, it will retrieve related Notifications from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Note.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildNotification[] List of ChildNotification objects
+     */
+    public function getNotificationsJoinOriginUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildNotificationQuery::create(null, $criteria);
+        $query->joinWith('OriginUser', $joinBehavior);
+
+        return $this->getNotifications($query, $con);
+    }
+
+    /**
+     * Clears out the collComments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addComments()
+     */
+    public function clearComments()
+    {
+        $this->collComments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collComments collection loaded partially.
+     */
+    public function resetPartialComments($v = true)
+    {
+        $this->collCommentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collComments collection.
+     *
+     * By default this just sets the collComments collection to an empty array (like clearcollComments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initComments($overrideExisting = true)
+    {
+        if (null !== $this->collComments && !$overrideExisting) {
+            return;
+        }
+        $this->collComments = new ObjectCollection();
+        $this->collComments->setModel('\Models\Comment');
+    }
+
+    /**
+     * Gets an array of ChildComment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildNote is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildComment[] List of ChildComment objects
+     * @throws PropelException
+     */
+    public function getComments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCommentsPartial && !$this->isNew();
+        if (null === $this->collComments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collComments) {
+                // return empty collection
+                $this->initComments();
+            } else {
+                $collComments = ChildCommentQuery::create(null, $criteria)
+                    ->filterByNote($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collCommentsPartial && count($collComments)) {
+                        $this->initComments(false);
+
+                        foreach ($collComments as $obj) {
+                            if (false == $this->collComments->contains($obj)) {
+                                $this->collComments->append($obj);
+                            }
+                        }
+
+                        $this->collCommentsPartial = true;
+                    }
+
+                    return $collComments;
+                }
+
+                if ($partial && $this->collComments) {
+                    foreach ($this->collComments as $obj) {
+                        if ($obj->isNew()) {
+                            $collComments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collComments = $collComments;
+                $this->collCommentsPartial = false;
+            }
+        }
+
+        return $this->collComments;
+    }
+
+    /**
+     * Sets a collection of ChildComment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $comments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function setComments(Collection $comments, ConnectionInterface $con = null)
+    {
+        /** @var ChildComment[] $commentsToDelete */
+        $commentsToDelete = $this->getComments(new Criteria(), $con)->diff($comments);
+
+
+        $this->commentsScheduledForDeletion = $commentsToDelete;
+
+        foreach ($commentsToDelete as $commentRemoved) {
+            $commentRemoved->setNote(null);
+        }
+
+        $this->collComments = null;
+        foreach ($comments as $comment) {
+            $this->addComment($comment);
+        }
+
+        $this->collComments = $comments;
+        $this->collCommentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Comment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Comment objects.
+     * @throws PropelException
+     */
+    public function countComments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCommentsPartial && !$this->isNew();
+        if (null === $this->collComments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collComments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getComments());
+            }
+
+            $query = ChildCommentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByNote($this)
+                ->count($con);
+        }
+
+        return count($this->collComments);
+    }
+
+    /**
+     * Method called to associate a ChildComment object to this object
+     * through the ChildComment foreign key attribute.
+     *
+     * @param  ChildComment $l ChildComment
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function addComment(ChildComment $l)
+    {
+        if ($this->collComments === null) {
+            $this->initComments();
+            $this->collCommentsPartial = true;
+        }
+
+        if (!$this->collComments->contains($l)) {
+            $this->doAddComment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildComment $comment The ChildComment object to add.
+     */
+    protected function doAddComment(ChildComment $comment)
+    {
+        $this->collComments[]= $comment;
+        $comment->setNote($this);
+    }
+
+    /**
+     * @param  ChildComment $comment The ChildComment object to remove.
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function removeComment(ChildComment $comment)
+    {
+        if ($this->getComments()->contains($comment)) {
+            $pos = $this->collComments->search($comment);
+            $this->collComments->remove($pos);
+            if (null === $this->commentsScheduledForDeletion) {
+                $this->commentsScheduledForDeletion = clone $this->collComments;
+                $this->commentsScheduledForDeletion->clear();
+            }
+            $this->commentsScheduledForDeletion[]= clone $comment;
+            $comment->setNote(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Note is new, it will return
+     * an empty collection; or if this Note has previously
+     * been saved, it will retrieve related Comments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Note.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildComment[] List of ChildComment objects
+     */
+    public function getCommentsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildCommentQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getComments($query, $con);
+    }
+
+    /**
+     * Clears out the collShareds collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addShareds()
+     */
+    public function clearShareds()
+    {
+        $this->collShareds = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collShareds collection loaded partially.
+     */
+    public function resetPartialShareds($v = true)
+    {
+        $this->collSharedsPartial = $v;
+    }
+
+    /**
+     * Initializes the collShareds collection.
+     *
+     * By default this just sets the collShareds collection to an empty array (like clearcollShareds());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initShareds($overrideExisting = true)
+    {
+        if (null !== $this->collShareds && !$overrideExisting) {
+            return;
+        }
+        $this->collShareds = new ObjectCollection();
+        $this->collShareds->setModel('\Models\Shared');
+    }
+
+    /**
+     * Gets an array of ChildShared objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildNote is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     * @throws PropelException
+     */
+    public function getShareds(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collSharedsPartial && !$this->isNew();
+        if (null === $this->collShareds || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collShareds) {
+                // return empty collection
+                $this->initShareds();
+            } else {
+                $collShareds = ChildSharedQuery::create(null, $criteria)
+                    ->filterByNote($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collSharedsPartial && count($collShareds)) {
+                        $this->initShareds(false);
+
+                        foreach ($collShareds as $obj) {
+                            if (false == $this->collShareds->contains($obj)) {
+                                $this->collShareds->append($obj);
+                            }
+                        }
+
+                        $this->collSharedsPartial = true;
+                    }
+
+                    return $collShareds;
+                }
+
+                if ($partial && $this->collShareds) {
+                    foreach ($this->collShareds as $obj) {
+                        if ($obj->isNew()) {
+                            $collShareds[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collShareds = $collShareds;
+                $this->collSharedsPartial = false;
+            }
+        }
+
+        return $this->collShareds;
+    }
+
+    /**
+     * Sets a collection of ChildShared objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $shareds A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function setShareds(Collection $shareds, ConnectionInterface $con = null)
+    {
+        /** @var ChildShared[] $sharedsToDelete */
+        $sharedsToDelete = $this->getShareds(new Criteria(), $con)->diff($shareds);
+
+
+        $this->sharedsScheduledForDeletion = $sharedsToDelete;
+
+        foreach ($sharedsToDelete as $sharedRemoved) {
+            $sharedRemoved->setNote(null);
+        }
+
+        $this->collShareds = null;
+        foreach ($shareds as $shared) {
+            $this->addShared($shared);
+        }
+
+        $this->collShareds = $shareds;
+        $this->collSharedsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Shared objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Shared objects.
+     * @throws PropelException
+     */
+    public function countShareds(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collSharedsPartial && !$this->isNew();
+        if (null === $this->collShareds || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collShareds) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getShareds());
+            }
+
+            $query = ChildSharedQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByNote($this)
+                ->count($con);
+        }
+
+        return count($this->collShareds);
+    }
+
+    /**
+     * Method called to associate a ChildShared object to this object
+     * through the ChildShared foreign key attribute.
+     *
+     * @param  ChildShared $l ChildShared
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function addShared(ChildShared $l)
+    {
+        if ($this->collShareds === null) {
+            $this->initShareds();
+            $this->collSharedsPartial = true;
+        }
+
+        if (!$this->collShareds->contains($l)) {
+            $this->doAddShared($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildShared $shared The ChildShared object to add.
+     */
+    protected function doAddShared(ChildShared $shared)
+    {
+        $this->collShareds[]= $shared;
+        $shared->setNote($this);
+    }
+
+    /**
+     * @param  ChildShared $shared The ChildShared object to remove.
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function removeShared(ChildShared $shared)
+    {
+        if ($this->getShareds()->contains($shared)) {
+            $pos = $this->collShareds->search($shared);
+            $this->collShareds->remove($pos);
+            if (null === $this->sharedsScheduledForDeletion) {
+                $this->sharedsScheduledForDeletion = clone $this->collShareds;
+                $this->sharedsScheduledForDeletion->clear();
+            }
+            $this->sharedsScheduledForDeletion[]= clone $shared;
+            $shared->setNote(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Note is new, it will return
+     * an empty collection; or if this Note has previously
+     * been saved, it will retrieve related Shareds from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Note.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     */
+    public function getSharedsJoinCategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildSharedQuery::create(null, $criteria);
+        $query->joinWith('Category', $joinBehavior);
+
+        return $this->getShareds($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Note is new, it will return
+     * an empty collection; or if this Note has previously
+     * been saved, it will retrieve related Shareds from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Note.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     */
+    public function getSharedsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildSharedQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getShareds($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Note is new, it will return
+     * an empty collection; or if this Note has previously
+     * been saved, it will retrieve related Shareds from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Note.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     */
+    public function getSharedsJoinGroup(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildSharedQuery::create(null, $criteria);
+        $query->joinWith('Group', $joinBehavior);
+
+        return $this->getShareds($query, $con);
+    }
+
     /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
@@ -2002,8 +3551,38 @@ abstract class Note implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collSubNotes) {
+                foreach ($this->collSubNotes as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collFiles) {
+                foreach ($this->collFiles as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collNotifications) {
+                foreach ($this->collNotifications as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collComments) {
+                foreach ($this->collComments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collShareds) {
+                foreach ($this->collShareds as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collSubNotes = null;
+        $this->collFiles = null;
+        $this->collNotifications = null;
+        $this->collComments = null;
+        $this->collShareds = null;
         $this->aUser = null;
         $this->aCategory = null;
     }

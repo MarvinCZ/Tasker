@@ -7,9 +7,21 @@ use \Exception;
 use \PDO;
 use Models\Category as ChildCategory;
 use Models\CategoryQuery as ChildCategoryQuery;
+use Models\Comment as ChildComment;
+use Models\CommentQuery as ChildCommentQuery;
+use Models\Group as ChildGroup;
+use Models\GroupQuery as ChildGroupQuery;
+use Models\Identity as ChildIdentity;
+use Models\IdentityQuery as ChildIdentityQuery;
 use Models\Note as ChildNote;
 use Models\NoteQuery as ChildNoteQuery;
+use Models\Notification as ChildNotification;
+use Models\NotificationQuery as ChildNotificationQuery;
+use Models\Shared as ChildShared;
+use Models\SharedQuery as ChildSharedQuery;
 use Models\User as ChildUser;
+use Models\UserGroup as ChildUserGroup;
+use Models\UserGroupQuery as ChildUserGroupQuery;
 use Models\UserQuery as ChildUserQuery;
 use Models\Map\UserTableMap;
 use Propel\Runtime\Propel;
@@ -171,12 +183,64 @@ abstract class User implements ActiveRecordInterface
     protected $collCategoriesPartial;
 
     /**
+     * @var        ObjectCollection|ChildNotification[] Collection to store aggregation of ChildNotification objects.
+     */
+    protected $collNotificationsRelatedByUserId;
+    protected $collNotificationsRelatedByUserIdPartial;
+
+    /**
+     * @var        ObjectCollection|ChildNotification[] Collection to store aggregation of ChildNotification objects.
+     */
+    protected $collNotificationsRelatedByOriginTypeOriginId;
+    protected $collNotificationsRelatedByOriginTypeOriginIdPartial;
+
+    /**
+     * @var        ObjectCollection|ChildComment[] Collection to store aggregation of ChildComment objects.
+     */
+    protected $collComments;
+    protected $collCommentsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildIdentity[] Collection to store aggregation of ChildIdentity objects.
+     */
+    protected $collIdentities;
+    protected $collIdentitiesPartial;
+
+    /**
+     * @var        ObjectCollection|ChildUserGroup[] Collection to store aggregation of ChildUserGroup objects.
+     */
+    protected $collUserGroups;
+    protected $collUserGroupsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildShared[] Collection to store aggregation of ChildShared objects.
+     */
+    protected $collShareds;
+    protected $collSharedsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildGroup[] Cross Collection to store aggregation of ChildGroup objects.
+     */
+    protected $collGroups;
+
+    /**
+     * @var bool
+     */
+    protected $collGroupsPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildGroup[]
+     */
+    protected $groupsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -189,6 +253,42 @@ abstract class User implements ActiveRecordInterface
      * @var ObjectCollection|ChildCategory[]
      */
     protected $categoriesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildNotification[]
+     */
+    protected $notificationsRelatedByUserIdScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildNotification[]
+     */
+    protected $notificationsRelatedByOriginTypeOriginIdScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildComment[]
+     */
+    protected $commentsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildIdentity[]
+     */
+    protected $identitiesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildUserGroup[]
+     */
+    protected $userGroupsScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildShared[]
+     */
+    protected $sharedsScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Models\Base\User object.
@@ -1001,6 +1101,19 @@ abstract class User implements ActiveRecordInterface
 
             $this->collCategories = null;
 
+            $this->collNotificationsRelatedByUserId = null;
+
+            $this->collNotificationsRelatedByOriginTypeOriginId = null;
+
+            $this->collComments = null;
+
+            $this->collIdentities = null;
+
+            $this->collUserGroups = null;
+
+            $this->collShareds = null;
+
+            $this->collGroups = null;
         } // if (deep)
     }
 
@@ -1123,6 +1236,35 @@ abstract class User implements ActiveRecordInterface
                 $this->resetModified();
             }
 
+            if ($this->groupsScheduledForDeletion !== null) {
+                if (!$this->groupsScheduledForDeletion->isEmpty()) {
+                    $pks = array();
+                    foreach ($this->groupsScheduledForDeletion as $entry) {
+                        $entryPk = [];
+
+                        $entryPk[0] = $this->getId();
+                        $entryPk[1] = $entry->getId();
+                        $pks[] = $entryPk;
+                    }
+
+                    \Models\UserGroupQuery::create()
+                        ->filterByPrimaryKeys($pks)
+                        ->delete($con);
+
+                    $this->groupsScheduledForDeletion = null;
+                }
+
+            }
+
+            if ($this->collGroups) {
+                foreach ($this->collGroups as $group) {
+                    if (!$group->isDeleted() && ($group->isNew() || $group->isModified())) {
+                        $group->save($con);
+                    }
+                }
+            }
+
+
             if ($this->notesScheduledForDeletion !== null) {
                 if (!$this->notesScheduledForDeletion->isEmpty()) {
                     \Models\NoteQuery::create()
@@ -1151,6 +1293,110 @@ abstract class User implements ActiveRecordInterface
 
             if ($this->collCategories !== null) {
                 foreach ($this->collCategories as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->notificationsRelatedByUserIdScheduledForDeletion !== null) {
+                if (!$this->notificationsRelatedByUserIdScheduledForDeletion->isEmpty()) {
+                    \Models\NotificationQuery::create()
+                        ->filterByPrimaryKeys($this->notificationsRelatedByUserIdScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->notificationsRelatedByUserIdScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collNotificationsRelatedByUserId !== null) {
+                foreach ($this->collNotificationsRelatedByUserId as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion !== null) {
+                if (!$this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion->isEmpty()) {
+                    foreach ($this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion as $notificationRelatedByOriginTypeOriginId) {
+                        // need to save related object because we set the relation to null
+                        $notificationRelatedByOriginTypeOriginId->save($con);
+                    }
+                    $this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collNotificationsRelatedByOriginTypeOriginId !== null) {
+                foreach ($this->collNotificationsRelatedByOriginTypeOriginId as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->commentsScheduledForDeletion !== null) {
+                if (!$this->commentsScheduledForDeletion->isEmpty()) {
+                    \Models\CommentQuery::create()
+                        ->filterByPrimaryKeys($this->commentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->commentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collComments !== null) {
+                foreach ($this->collComments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->identitiesScheduledForDeletion !== null) {
+                if (!$this->identitiesScheduledForDeletion->isEmpty()) {
+                    \Models\IdentityQuery::create()
+                        ->filterByPrimaryKeys($this->identitiesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->identitiesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collIdentities !== null) {
+                foreach ($this->collIdentities as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->userGroupsScheduledForDeletion !== null) {
+                if (!$this->userGroupsScheduledForDeletion->isEmpty()) {
+                    \Models\UserGroupQuery::create()
+                        ->filterByPrimaryKeys($this->userGroupsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->userGroupsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collUserGroups !== null) {
+                foreach ($this->collUserGroups as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->sharedsScheduledForDeletion !== null) {
+                if (!$this->sharedsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->sharedsScheduledForDeletion as $shared) {
+                        // need to save related object because we set the relation to null
+                        $shared->save($con);
+                    }
+                    $this->sharedsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collShareds !== null) {
+                foreach ($this->collShareds as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1468,6 +1714,96 @@ abstract class User implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->collCategories->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collNotificationsRelatedByUserId) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'notifications';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'notifications';
+                        break;
+                    default:
+                        $key = 'Notifications';
+                }
+
+                $result[$key] = $this->collNotificationsRelatedByUserId->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collNotificationsRelatedByOriginTypeOriginId) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'notifications';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'notifications';
+                        break;
+                    default:
+                        $key = 'Notifications';
+                }
+
+                $result[$key] = $this->collNotificationsRelatedByOriginTypeOriginId->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collComments) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'comments';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'comments';
+                        break;
+                    default:
+                        $key = 'Comments';
+                }
+
+                $result[$key] = $this->collComments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collIdentities) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'identities';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'identities';
+                        break;
+                    default:
+                        $key = 'Identities';
+                }
+
+                $result[$key] = $this->collIdentities->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collUserGroups) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'userGroups';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'user_groups';
+                        break;
+                    default:
+                        $key = 'UserGroups';
+                }
+
+                $result[$key] = $this->collUserGroups->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collShareds) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'shareds';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'shareds';
+                        break;
+                    default:
+                        $key = 'Shareds';
+                }
+
+                $result[$key] = $this->collShareds->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1803,6 +2139,42 @@ abstract class User implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getNotificationsRelatedByUserId() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addNotificationRelatedByUserId($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getNotificationsRelatedByOriginTypeOriginId() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addNotificationRelatedByOriginTypeOriginId($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getComments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addComment($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getIdentities() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addIdentity($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getUserGroups() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addUserGroup($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getShareds() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addShared($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -1849,6 +2221,24 @@ abstract class User implements ActiveRecordInterface
         }
         if ('Category' == $relationName) {
             return $this->initCategories();
+        }
+        if ('NotificationRelatedByUserId' == $relationName) {
+            return $this->initNotificationsRelatedByUserId();
+        }
+        if ('NotificationRelatedByOriginTypeOriginId' == $relationName) {
+            return $this->initNotificationsRelatedByOriginTypeOriginId();
+        }
+        if ('Comment' == $relationName) {
+            return $this->initComments();
+        }
+        if ('Identity' == $relationName) {
+            return $this->initIdentities();
+        }
+        if ('UserGroup' == $relationName) {
+            return $this->initUserGroups();
+        }
+        if ('Shared' == $relationName) {
+            return $this->initShareds();
         }
     }
 
@@ -2314,6 +2704,1734 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collNotificationsRelatedByUserId collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addNotificationsRelatedByUserId()
+     */
+    public function clearNotificationsRelatedByUserId()
+    {
+        $this->collNotificationsRelatedByUserId = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collNotificationsRelatedByUserId collection loaded partially.
+     */
+    public function resetPartialNotificationsRelatedByUserId($v = true)
+    {
+        $this->collNotificationsRelatedByUserIdPartial = $v;
+    }
+
+    /**
+     * Initializes the collNotificationsRelatedByUserId collection.
+     *
+     * By default this just sets the collNotificationsRelatedByUserId collection to an empty array (like clearcollNotificationsRelatedByUserId());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initNotificationsRelatedByUserId($overrideExisting = true)
+    {
+        if (null !== $this->collNotificationsRelatedByUserId && !$overrideExisting) {
+            return;
+        }
+        $this->collNotificationsRelatedByUserId = new ObjectCollection();
+        $this->collNotificationsRelatedByUserId->setModel('\Models\Notification');
+    }
+
+    /**
+     * Gets an array of ChildNotification objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildNotification[] List of ChildNotification objects
+     * @throws PropelException
+     */
+    public function getNotificationsRelatedByUserId(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collNotificationsRelatedByUserIdPartial && !$this->isNew();
+        if (null === $this->collNotificationsRelatedByUserId || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collNotificationsRelatedByUserId) {
+                // return empty collection
+                $this->initNotificationsRelatedByUserId();
+            } else {
+                $collNotificationsRelatedByUserId = ChildNotificationQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collNotificationsRelatedByUserIdPartial && count($collNotificationsRelatedByUserId)) {
+                        $this->initNotificationsRelatedByUserId(false);
+
+                        foreach ($collNotificationsRelatedByUserId as $obj) {
+                            if (false == $this->collNotificationsRelatedByUserId->contains($obj)) {
+                                $this->collNotificationsRelatedByUserId->append($obj);
+                            }
+                        }
+
+                        $this->collNotificationsRelatedByUserIdPartial = true;
+                    }
+
+                    return $collNotificationsRelatedByUserId;
+                }
+
+                if ($partial && $this->collNotificationsRelatedByUserId) {
+                    foreach ($this->collNotificationsRelatedByUserId as $obj) {
+                        if ($obj->isNew()) {
+                            $collNotificationsRelatedByUserId[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collNotificationsRelatedByUserId = $collNotificationsRelatedByUserId;
+                $this->collNotificationsRelatedByUserIdPartial = false;
+            }
+        }
+
+        return $this->collNotificationsRelatedByUserId;
+    }
+
+    /**
+     * Sets a collection of ChildNotification objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $notificationsRelatedByUserId A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setNotificationsRelatedByUserId(Collection $notificationsRelatedByUserId, ConnectionInterface $con = null)
+    {
+        /** @var ChildNotification[] $notificationsRelatedByUserIdToDelete */
+        $notificationsRelatedByUserIdToDelete = $this->getNotificationsRelatedByUserId(new Criteria(), $con)->diff($notificationsRelatedByUserId);
+
+
+        $this->notificationsRelatedByUserIdScheduledForDeletion = $notificationsRelatedByUserIdToDelete;
+
+        foreach ($notificationsRelatedByUserIdToDelete as $notificationRelatedByUserIdRemoved) {
+            $notificationRelatedByUserIdRemoved->setUser(null);
+        }
+
+        $this->collNotificationsRelatedByUserId = null;
+        foreach ($notificationsRelatedByUserId as $notificationRelatedByUserId) {
+            $this->addNotificationRelatedByUserId($notificationRelatedByUserId);
+        }
+
+        $this->collNotificationsRelatedByUserId = $notificationsRelatedByUserId;
+        $this->collNotificationsRelatedByUserIdPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Notification objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Notification objects.
+     * @throws PropelException
+     */
+    public function countNotificationsRelatedByUserId(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collNotificationsRelatedByUserIdPartial && !$this->isNew();
+        if (null === $this->collNotificationsRelatedByUserId || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collNotificationsRelatedByUserId) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getNotificationsRelatedByUserId());
+            }
+
+            $query = ChildNotificationQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collNotificationsRelatedByUserId);
+    }
+
+    /**
+     * Method called to associate a ChildNotification object to this object
+     * through the ChildNotification foreign key attribute.
+     *
+     * @param  ChildNotification $l ChildNotification
+     * @return $this|\Models\User The current object (for fluent API support)
+     */
+    public function addNotificationRelatedByUserId(ChildNotification $l)
+    {
+        if ($this->collNotificationsRelatedByUserId === null) {
+            $this->initNotificationsRelatedByUserId();
+            $this->collNotificationsRelatedByUserIdPartial = true;
+        }
+
+        if (!$this->collNotificationsRelatedByUserId->contains($l)) {
+            $this->doAddNotificationRelatedByUserId($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildNotification $notificationRelatedByUserId The ChildNotification object to add.
+     */
+    protected function doAddNotificationRelatedByUserId(ChildNotification $notificationRelatedByUserId)
+    {
+        $this->collNotificationsRelatedByUserId[]= $notificationRelatedByUserId;
+        $notificationRelatedByUserId->setUser($this);
+    }
+
+    /**
+     * @param  ChildNotification $notificationRelatedByUserId The ChildNotification object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeNotificationRelatedByUserId(ChildNotification $notificationRelatedByUserId)
+    {
+        if ($this->getNotificationsRelatedByUserId()->contains($notificationRelatedByUserId)) {
+            $pos = $this->collNotificationsRelatedByUserId->search($notificationRelatedByUserId);
+            $this->collNotificationsRelatedByUserId->remove($pos);
+            if (null === $this->notificationsRelatedByUserIdScheduledForDeletion) {
+                $this->notificationsRelatedByUserIdScheduledForDeletion = clone $this->collNotificationsRelatedByUserId;
+                $this->notificationsRelatedByUserIdScheduledForDeletion->clear();
+            }
+            $this->notificationsRelatedByUserIdScheduledForDeletion[]= clone $notificationRelatedByUserId;
+            $notificationRelatedByUserId->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related NotificationsRelatedByUserId from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildNotification[] List of ChildNotification objects
+     */
+    public function getNotificationsRelatedByUserIdJoinNote(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildNotificationQuery::create(null, $criteria);
+        $query->joinWith('Note', $joinBehavior);
+
+        return $this->getNotificationsRelatedByUserId($query, $con);
+    }
+
+    /**
+     * Clears out the collNotificationsRelatedByOriginTypeOriginId collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addNotificationsRelatedByOriginTypeOriginId()
+     */
+    public function clearNotificationsRelatedByOriginTypeOriginId()
+    {
+        $this->collNotificationsRelatedByOriginTypeOriginId = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collNotificationsRelatedByOriginTypeOriginId collection loaded partially.
+     */
+    public function resetPartialNotificationsRelatedByOriginTypeOriginId($v = true)
+    {
+        $this->collNotificationsRelatedByOriginTypeOriginIdPartial = $v;
+    }
+
+    /**
+     * Initializes the collNotificationsRelatedByOriginTypeOriginId collection.
+     *
+     * By default this just sets the collNotificationsRelatedByOriginTypeOriginId collection to an empty array (like clearcollNotificationsRelatedByOriginTypeOriginId());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initNotificationsRelatedByOriginTypeOriginId($overrideExisting = true)
+    {
+        if (null !== $this->collNotificationsRelatedByOriginTypeOriginId && !$overrideExisting) {
+            return;
+        }
+        $this->collNotificationsRelatedByOriginTypeOriginId = new ObjectCollection();
+        $this->collNotificationsRelatedByOriginTypeOriginId->setModel('\Models\Notification');
+    }
+
+    /**
+     * Gets an array of ChildNotification objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildNotification[] List of ChildNotification objects
+     * @throws PropelException
+     */
+    public function getNotificationsRelatedByOriginTypeOriginId(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collNotificationsRelatedByOriginTypeOriginIdPartial && !$this->isNew();
+        if (null === $this->collNotificationsRelatedByOriginTypeOriginId || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collNotificationsRelatedByOriginTypeOriginId) {
+                // return empty collection
+                $this->initNotificationsRelatedByOriginTypeOriginId();
+            } else {
+                $collNotificationsRelatedByOriginTypeOriginId = ChildNotificationQuery::create(null, $criteria)
+                    ->filterByOriginUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collNotificationsRelatedByOriginTypeOriginIdPartial && count($collNotificationsRelatedByOriginTypeOriginId)) {
+                        $this->initNotificationsRelatedByOriginTypeOriginId(false);
+
+                        foreach ($collNotificationsRelatedByOriginTypeOriginId as $obj) {
+                            if (false == $this->collNotificationsRelatedByOriginTypeOriginId->contains($obj)) {
+                                $this->collNotificationsRelatedByOriginTypeOriginId->append($obj);
+                            }
+                        }
+
+                        $this->collNotificationsRelatedByOriginTypeOriginIdPartial = true;
+                    }
+
+                    return $collNotificationsRelatedByOriginTypeOriginId;
+                }
+
+                if ($partial && $this->collNotificationsRelatedByOriginTypeOriginId) {
+                    foreach ($this->collNotificationsRelatedByOriginTypeOriginId as $obj) {
+                        if ($obj->isNew()) {
+                            $collNotificationsRelatedByOriginTypeOriginId[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collNotificationsRelatedByOriginTypeOriginId = $collNotificationsRelatedByOriginTypeOriginId;
+                $this->collNotificationsRelatedByOriginTypeOriginIdPartial = false;
+            }
+        }
+
+        return $this->collNotificationsRelatedByOriginTypeOriginId;
+    }
+
+    /**
+     * Sets a collection of ChildNotification objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $notificationsRelatedByOriginTypeOriginId A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setNotificationsRelatedByOriginTypeOriginId(Collection $notificationsRelatedByOriginTypeOriginId, ConnectionInterface $con = null)
+    {
+        /** @var ChildNotification[] $notificationsRelatedByOriginTypeOriginIdToDelete */
+        $notificationsRelatedByOriginTypeOriginIdToDelete = $this->getNotificationsRelatedByOriginTypeOriginId(new Criteria(), $con)->diff($notificationsRelatedByOriginTypeOriginId);
+
+
+        $this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion = $notificationsRelatedByOriginTypeOriginIdToDelete;
+
+        foreach ($notificationsRelatedByOriginTypeOriginIdToDelete as $notificationRelatedByOriginTypeOriginIdRemoved) {
+            $notificationRelatedByOriginTypeOriginIdRemoved->setOriginUser(null);
+        }
+
+        $this->collNotificationsRelatedByOriginTypeOriginId = null;
+        foreach ($notificationsRelatedByOriginTypeOriginId as $notificationRelatedByOriginTypeOriginId) {
+            $this->addNotificationRelatedByOriginTypeOriginId($notificationRelatedByOriginTypeOriginId);
+        }
+
+        $this->collNotificationsRelatedByOriginTypeOriginId = $notificationsRelatedByOriginTypeOriginId;
+        $this->collNotificationsRelatedByOriginTypeOriginIdPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Notification objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Notification objects.
+     * @throws PropelException
+     */
+    public function countNotificationsRelatedByOriginTypeOriginId(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collNotificationsRelatedByOriginTypeOriginIdPartial && !$this->isNew();
+        if (null === $this->collNotificationsRelatedByOriginTypeOriginId || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collNotificationsRelatedByOriginTypeOriginId) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getNotificationsRelatedByOriginTypeOriginId());
+            }
+
+            $query = ChildNotificationQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByOriginUser($this)
+                ->count($con);
+        }
+
+        return count($this->collNotificationsRelatedByOriginTypeOriginId);
+    }
+
+    /**
+     * Method called to associate a ChildNotification object to this object
+     * through the ChildNotification foreign key attribute.
+     *
+     * @param  ChildNotification $l ChildNotification
+     * @return $this|\Models\User The current object (for fluent API support)
+     */
+    public function addNotificationRelatedByOriginTypeOriginId(ChildNotification $l)
+    {
+        if ($this->collNotificationsRelatedByOriginTypeOriginId === null) {
+            $this->initNotificationsRelatedByOriginTypeOriginId();
+            $this->collNotificationsRelatedByOriginTypeOriginIdPartial = true;
+        }
+
+        if (!$this->collNotificationsRelatedByOriginTypeOriginId->contains($l)) {
+            $this->doAddNotificationRelatedByOriginTypeOriginId($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildNotification $notificationRelatedByOriginTypeOriginId The ChildNotification object to add.
+     */
+    protected function doAddNotificationRelatedByOriginTypeOriginId(ChildNotification $notificationRelatedByOriginTypeOriginId)
+    {
+        $this->collNotificationsRelatedByOriginTypeOriginId[]= $notificationRelatedByOriginTypeOriginId;
+        $notificationRelatedByOriginTypeOriginId->setOriginUser($this);
+    }
+
+    /**
+     * @param  ChildNotification $notificationRelatedByOriginTypeOriginId The ChildNotification object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeNotificationRelatedByOriginTypeOriginId(ChildNotification $notificationRelatedByOriginTypeOriginId)
+    {
+        if ($this->getNotificationsRelatedByOriginTypeOriginId()->contains($notificationRelatedByOriginTypeOriginId)) {
+            $pos = $this->collNotificationsRelatedByOriginTypeOriginId->search($notificationRelatedByOriginTypeOriginId);
+            $this->collNotificationsRelatedByOriginTypeOriginId->remove($pos);
+            if (null === $this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion) {
+                $this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion = clone $this->collNotificationsRelatedByOriginTypeOriginId;
+                $this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion->clear();
+            }
+            $this->notificationsRelatedByOriginTypeOriginIdScheduledForDeletion[]= clone $notificationRelatedByOriginTypeOriginId;
+            $notificationRelatedByOriginTypeOriginId->setOriginUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related NotificationsRelatedByOriginTypeOriginId from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildNotification[] List of ChildNotification objects
+     */
+    public function getNotificationsRelatedByOriginTypeOriginIdJoinNote(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildNotificationQuery::create(null, $criteria);
+        $query->joinWith('Note', $joinBehavior);
+
+        return $this->getNotificationsRelatedByOriginTypeOriginId($query, $con);
+    }
+
+    /**
+     * Clears out the collComments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addComments()
+     */
+    public function clearComments()
+    {
+        $this->collComments = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collComments collection loaded partially.
+     */
+    public function resetPartialComments($v = true)
+    {
+        $this->collCommentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collComments collection.
+     *
+     * By default this just sets the collComments collection to an empty array (like clearcollComments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initComments($overrideExisting = true)
+    {
+        if (null !== $this->collComments && !$overrideExisting) {
+            return;
+        }
+        $this->collComments = new ObjectCollection();
+        $this->collComments->setModel('\Models\Comment');
+    }
+
+    /**
+     * Gets an array of ChildComment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildComment[] List of ChildComment objects
+     * @throws PropelException
+     */
+    public function getComments(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCommentsPartial && !$this->isNew();
+        if (null === $this->collComments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collComments) {
+                // return empty collection
+                $this->initComments();
+            } else {
+                $collComments = ChildCommentQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collCommentsPartial && count($collComments)) {
+                        $this->initComments(false);
+
+                        foreach ($collComments as $obj) {
+                            if (false == $this->collComments->contains($obj)) {
+                                $this->collComments->append($obj);
+                            }
+                        }
+
+                        $this->collCommentsPartial = true;
+                    }
+
+                    return $collComments;
+                }
+
+                if ($partial && $this->collComments) {
+                    foreach ($this->collComments as $obj) {
+                        if ($obj->isNew()) {
+                            $collComments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collComments = $collComments;
+                $this->collCommentsPartial = false;
+            }
+        }
+
+        return $this->collComments;
+    }
+
+    /**
+     * Sets a collection of ChildComment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $comments A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setComments(Collection $comments, ConnectionInterface $con = null)
+    {
+        /** @var ChildComment[] $commentsToDelete */
+        $commentsToDelete = $this->getComments(new Criteria(), $con)->diff($comments);
+
+
+        $this->commentsScheduledForDeletion = $commentsToDelete;
+
+        foreach ($commentsToDelete as $commentRemoved) {
+            $commentRemoved->setUser(null);
+        }
+
+        $this->collComments = null;
+        foreach ($comments as $comment) {
+            $this->addComment($comment);
+        }
+
+        $this->collComments = $comments;
+        $this->collCommentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Comment objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Comment objects.
+     * @throws PropelException
+     */
+    public function countComments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collCommentsPartial && !$this->isNew();
+        if (null === $this->collComments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collComments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getComments());
+            }
+
+            $query = ChildCommentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collComments);
+    }
+
+    /**
+     * Method called to associate a ChildComment object to this object
+     * through the ChildComment foreign key attribute.
+     *
+     * @param  ChildComment $l ChildComment
+     * @return $this|\Models\User The current object (for fluent API support)
+     */
+    public function addComment(ChildComment $l)
+    {
+        if ($this->collComments === null) {
+            $this->initComments();
+            $this->collCommentsPartial = true;
+        }
+
+        if (!$this->collComments->contains($l)) {
+            $this->doAddComment($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildComment $comment The ChildComment object to add.
+     */
+    protected function doAddComment(ChildComment $comment)
+    {
+        $this->collComments[]= $comment;
+        $comment->setUser($this);
+    }
+
+    /**
+     * @param  ChildComment $comment The ChildComment object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeComment(ChildComment $comment)
+    {
+        if ($this->getComments()->contains($comment)) {
+            $pos = $this->collComments->search($comment);
+            $this->collComments->remove($pos);
+            if (null === $this->commentsScheduledForDeletion) {
+                $this->commentsScheduledForDeletion = clone $this->collComments;
+                $this->commentsScheduledForDeletion->clear();
+            }
+            $this->commentsScheduledForDeletion[]= clone $comment;
+            $comment->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Comments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildComment[] List of ChildComment objects
+     */
+    public function getCommentsJoinNote(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildCommentQuery::create(null, $criteria);
+        $query->joinWith('Note', $joinBehavior);
+
+        return $this->getComments($query, $con);
+    }
+
+    /**
+     * Clears out the collIdentities collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addIdentities()
+     */
+    public function clearIdentities()
+    {
+        $this->collIdentities = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collIdentities collection loaded partially.
+     */
+    public function resetPartialIdentities($v = true)
+    {
+        $this->collIdentitiesPartial = $v;
+    }
+
+    /**
+     * Initializes the collIdentities collection.
+     *
+     * By default this just sets the collIdentities collection to an empty array (like clearcollIdentities());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initIdentities($overrideExisting = true)
+    {
+        if (null !== $this->collIdentities && !$overrideExisting) {
+            return;
+        }
+        $this->collIdentities = new ObjectCollection();
+        $this->collIdentities->setModel('\Models\Identity');
+    }
+
+    /**
+     * Gets an array of ChildIdentity objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildIdentity[] List of ChildIdentity objects
+     * @throws PropelException
+     */
+    public function getIdentities(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collIdentitiesPartial && !$this->isNew();
+        if (null === $this->collIdentities || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collIdentities) {
+                // return empty collection
+                $this->initIdentities();
+            } else {
+                $collIdentities = ChildIdentityQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collIdentitiesPartial && count($collIdentities)) {
+                        $this->initIdentities(false);
+
+                        foreach ($collIdentities as $obj) {
+                            if (false == $this->collIdentities->contains($obj)) {
+                                $this->collIdentities->append($obj);
+                            }
+                        }
+
+                        $this->collIdentitiesPartial = true;
+                    }
+
+                    return $collIdentities;
+                }
+
+                if ($partial && $this->collIdentities) {
+                    foreach ($this->collIdentities as $obj) {
+                        if ($obj->isNew()) {
+                            $collIdentities[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collIdentities = $collIdentities;
+                $this->collIdentitiesPartial = false;
+            }
+        }
+
+        return $this->collIdentities;
+    }
+
+    /**
+     * Sets a collection of ChildIdentity objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $identities A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setIdentities(Collection $identities, ConnectionInterface $con = null)
+    {
+        /** @var ChildIdentity[] $identitiesToDelete */
+        $identitiesToDelete = $this->getIdentities(new Criteria(), $con)->diff($identities);
+
+
+        $this->identitiesScheduledForDeletion = $identitiesToDelete;
+
+        foreach ($identitiesToDelete as $identityRemoved) {
+            $identityRemoved->setUser(null);
+        }
+
+        $this->collIdentities = null;
+        foreach ($identities as $identity) {
+            $this->addIdentity($identity);
+        }
+
+        $this->collIdentities = $identities;
+        $this->collIdentitiesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Identity objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Identity objects.
+     * @throws PropelException
+     */
+    public function countIdentities(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collIdentitiesPartial && !$this->isNew();
+        if (null === $this->collIdentities || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collIdentities) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getIdentities());
+            }
+
+            $query = ChildIdentityQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collIdentities);
+    }
+
+    /**
+     * Method called to associate a ChildIdentity object to this object
+     * through the ChildIdentity foreign key attribute.
+     *
+     * @param  ChildIdentity $l ChildIdentity
+     * @return $this|\Models\User The current object (for fluent API support)
+     */
+    public function addIdentity(ChildIdentity $l)
+    {
+        if ($this->collIdentities === null) {
+            $this->initIdentities();
+            $this->collIdentitiesPartial = true;
+        }
+
+        if (!$this->collIdentities->contains($l)) {
+            $this->doAddIdentity($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildIdentity $identity The ChildIdentity object to add.
+     */
+    protected function doAddIdentity(ChildIdentity $identity)
+    {
+        $this->collIdentities[]= $identity;
+        $identity->setUser($this);
+    }
+
+    /**
+     * @param  ChildIdentity $identity The ChildIdentity object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeIdentity(ChildIdentity $identity)
+    {
+        if ($this->getIdentities()->contains($identity)) {
+            $pos = $this->collIdentities->search($identity);
+            $this->collIdentities->remove($pos);
+            if (null === $this->identitiesScheduledForDeletion) {
+                $this->identitiesScheduledForDeletion = clone $this->collIdentities;
+                $this->identitiesScheduledForDeletion->clear();
+            }
+            $this->identitiesScheduledForDeletion[]= clone $identity;
+            $identity->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collUserGroups collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addUserGroups()
+     */
+    public function clearUserGroups()
+    {
+        $this->collUserGroups = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collUserGroups collection loaded partially.
+     */
+    public function resetPartialUserGroups($v = true)
+    {
+        $this->collUserGroupsPartial = $v;
+    }
+
+    /**
+     * Initializes the collUserGroups collection.
+     *
+     * By default this just sets the collUserGroups collection to an empty array (like clearcollUserGroups());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initUserGroups($overrideExisting = true)
+    {
+        if (null !== $this->collUserGroups && !$overrideExisting) {
+            return;
+        }
+        $this->collUserGroups = new ObjectCollection();
+        $this->collUserGroups->setModel('\Models\UserGroup');
+    }
+
+    /**
+     * Gets an array of ChildUserGroup objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildUserGroup[] List of ChildUserGroup objects
+     * @throws PropelException
+     */
+    public function getUserGroups(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collUserGroupsPartial && !$this->isNew();
+        if (null === $this->collUserGroups || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collUserGroups) {
+                // return empty collection
+                $this->initUserGroups();
+            } else {
+                $collUserGroups = ChildUserGroupQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collUserGroupsPartial && count($collUserGroups)) {
+                        $this->initUserGroups(false);
+
+                        foreach ($collUserGroups as $obj) {
+                            if (false == $this->collUserGroups->contains($obj)) {
+                                $this->collUserGroups->append($obj);
+                            }
+                        }
+
+                        $this->collUserGroupsPartial = true;
+                    }
+
+                    return $collUserGroups;
+                }
+
+                if ($partial && $this->collUserGroups) {
+                    foreach ($this->collUserGroups as $obj) {
+                        if ($obj->isNew()) {
+                            $collUserGroups[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collUserGroups = $collUserGroups;
+                $this->collUserGroupsPartial = false;
+            }
+        }
+
+        return $this->collUserGroups;
+    }
+
+    /**
+     * Sets a collection of ChildUserGroup objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $userGroups A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setUserGroups(Collection $userGroups, ConnectionInterface $con = null)
+    {
+        /** @var ChildUserGroup[] $userGroupsToDelete */
+        $userGroupsToDelete = $this->getUserGroups(new Criteria(), $con)->diff($userGroups);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->userGroupsScheduledForDeletion = clone $userGroupsToDelete;
+
+        foreach ($userGroupsToDelete as $userGroupRemoved) {
+            $userGroupRemoved->setUser(null);
+        }
+
+        $this->collUserGroups = null;
+        foreach ($userGroups as $userGroup) {
+            $this->addUserGroup($userGroup);
+        }
+
+        $this->collUserGroups = $userGroups;
+        $this->collUserGroupsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related UserGroup objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related UserGroup objects.
+     * @throws PropelException
+     */
+    public function countUserGroups(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collUserGroupsPartial && !$this->isNew();
+        if (null === $this->collUserGroups || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collUserGroups) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getUserGroups());
+            }
+
+            $query = ChildUserGroupQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collUserGroups);
+    }
+
+    /**
+     * Method called to associate a ChildUserGroup object to this object
+     * through the ChildUserGroup foreign key attribute.
+     *
+     * @param  ChildUserGroup $l ChildUserGroup
+     * @return $this|\Models\User The current object (for fluent API support)
+     */
+    public function addUserGroup(ChildUserGroup $l)
+    {
+        if ($this->collUserGroups === null) {
+            $this->initUserGroups();
+            $this->collUserGroupsPartial = true;
+        }
+
+        if (!$this->collUserGroups->contains($l)) {
+            $this->doAddUserGroup($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildUserGroup $userGroup The ChildUserGroup object to add.
+     */
+    protected function doAddUserGroup(ChildUserGroup $userGroup)
+    {
+        $this->collUserGroups[]= $userGroup;
+        $userGroup->setUser($this);
+    }
+
+    /**
+     * @param  ChildUserGroup $userGroup The ChildUserGroup object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeUserGroup(ChildUserGroup $userGroup)
+    {
+        if ($this->getUserGroups()->contains($userGroup)) {
+            $pos = $this->collUserGroups->search($userGroup);
+            $this->collUserGroups->remove($pos);
+            if (null === $this->userGroupsScheduledForDeletion) {
+                $this->userGroupsScheduledForDeletion = clone $this->collUserGroups;
+                $this->userGroupsScheduledForDeletion->clear();
+            }
+            $this->userGroupsScheduledForDeletion[]= clone $userGroup;
+            $userGroup->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related UserGroups from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildUserGroup[] List of ChildUserGroup objects
+     */
+    public function getUserGroupsJoinGroup(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildUserGroupQuery::create(null, $criteria);
+        $query->joinWith('Group', $joinBehavior);
+
+        return $this->getUserGroups($query, $con);
+    }
+
+    /**
+     * Clears out the collShareds collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addShareds()
+     */
+    public function clearShareds()
+    {
+        $this->collShareds = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collShareds collection loaded partially.
+     */
+    public function resetPartialShareds($v = true)
+    {
+        $this->collSharedsPartial = $v;
+    }
+
+    /**
+     * Initializes the collShareds collection.
+     *
+     * By default this just sets the collShareds collection to an empty array (like clearcollShareds());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initShareds($overrideExisting = true)
+    {
+        if (null !== $this->collShareds && !$overrideExisting) {
+            return;
+        }
+        $this->collShareds = new ObjectCollection();
+        $this->collShareds->setModel('\Models\Shared');
+    }
+
+    /**
+     * Gets an array of ChildShared objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     * @throws PropelException
+     */
+    public function getShareds(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collSharedsPartial && !$this->isNew();
+        if (null === $this->collShareds || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collShareds) {
+                // return empty collection
+                $this->initShareds();
+            } else {
+                $collShareds = ChildSharedQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collSharedsPartial && count($collShareds)) {
+                        $this->initShareds(false);
+
+                        foreach ($collShareds as $obj) {
+                            if (false == $this->collShareds->contains($obj)) {
+                                $this->collShareds->append($obj);
+                            }
+                        }
+
+                        $this->collSharedsPartial = true;
+                    }
+
+                    return $collShareds;
+                }
+
+                if ($partial && $this->collShareds) {
+                    foreach ($this->collShareds as $obj) {
+                        if ($obj->isNew()) {
+                            $collShareds[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collShareds = $collShareds;
+                $this->collSharedsPartial = false;
+            }
+        }
+
+        return $this->collShareds;
+    }
+
+    /**
+     * Sets a collection of ChildShared objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $shareds A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setShareds(Collection $shareds, ConnectionInterface $con = null)
+    {
+        /** @var ChildShared[] $sharedsToDelete */
+        $sharedsToDelete = $this->getShareds(new Criteria(), $con)->diff($shareds);
+
+
+        $this->sharedsScheduledForDeletion = $sharedsToDelete;
+
+        foreach ($sharedsToDelete as $sharedRemoved) {
+            $sharedRemoved->setUser(null);
+        }
+
+        $this->collShareds = null;
+        foreach ($shareds as $shared) {
+            $this->addShared($shared);
+        }
+
+        $this->collShareds = $shareds;
+        $this->collSharedsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Shared objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Shared objects.
+     * @throws PropelException
+     */
+    public function countShareds(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collSharedsPartial && !$this->isNew();
+        if (null === $this->collShareds || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collShareds) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getShareds());
+            }
+
+            $query = ChildSharedQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collShareds);
+    }
+
+    /**
+     * Method called to associate a ChildShared object to this object
+     * through the ChildShared foreign key attribute.
+     *
+     * @param  ChildShared $l ChildShared
+     * @return $this|\Models\User The current object (for fluent API support)
+     */
+    public function addShared(ChildShared $l)
+    {
+        if ($this->collShareds === null) {
+            $this->initShareds();
+            $this->collSharedsPartial = true;
+        }
+
+        if (!$this->collShareds->contains($l)) {
+            $this->doAddShared($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildShared $shared The ChildShared object to add.
+     */
+    protected function doAddShared(ChildShared $shared)
+    {
+        $this->collShareds[]= $shared;
+        $shared->setUser($this);
+    }
+
+    /**
+     * @param  ChildShared $shared The ChildShared object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeShared(ChildShared $shared)
+    {
+        if ($this->getShareds()->contains($shared)) {
+            $pos = $this->collShareds->search($shared);
+            $this->collShareds->remove($pos);
+            if (null === $this->sharedsScheduledForDeletion) {
+                $this->sharedsScheduledForDeletion = clone $this->collShareds;
+                $this->sharedsScheduledForDeletion->clear();
+            }
+            $this->sharedsScheduledForDeletion[]= clone $shared;
+            $shared->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Shareds from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     */
+    public function getSharedsJoinNote(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildSharedQuery::create(null, $criteria);
+        $query->joinWith('Note', $joinBehavior);
+
+        return $this->getShareds($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Shareds from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     */
+    public function getSharedsJoinCategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildSharedQuery::create(null, $criteria);
+        $query->joinWith('Category', $joinBehavior);
+
+        return $this->getShareds($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Shareds from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     */
+    public function getSharedsJoinGroup(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildSharedQuery::create(null, $criteria);
+        $query->joinWith('Group', $joinBehavior);
+
+        return $this->getShareds($query, $con);
+    }
+
+    /**
+     * Clears out the collGroups collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addGroups()
+     */
+    public function clearGroups()
+    {
+        $this->collGroups = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Initializes the collGroups crossRef collection.
+     *
+     * By default this just sets the collGroups collection to an empty collection (like clearGroups());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @return void
+     */
+    public function initGroups()
+    {
+        $this->collGroups = new ObjectCollection();
+        $this->collGroupsPartial = true;
+
+        $this->collGroups->setModel('\Models\Group');
+    }
+
+    /**
+     * Checks if the collGroups collection is loaded.
+     *
+     * @return bool
+     */
+    public function isGroupsLoaded()
+    {
+        return null !== $this->collGroups;
+    }
+
+    /**
+     * Gets a collection of ChildGroup objects related by a many-to-many relationship
+     * to the current object by way of the user_group cross-reference table.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria Optional query object to filter the query
+     * @param      ConnectionInterface $con Optional connection object
+     *
+     * @return ObjectCollection|ChildGroup[] List of ChildGroup objects
+     */
+    public function getGroups(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collGroupsPartial && !$this->isNew();
+        if (null === $this->collGroups || null !== $criteria || $partial) {
+            if ($this->isNew()) {
+                // return empty collection
+                if (null === $this->collGroups) {
+                    $this->initGroups();
+                }
+            } else {
+
+                $query = ChildGroupQuery::create(null, $criteria)
+                    ->filterByUser($this);
+                $collGroups = $query->find($con);
+                if (null !== $criteria) {
+                    return $collGroups;
+                }
+
+                if ($partial && $this->collGroups) {
+                    //make sure that already added objects gets added to the list of the database.
+                    foreach ($this->collGroups as $obj) {
+                        if (!$collGroups->contains($obj)) {
+                            $collGroups[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collGroups = $collGroups;
+                $this->collGroupsPartial = false;
+            }
+        }
+
+        return $this->collGroups;
+    }
+
+    /**
+     * Sets a collection of Group objects related by a many-to-many relationship
+     * to the current object by way of the user_group cross-reference table.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param  Collection $groups A Propel collection.
+     * @param  ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setGroups(Collection $groups, ConnectionInterface $con = null)
+    {
+        $this->clearGroups();
+        $currentGroups = $this->getGroups();
+
+        $groupsScheduledForDeletion = $currentGroups->diff($groups);
+
+        foreach ($groupsScheduledForDeletion as $toDelete) {
+            $this->removeGroup($toDelete);
+        }
+
+        foreach ($groups as $group) {
+            if (!$currentGroups->contains($group)) {
+                $this->doAddGroup($group);
+            }
+        }
+
+        $this->collGroupsPartial = false;
+        $this->collGroups = $groups;
+
+        return $this;
+    }
+
+    /**
+     * Gets the number of Group objects related by a many-to-many relationship
+     * to the current object by way of the user_group cross-reference table.
+     *
+     * @param      Criteria $criteria Optional query object to filter the query
+     * @param      boolean $distinct Set to true to force count distinct
+     * @param      ConnectionInterface $con Optional connection object
+     *
+     * @return int the number of related Group objects
+     */
+    public function countGroups(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collGroupsPartial && !$this->isNew();
+        if (null === $this->collGroups || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collGroups) {
+                return 0;
+            } else {
+
+                if ($partial && !$criteria) {
+                    return count($this->getGroups());
+                }
+
+                $query = ChildGroupQuery::create(null, $criteria);
+                if ($distinct) {
+                    $query->distinct();
+                }
+
+                return $query
+                    ->filterByUser($this)
+                    ->count($con);
+            }
+        } else {
+            return count($this->collGroups);
+        }
+    }
+
+    /**
+     * Associate a ChildGroup to this object
+     * through the user_group cross reference table.
+     *
+     * @param ChildGroup $group
+     * @return ChildUser The current object (for fluent API support)
+     */
+    public function addGroup(ChildGroup $group)
+    {
+        if ($this->collGroups === null) {
+            $this->initGroups();
+        }
+
+        if (!$this->getGroups()->contains($group)) {
+            // only add it if the **same** object is not already associated
+            $this->collGroups->push($group);
+            $this->doAddGroup($group);
+        }
+
+        return $this;
+    }
+
+    /**
+     *
+     * @param ChildGroup $group
+     */
+    protected function doAddGroup(ChildGroup $group)
+    {
+        $userGroup = new ChildUserGroup();
+
+        $userGroup->setGroup($group);
+
+        $userGroup->setUser($this);
+
+        $this->addUserGroup($userGroup);
+
+        // set the back reference to this object directly as using provided method either results
+        // in endless loop or in multiple relations
+        if (!$group->isUsersLoaded()) {
+            $group->initUsers();
+            $group->getUsers()->push($this);
+        } elseif (!$group->getUsers()->contains($this)) {
+            $group->getUsers()->push($this);
+        }
+
+    }
+
+    /**
+     * Remove group of this object
+     * through the user_group cross reference table.
+     *
+     * @param ChildGroup $group
+     * @return ChildUser The current object (for fluent API support)
+     */
+    public function removeGroup(ChildGroup $group)
+    {
+        if ($this->getGroups()->contains($group)) { $userGroup = new ChildUserGroup();
+
+            $userGroup->setGroup($group);
+            if ($group->isUsersLoaded()) {
+                //remove the back reference if available
+                $group->getUsers()->removeObject($this);
+            }
+
+            $userGroup->setUser($this);
+            $this->removeUserGroup(clone $userGroup);
+            $userGroup->clear();
+
+            $this->collGroups->remove($this->collGroups->search($group));
+
+            if (null === $this->groupsScheduledForDeletion) {
+                $this->groupsScheduledForDeletion = clone $this->collGroups;
+                $this->groupsScheduledForDeletion->clear();
+            }
+
+            $this->groupsScheduledForDeletion->push($group);
+        }
+
+
+        return $this;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -2361,10 +4479,52 @@ abstract class User implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collNotificationsRelatedByUserId) {
+                foreach ($this->collNotificationsRelatedByUserId as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collNotificationsRelatedByOriginTypeOriginId) {
+                foreach ($this->collNotificationsRelatedByOriginTypeOriginId as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collComments) {
+                foreach ($this->collComments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collIdentities) {
+                foreach ($this->collIdentities as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collUserGroups) {
+                foreach ($this->collUserGroups as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collShareds) {
+                foreach ($this->collShareds as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collGroups) {
+                foreach ($this->collGroups as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collNotes = null;
         $this->collCategories = null;
+        $this->collNotificationsRelatedByUserId = null;
+        $this->collNotificationsRelatedByOriginTypeOriginId = null;
+        $this->collComments = null;
+        $this->collIdentities = null;
+        $this->collUserGroups = null;
+        $this->collShareds = null;
+        $this->collGroups = null;
     }
 
     /**

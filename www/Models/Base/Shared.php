@@ -7,19 +7,20 @@ use \Exception;
 use \PDO;
 use Models\Category as ChildCategory;
 use Models\CategoryQuery as ChildCategoryQuery;
+use Models\Group as ChildGroup;
+use Models\GroupQuery as ChildGroupQuery;
 use Models\Note as ChildNote;
 use Models\NoteQuery as ChildNoteQuery;
 use Models\Shared as ChildShared;
 use Models\SharedQuery as ChildSharedQuery;
 use Models\User as ChildUser;
 use Models\UserQuery as ChildUserQuery;
-use Models\Map\CategoryTableMap;
+use Models\Map\SharedTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -29,18 +30,18 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'category' table.
+ * Base class that represents a row from the 'shared' table.
  *
  *
  *
 * @package    propel.generator.Models.Base
 */
-abstract class Category implements ActiveRecordInterface
+abstract class Shared implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Models\\Map\\CategoryTableMap';
+    const TABLE_MAP = '\\Models\\Map\\SharedTableMap';
 
 
     /**
@@ -77,25 +78,40 @@ abstract class Category implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the user_id field.
+     * The value for the what_id field.
      *
      * @var        int
      */
-    protected $user_id;
+    protected $what_id;
 
     /**
-     * The value for the name field.
+     * The value for the what_type field.
      *
      * @var        string
      */
-    protected $name;
+    protected $what_type;
 
     /**
-     * The value for the color field.
+     * The value for the to_id field.
+     *
+     * @var        int
+     */
+    protected $to_id;
+
+    /**
+     * The value for the to_type field.
      *
      * @var        string
      */
-    protected $color;
+    protected $to_type;
+
+    /**
+     * The value for the rights field.
+     *
+     * Note: this column has a database default value of: 0
+     * @var        int
+     */
+    protected $rights;
 
     /**
      * The value for the created_at field.
@@ -112,21 +128,24 @@ abstract class Category implements ActiveRecordInterface
     protected $updated_at;
 
     /**
+     * @var        ChildNote
+     */
+    protected $aNote;
+
+    /**
+     * @var        ChildCategory
+     */
+    protected $aCategory;
+
+    /**
      * @var        ChildUser
      */
     protected $aUser;
 
     /**
-     * @var        ObjectCollection|ChildNote[] Collection to store aggregation of ChildNote objects.
+     * @var        ChildGroup
      */
-    protected $collNotes;
-    protected $collNotesPartial;
-
-    /**
-     * @var        ObjectCollection|ChildShared[] Collection to store aggregation of ChildShared objects.
-     */
-    protected $collShareds;
-    protected $collSharedsPartial;
+    protected $aGroup;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -137,22 +156,23 @@ abstract class Category implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildNote[]
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
      */
-    protected $notesScheduledForDeletion = null;
+    public function applyDefaultValues()
+    {
+        $this->rights = 0;
+    }
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildShared[]
-     */
-    protected $sharedsScheduledForDeletion = null;
-
-    /**
-     * Initializes internal state of Models\Base\Category object.
+     * Initializes internal state of Models\Base\Shared object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -244,9 +264,9 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Category</code> instance.  If
-     * <code>obj</code> is an instance of <code>Category</code>, delegates to
-     * <code>equals(Category)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Shared</code> instance.  If
+     * <code>obj</code> is an instance of <code>Shared</code>, delegates to
+     * <code>equals(Shared)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -312,7 +332,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Category The current object, for fluid interface
+     * @return $this|Shared The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -381,33 +401,53 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Get the [user_id] column value.
+     * Get the [what_id] column value.
      *
      * @return int
      */
-    public function getUserId()
+    public function getWhatId()
     {
-        return $this->user_id;
+        return $this->what_id;
     }
 
     /**
-     * Get the [name] column value.
+     * Get the [what_type] column value.
      *
      * @return string
      */
-    public function getName()
+    public function getWhatType()
     {
-        return $this->name;
+        return $this->what_type;
     }
 
     /**
-     * Get the [color] column value.
+     * Get the [to_id] column value.
+     *
+     * @return int
+     */
+    public function getToId()
+    {
+        return $this->to_id;
+    }
+
+    /**
+     * Get the [to_type] column value.
      *
      * @return string
      */
-    public function getColor()
+    public function getToType()
     {
-        return $this->color;
+        return $this->to_type;
+    }
+
+    /**
+     * Get the [rights] column value.
+     *
+     * @return int
+     */
+    public function getRights()
+    {
+        return $this->rights;
     }
 
     /**
@@ -454,7 +494,7 @@ abstract class Category implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Shared The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -464,82 +504,134 @@ abstract class Category implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+            $this->modifiedColumns[SharedTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [user_id] column.
+     * Set the value of [what_id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Shared The current object (for fluent API support)
      */
-    public function setUserId($v)
+    public function setWhatId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_USER_ID] = true;
+        if ($this->what_id !== $v) {
+            $this->what_id = $v;
+            $this->modifiedColumns[SharedTableMap::COL_WHAT_ID] = true;
+        }
+
+        if ($this->aNote !== null && $this->aNote->getId() !== $v) {
+            $this->aNote = null;
+        }
+
+        if ($this->aCategory !== null && $this->aCategory->getId() !== $v) {
+            $this->aCategory = null;
+        }
+
+        return $this;
+    } // setWhatId()
+
+    /**
+     * Set the value of [what_type] column.
+     *
+     * @param string $v new value
+     * @return $this|\Models\Shared The current object (for fluent API support)
+     */
+    public function setWhatType($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->what_type !== $v) {
+            $this->what_type = $v;
+            $this->modifiedColumns[SharedTableMap::COL_WHAT_TYPE] = true;
+        }
+
+        return $this;
+    } // setWhatType()
+
+    /**
+     * Set the value of [to_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\Models\Shared The current object (for fluent API support)
+     */
+    public function setToId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->to_id !== $v) {
+            $this->to_id = $v;
+            $this->modifiedColumns[SharedTableMap::COL_TO_ID] = true;
         }
 
         if ($this->aUser !== null && $this->aUser->getId() !== $v) {
             $this->aUser = null;
         }
 
+        if ($this->aGroup !== null && $this->aGroup->getId() !== $v) {
+            $this->aGroup = null;
+        }
+
         return $this;
-    } // setUserId()
+    } // setToId()
 
     /**
-     * Set the value of [name] column.
+     * Set the value of [to_type] column.
      *
      * @param string $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Shared The current object (for fluent API support)
      */
-    public function setName($v)
+    public function setToType($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->name !== $v) {
-            $this->name = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_NAME] = true;
+        if ($this->to_type !== $v) {
+            $this->to_type = $v;
+            $this->modifiedColumns[SharedTableMap::COL_TO_TYPE] = true;
         }
 
         return $this;
-    } // setName()
+    } // setToType()
 
     /**
-     * Set the value of [color] column.
+     * Set the value of [rights] column.
      *
-     * @param string $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @param int $v new value
+     * @return $this|\Models\Shared The current object (for fluent API support)
      */
-    public function setColor($v)
+    public function setRights($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            $v = (int) $v;
         }
 
-        if ($this->color !== $v) {
-            $this->color = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_COLOR] = true;
+        if ($this->rights !== $v) {
+            $this->rights = $v;
+            $this->modifiedColumns[SharedTableMap::COL_RIGHTS] = true;
         }
 
         return $this;
-    } // setColor()
+    } // setRights()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Shared The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -547,7 +639,7 @@ abstract class Category implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($this->created_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->created_at->format("Y-m-d H:i:s")) {
                 $this->created_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[CategoryTableMap::COL_CREATED_AT] = true;
+                $this->modifiedColumns[SharedTableMap::COL_CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -559,7 +651,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Shared The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -567,7 +659,7 @@ abstract class Category implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->updated_at->format("Y-m-d H:i:s")) {
                 $this->updated_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[CategoryTableMap::COL_UPDATED_AT] = true;
+                $this->modifiedColumns[SharedTableMap::COL_UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -584,6 +676,10 @@ abstract class Category implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->rights !== 0) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -610,25 +706,31 @@ abstract class Category implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : SharedTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : SharedTableMap::translateFieldName('WhatId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->what_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : SharedTableMap::translateFieldName('WhatType', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->what_type = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : CategoryTableMap::translateFieldName('Color', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->color = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : SharedTableMap::translateFieldName('ToId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->to_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : CategoryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : SharedTableMap::translateFieldName('ToType', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->to_type = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : SharedTableMap::translateFieldName('Rights', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->rights = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : SharedTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : CategoryTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : SharedTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -641,10 +743,10 @@ abstract class Category implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = CategoryTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 8; // 8 = SharedTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Models\\Category'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\Models\\Shared'), 0, $e);
         }
     }
 
@@ -663,8 +765,17 @@ abstract class Category implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+        if ($this->aNote !== null && $this->what_id !== $this->aNote->getId()) {
+            $this->aNote = null;
+        }
+        if ($this->aCategory !== null && $this->what_id !== $this->aCategory->getId()) {
+            $this->aCategory = null;
+        }
+        if ($this->aUser !== null && $this->to_id !== $this->aUser->getId()) {
             $this->aUser = null;
+        }
+        if ($this->aGroup !== null && $this->to_id !== $this->aGroup->getId()) {
+            $this->aGroup = null;
         }
     } // ensureConsistency
 
@@ -689,13 +800,13 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(SharedTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildCategoryQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildSharedQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -705,11 +816,10 @@ abstract class Category implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aNote = null;
+            $this->aCategory = null;
             $this->aUser = null;
-            $this->collNotes = null;
-
-            $this->collShareds = null;
-
+            $this->aGroup = null;
         } // if (deep)
     }
 
@@ -719,8 +829,8 @@ abstract class Category implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Category::setDeleted()
-     * @see Category::isDeleted()
+     * @see Shared::setDeleted()
+     * @see Shared::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -729,11 +839,11 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SharedTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildCategoryQuery::create()
+            $deleteQuery = ChildSharedQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -764,7 +874,7 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SharedTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -774,16 +884,16 @@ abstract class Category implements ActiveRecordInterface
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
 
-                if (!$this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
+                if (!$this->isColumnModified(SharedTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+                if (!$this->isColumnModified(SharedTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(SharedTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -795,7 +905,7 @@ abstract class Category implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                CategoryTableMap::addInstanceToPool($this);
+                SharedTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -826,11 +936,32 @@ abstract class Category implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
+            if ($this->aNote !== null) {
+                if ($this->aNote->isModified() || $this->aNote->isNew()) {
+                    $affectedRows += $this->aNote->save($con);
+                }
+                $this->setNote($this->aNote);
+            }
+
+            if ($this->aCategory !== null) {
+                if ($this->aCategory->isModified() || $this->aCategory->isNew()) {
+                    $affectedRows += $this->aCategory->save($con);
+                }
+                $this->setCategory($this->aCategory);
+            }
+
             if ($this->aUser !== null) {
                 if ($this->aUser->isModified() || $this->aUser->isNew()) {
                     $affectedRows += $this->aUser->save($con);
                 }
                 $this->setUser($this->aUser);
+            }
+
+            if ($this->aGroup !== null) {
+                if ($this->aGroup->isModified() || $this->aGroup->isNew()) {
+                    $affectedRows += $this->aGroup->save($con);
+                }
+                $this->setGroup($this->aGroup);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -842,42 +973,6 @@ abstract class Category implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
-            }
-
-            if ($this->notesScheduledForDeletion !== null) {
-                if (!$this->notesScheduledForDeletion->isEmpty()) {
-                    foreach ($this->notesScheduledForDeletion as $note) {
-                        // need to save related object because we set the relation to null
-                        $note->save($con);
-                    }
-                    $this->notesScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collNotes !== null) {
-                foreach ($this->collNotes as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->sharedsScheduledForDeletion !== null) {
-                if (!$this->sharedsScheduledForDeletion->isEmpty()) {
-                    foreach ($this->sharedsScheduledForDeletion as $shared) {
-                        // need to save related object because we set the relation to null
-                        $shared->save($con);
-                    }
-                    $this->sharedsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collShareds !== null) {
-                foreach ($this->collShareds as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
             }
 
             $this->alreadyInSave = false;
@@ -900,33 +995,39 @@ abstract class Category implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+        $this->modifiedColumns[SharedTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategoryTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . SharedTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
+        if ($this->isColumnModified(SharedTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
+        if ($this->isColumnModified(SharedTableMap::COL_WHAT_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'what_id';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'name';
+        if ($this->isColumnModified(SharedTableMap::COL_WHAT_TYPE)) {
+            $modifiedColumns[':p' . $index++]  = 'what_type';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_COLOR)) {
-            $modifiedColumns[':p' . $index++]  = 'color';
+        if ($this->isColumnModified(SharedTableMap::COL_TO_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'to_id';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
+        if ($this->isColumnModified(SharedTableMap::COL_TO_TYPE)) {
+            $modifiedColumns[':p' . $index++]  = 'to_type';
+        }
+        if ($this->isColumnModified(SharedTableMap::COL_RIGHTS)) {
+            $modifiedColumns[':p' . $index++]  = 'rights';
+        }
+        if ($this->isColumnModified(SharedTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+        if ($this->isColumnModified(SharedTableMap::COL_UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
-            'INSERT INTO category (%s) VALUES (%s)',
+            'INSERT INTO shared (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -938,14 +1039,20 @@ abstract class Category implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                    case 'what_id':
+                        $stmt->bindValue($identifier, $this->what_id, PDO::PARAM_INT);
                         break;
-                    case 'name':
-                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
+                    case 'what_type':
+                        $stmt->bindValue($identifier, $this->what_type, PDO::PARAM_STR);
                         break;
-                    case 'color':
-                        $stmt->bindValue($identifier, $this->color, PDO::PARAM_STR);
+                    case 'to_id':
+                        $stmt->bindValue($identifier, $this->to_id, PDO::PARAM_INT);
+                        break;
+                    case 'to_type':
+                        $stmt->bindValue($identifier, $this->to_type, PDO::PARAM_STR);
+                        break;
+                    case 'rights':
+                        $stmt->bindValue($identifier, $this->rights, PDO::PARAM_INT);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -999,7 +1106,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = SharedTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -1019,18 +1126,24 @@ abstract class Category implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getUserId();
+                return $this->getWhatId();
                 break;
             case 2:
-                return $this->getName();
+                return $this->getWhatType();
                 break;
             case 3:
-                return $this->getColor();
+                return $this->getToId();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getToType();
                 break;
             case 5:
+                return $this->getRights();
+                break;
+            case 6:
+                return $this->getCreatedAt();
+                break;
+            case 7:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1057,25 +1170,27 @@ abstract class Category implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['Category'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['Shared'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Category'][$this->hashCode()] = true;
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Shared'][$this->hashCode()] = true;
+        $keys = SharedTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getUserId(),
-            $keys[2] => $this->getName(),
-            $keys[3] => $this->getColor(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[1] => $this->getWhatId(),
+            $keys[2] => $this->getWhatType(),
+            $keys[3] => $this->getToId(),
+            $keys[4] => $this->getToType(),
+            $keys[5] => $this->getRights(),
+            $keys[6] => $this->getCreatedAt(),
+            $keys[7] => $this->getUpdatedAt(),
         );
-        if ($result[$keys[4]] instanceof \DateTime) {
-            $result[$keys[4]] = $result[$keys[4]]->format('c');
+        if ($result[$keys[6]] instanceof \DateTime) {
+            $result[$keys[6]] = $result[$keys[6]]->format('c');
         }
 
-        if ($result[$keys[5]] instanceof \DateTime) {
-            $result[$keys[5]] = $result[$keys[5]]->format('c');
+        if ($result[$keys[7]] instanceof \DateTime) {
+            $result[$keys[7]] = $result[$keys[7]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1084,6 +1199,36 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
+            if (null !== $this->aNote) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'note';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'note';
+                        break;
+                    default:
+                        $key = 'Note';
+                }
+
+                $result[$key] = $this->aNote->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aCategory) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'category';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'category';
+                        break;
+                    default:
+                        $key = 'Category';
+                }
+
+                $result[$key] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
             if (null !== $this->aUser) {
 
                 switch ($keyType) {
@@ -1099,35 +1244,20 @@ abstract class Category implements ActiveRecordInterface
 
                 $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->collNotes) {
+            if (null !== $this->aGroup) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'notes';
+                        $key = 'group';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'notes';
+                        $key = 'group';
                         break;
                     default:
-                        $key = 'Notes';
+                        $key = 'Group';
                 }
 
-                $result[$key] = $this->collNotes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collShareds) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'shareds';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'shareds';
-                        break;
-                    default:
-                        $key = 'Shareds';
-                }
-
-                $result[$key] = $this->collShareds->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aGroup->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1143,11 +1273,11 @@ abstract class Category implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Models\Category
+     * @return $this|\Models\Shared
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = SharedTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1158,7 +1288,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Models\Category
+     * @return $this|\Models\Shared
      */
     public function setByPosition($pos, $value)
     {
@@ -1167,18 +1297,24 @@ abstract class Category implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setUserId($value);
+                $this->setWhatId($value);
                 break;
             case 2:
-                $this->setName($value);
+                $this->setWhatType($value);
                 break;
             case 3:
-                $this->setColor($value);
+                $this->setToId($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setToType($value);
                 break;
             case 5:
+                $this->setRights($value);
+                break;
+            case 6:
+                $this->setCreatedAt($value);
+                break;
+            case 7:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1205,25 +1341,31 @@ abstract class Category implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $keys = SharedTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setUserId($arr[$keys[1]]);
+            $this->setWhatId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setName($arr[$keys[2]]);
+            $this->setWhatType($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setColor($arr[$keys[3]]);
+            $this->setToId($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setToType($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setRights($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setCreatedAt($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setUpdatedAt($arr[$keys[7]]);
         }
     }
 
@@ -1244,7 +1386,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Models\Category The current object, for fluid interface
+     * @return $this|\Models\Shared The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1264,25 +1406,31 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
+        $criteria = new Criteria(SharedTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
-            $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(SharedTableMap::COL_ID)) {
+            $criteria->add(SharedTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_USER_ID)) {
-            $criteria->add(CategoryTableMap::COL_USER_ID, $this->user_id);
+        if ($this->isColumnModified(SharedTableMap::COL_WHAT_ID)) {
+            $criteria->add(SharedTableMap::COL_WHAT_ID, $this->what_id);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
-            $criteria->add(CategoryTableMap::COL_NAME, $this->name);
+        if ($this->isColumnModified(SharedTableMap::COL_WHAT_TYPE)) {
+            $criteria->add(SharedTableMap::COL_WHAT_TYPE, $this->what_type);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_COLOR)) {
-            $criteria->add(CategoryTableMap::COL_COLOR, $this->color);
+        if ($this->isColumnModified(SharedTableMap::COL_TO_ID)) {
+            $criteria->add(SharedTableMap::COL_TO_ID, $this->to_id);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
-            $criteria->add(CategoryTableMap::COL_CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(SharedTableMap::COL_TO_TYPE)) {
+            $criteria->add(SharedTableMap::COL_TO_TYPE, $this->to_type);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
-            $criteria->add(CategoryTableMap::COL_UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(SharedTableMap::COL_RIGHTS)) {
+            $criteria->add(SharedTableMap::COL_RIGHTS, $this->rights);
+        }
+        if ($this->isColumnModified(SharedTableMap::COL_CREATED_AT)) {
+            $criteria->add(SharedTableMap::COL_CREATED_AT, $this->created_at);
+        }
+        if ($this->isColumnModified(SharedTableMap::COL_UPDATED_AT)) {
+            $criteria->add(SharedTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1300,8 +1448,8 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildCategoryQuery::create();
-        $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        $criteria = ChildSharedQuery::create();
+        $criteria->add(SharedTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1363,38 +1511,20 @@ abstract class Category implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Models\Category (or compatible) type.
+     * @param      object $copyObj An object of \Models\Shared (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setUserId($this->getUserId());
-        $copyObj->setName($this->getName());
-        $copyObj->setColor($this->getColor());
+        $copyObj->setWhatId($this->getWhatId());
+        $copyObj->setWhatType($this->getWhatType());
+        $copyObj->setToId($this->getToId());
+        $copyObj->setToType($this->getToType());
+        $copyObj->setRights($this->getRights());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getNotes() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addNote($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getShareds() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addShared($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1410,7 +1540,7 @@ abstract class Category implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Models\Category Clone of current object.
+     * @return \Models\Shared Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1424,18 +1554,138 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildNote object.
+     *
+     * @param  ChildNote $v
+     * @return $this|\Models\Shared The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setNote(ChildNote $v = null)
+    {
+        if ($v === null) {
+            $this->setWhatType(null);
+        } else {
+            $this->setWhatType('note');
+        }
+
+        if ($v === null) {
+            $this->setWhatId(NULL);
+        } else {
+            $this->setWhatId($v->getId());
+        }
+
+        $this->aNote = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildNote object, it will not be re-added.
+        if ($v !== null) {
+            $v->addShared($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildNote object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildNote The associated ChildNote object.
+     * @throws PropelException
+     */
+    public function getNote(ConnectionInterface $con = null)
+    {
+        if ($this->aNote === null && ($this->what_type === 'note' && $this->what_id !== null)) {
+            $this->aNote = ChildNoteQuery::create()->findPk($this->what_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aNote->addShareds($this);
+             */
+        }
+
+        return $this->aNote;
+    }
+
+    /**
+     * Declares an association between this object and a ChildCategory object.
+     *
+     * @param  ChildCategory $v
+     * @return $this|\Models\Shared The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setCategory(ChildCategory $v = null)
+    {
+        if ($v === null) {
+            $this->setWhatType(null);
+        } else {
+            $this->setWhatType('category');
+        }
+
+        if ($v === null) {
+            $this->setWhatId(NULL);
+        } else {
+            $this->setWhatId($v->getId());
+        }
+
+        $this->aCategory = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        if ($v !== null) {
+            $v->addShared($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCategory object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCategory The associated ChildCategory object.
+     * @throws PropelException
+     */
+    public function getCategory(ConnectionInterface $con = null)
+    {
+        if ($this->aCategory === null && ($this->what_type === 'category' && $this->what_id !== null)) {
+            $this->aCategory = ChildCategoryQuery::create()->findPk($this->what_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCategory->addShareds($this);
+             */
+        }
+
+        return $this->aCategory;
+    }
+
+    /**
      * Declares an association between this object and a ChildUser object.
      *
      * @param  ChildUser $v
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Shared The current object (for fluent API support)
      * @throws PropelException
      */
     public function setUser(ChildUser $v = null)
     {
         if ($v === null) {
-            $this->setUserId(NULL);
+            $this->setToType(null);
         } else {
-            $this->setUserId($v->getId());
+            $this->setToType('user');
+        }
+
+        if ($v === null) {
+            $this->setToId(NULL);
+        } else {
+            $this->setToId($v->getId());
         }
 
         $this->aUser = $v;
@@ -1443,7 +1693,7 @@ abstract class Category implements ActiveRecordInterface
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildUser object, it will not be re-added.
         if ($v !== null) {
-            $v->addCategory($this);
+            $v->addShared($this);
         }
 
 
@@ -1460,573 +1710,75 @@ abstract class Category implements ActiveRecordInterface
      */
     public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+        if ($this->aUser === null && ($this->to_type === 'user' && $this->to_id !== null)) {
+            $this->aUser = ChildUserQuery::create()->findPk($this->to_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aUser->addCategories($this);
+                $this->aUser->addShareds($this);
              */
         }
 
         return $this->aUser;
     }
 
-
     /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
+     * Declares an association between this object and a ChildGroup object.
      *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('Note' == $relationName) {
-            return $this->initNotes();
-        }
-        if ('Shared' == $relationName) {
-            return $this->initShareds();
-        }
-    }
-
-    /**
-     * Clears out the collNotes collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addNotes()
-     */
-    public function clearNotes()
-    {
-        $this->collNotes = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collNotes collection loaded partially.
-     */
-    public function resetPartialNotes($v = true)
-    {
-        $this->collNotesPartial = $v;
-    }
-
-    /**
-     * Initializes the collNotes collection.
-     *
-     * By default this just sets the collNotes collection to an empty array (like clearcollNotes());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initNotes($overrideExisting = true)
-    {
-        if (null !== $this->collNotes && !$overrideExisting) {
-            return;
-        }
-        $this->collNotes = new ObjectCollection();
-        $this->collNotes->setModel('\Models\Note');
-    }
-
-    /**
-     * Gets an array of ChildNote objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
+     * @param  ChildGroup $v
+     * @return $this|\Models\Shared The current object (for fluent API support)
      * @throws PropelException
      */
-    public function getNotes(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function setGroup(ChildGroup $v = null)
     {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
-                // return empty collection
-                $this->initNotes();
-            } else {
-                $collNotes = ChildNoteQuery::create(null, $criteria)
-                    ->filterByCategory($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collNotesPartial && count($collNotes)) {
-                        $this->initNotes(false);
-
-                        foreach ($collNotes as $obj) {
-                            if (false == $this->collNotes->contains($obj)) {
-                                $this->collNotes->append($obj);
-                            }
-                        }
-
-                        $this->collNotesPartial = true;
-                    }
-
-                    return $collNotes;
-                }
-
-                if ($partial && $this->collNotes) {
-                    foreach ($this->collNotes as $obj) {
-                        if ($obj->isNew()) {
-                            $collNotes[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collNotes = $collNotes;
-                $this->collNotesPartial = false;
-            }
+        if ($v === null) {
+            $this->setToType(null);
+        } else {
+            $this->setToType('group');
         }
 
-        return $this->collNotes;
-    }
-
-    /**
-     * Sets a collection of ChildNote objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $notes A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function setNotes(Collection $notes, ConnectionInterface $con = null)
-    {
-        /** @var ChildNote[] $notesToDelete */
-        $notesToDelete = $this->getNotes(new Criteria(), $con)->diff($notes);
-
-
-        $this->notesScheduledForDeletion = $notesToDelete;
-
-        foreach ($notesToDelete as $noteRemoved) {
-            $noteRemoved->setCategory(null);
+        if ($v === null) {
+            $this->setToId(NULL);
+        } else {
+            $this->setToId($v->getId());
         }
 
-        $this->collNotes = null;
-        foreach ($notes as $note) {
-            $this->addNote($note);
+        $this->aGroup = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildGroup object, it will not be re-added.
+        if ($v !== null) {
+            $v->addShared($this);
         }
 
-        $this->collNotes = $notes;
-        $this->collNotesPartial = false;
 
         return $this;
     }
 
+
     /**
-     * Returns the number of related Note objects.
+     * Get the associated ChildGroup object
      *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Note objects.
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildGroup The associated ChildGroup object.
      * @throws PropelException
      */
-    public function countNotes(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function getGroup(ConnectionInterface $con = null)
     {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getNotes());
-            }
-
-            $query = ChildNoteQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByCategory($this)
-                ->count($con);
+        if ($this->aGroup === null && ($this->to_type === 'group' && $this->to_id !== null)) {
+            $this->aGroup = ChildGroupQuery::create()->findPk($this->to_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aGroup->addShareds($this);
+             */
         }
 
-        return count($this->collNotes);
-    }
-
-    /**
-     * Method called to associate a ChildNote object to this object
-     * through the ChildNote foreign key attribute.
-     *
-     * @param  ChildNote $l ChildNote
-     * @return $this|\Models\Category The current object (for fluent API support)
-     */
-    public function addNote(ChildNote $l)
-    {
-        if ($this->collNotes === null) {
-            $this->initNotes();
-            $this->collNotesPartial = true;
-        }
-
-        if (!$this->collNotes->contains($l)) {
-            $this->doAddNote($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildNote $note The ChildNote object to add.
-     */
-    protected function doAddNote(ChildNote $note)
-    {
-        $this->collNotes[]= $note;
-        $note->setCategory($this);
-    }
-
-    /**
-     * @param  ChildNote $note The ChildNote object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function removeNote(ChildNote $note)
-    {
-        if ($this->getNotes()->contains($note)) {
-            $pos = $this->collNotes->search($note);
-            $this->collNotes->remove($pos);
-            if (null === $this->notesScheduledForDeletion) {
-                $this->notesScheduledForDeletion = clone $this->collNotes;
-                $this->notesScheduledForDeletion->clear();
-            }
-            $this->notesScheduledForDeletion[]= $note;
-            $note->setCategory(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Notes from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
-     */
-    public function getNotesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildNoteQuery::create(null, $criteria);
-        $query->joinWith('User', $joinBehavior);
-
-        return $this->getNotes($query, $con);
-    }
-
-    /**
-     * Clears out the collShareds collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addShareds()
-     */
-    public function clearShareds()
-    {
-        $this->collShareds = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collShareds collection loaded partially.
-     */
-    public function resetPartialShareds($v = true)
-    {
-        $this->collSharedsPartial = $v;
-    }
-
-    /**
-     * Initializes the collShareds collection.
-     *
-     * By default this just sets the collShareds collection to an empty array (like clearcollShareds());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initShareds($overrideExisting = true)
-    {
-        if (null !== $this->collShareds && !$overrideExisting) {
-            return;
-        }
-        $this->collShareds = new ObjectCollection();
-        $this->collShareds->setModel('\Models\Shared');
-    }
-
-    /**
-     * Gets an array of ChildShared objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     * @throws PropelException
-     */
-    public function getShareds(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSharedsPartial && !$this->isNew();
-        if (null === $this->collShareds || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collShareds) {
-                // return empty collection
-                $this->initShareds();
-            } else {
-                $collShareds = ChildSharedQuery::create(null, $criteria)
-                    ->filterByCategory($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collSharedsPartial && count($collShareds)) {
-                        $this->initShareds(false);
-
-                        foreach ($collShareds as $obj) {
-                            if (false == $this->collShareds->contains($obj)) {
-                                $this->collShareds->append($obj);
-                            }
-                        }
-
-                        $this->collSharedsPartial = true;
-                    }
-
-                    return $collShareds;
-                }
-
-                if ($partial && $this->collShareds) {
-                    foreach ($this->collShareds as $obj) {
-                        if ($obj->isNew()) {
-                            $collShareds[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collShareds = $collShareds;
-                $this->collSharedsPartial = false;
-            }
-        }
-
-        return $this->collShareds;
-    }
-
-    /**
-     * Sets a collection of ChildShared objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $shareds A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function setShareds(Collection $shareds, ConnectionInterface $con = null)
-    {
-        /** @var ChildShared[] $sharedsToDelete */
-        $sharedsToDelete = $this->getShareds(new Criteria(), $con)->diff($shareds);
-
-
-        $this->sharedsScheduledForDeletion = $sharedsToDelete;
-
-        foreach ($sharedsToDelete as $sharedRemoved) {
-            $sharedRemoved->setCategory(null);
-        }
-
-        $this->collShareds = null;
-        foreach ($shareds as $shared) {
-            $this->addShared($shared);
-        }
-
-        $this->collShareds = $shareds;
-        $this->collSharedsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related Shared objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Shared objects.
-     * @throws PropelException
-     */
-    public function countShareds(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSharedsPartial && !$this->isNew();
-        if (null === $this->collShareds || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collShareds) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getShareds());
-            }
-
-            $query = ChildSharedQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByCategory($this)
-                ->count($con);
-        }
-
-        return count($this->collShareds);
-    }
-
-    /**
-     * Method called to associate a ChildShared object to this object
-     * through the ChildShared foreign key attribute.
-     *
-     * @param  ChildShared $l ChildShared
-     * @return $this|\Models\Category The current object (for fluent API support)
-     */
-    public function addShared(ChildShared $l)
-    {
-        if ($this->collShareds === null) {
-            $this->initShareds();
-            $this->collSharedsPartial = true;
-        }
-
-        if (!$this->collShareds->contains($l)) {
-            $this->doAddShared($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildShared $shared The ChildShared object to add.
-     */
-    protected function doAddShared(ChildShared $shared)
-    {
-        $this->collShareds[]= $shared;
-        $shared->setCategory($this);
-    }
-
-    /**
-     * @param  ChildShared $shared The ChildShared object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function removeShared(ChildShared $shared)
-    {
-        if ($this->getShareds()->contains($shared)) {
-            $pos = $this->collShareds->search($shared);
-            $this->collShareds->remove($pos);
-            if (null === $this->sharedsScheduledForDeletion) {
-                $this->sharedsScheduledForDeletion = clone $this->collShareds;
-                $this->sharedsScheduledForDeletion->clear();
-            }
-            $this->sharedsScheduledForDeletion[]= clone $shared;
-            $shared->setCategory(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Shareds from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     */
-    public function getSharedsJoinNote(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildSharedQuery::create(null, $criteria);
-        $query->joinWith('Note', $joinBehavior);
-
-        return $this->getShareds($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Shareds from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     */
-    public function getSharedsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildSharedQuery::create(null, $criteria);
-        $query->joinWith('User', $joinBehavior);
-
-        return $this->getShareds($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Shareds from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     */
-    public function getSharedsJoinGroup(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildSharedQuery::create(null, $criteria);
-        $query->joinWith('Group', $joinBehavior);
-
-        return $this->getShareds($query, $con);
+        return $this->aGroup;
     }
 
     /**
@@ -2036,17 +1788,29 @@ abstract class Category implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aNote) {
+            $this->aNote->removeShared($this);
+        }
+        if (null !== $this->aCategory) {
+            $this->aCategory->removeShared($this);
+        }
         if (null !== $this->aUser) {
-            $this->aUser->removeCategory($this);
+            $this->aUser->removeShared($this);
+        }
+        if (null !== $this->aGroup) {
+            $this->aGroup->removeShared($this);
         }
         $this->id = null;
-        $this->user_id = null;
-        $this->name = null;
-        $this->color = null;
+        $this->what_id = null;
+        $this->what_type = null;
+        $this->to_id = null;
+        $this->to_type = null;
+        $this->rights = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -2063,21 +1827,12 @@ abstract class Category implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collNotes) {
-                foreach ($this->collNotes as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collShareds) {
-                foreach ($this->collShareds as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collNotes = null;
-        $this->collShareds = null;
+        $this->aNote = null;
+        $this->aCategory = null;
         $this->aUser = null;
+        $this->aGroup = null;
     }
 
     /**
@@ -2087,7 +1842,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(CategoryTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(SharedTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -2095,11 +1850,11 @@ abstract class Category implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     $this|ChildCategory The current object (for fluent API support)
+     * @return     $this|ChildShared The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[CategoryTableMap::COL_UPDATED_AT] = true;
+        $this->modifiedColumns[SharedTableMap::COL_UPDATED_AT] = true;
 
         return $this;
     }

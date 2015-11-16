@@ -76,7 +76,67 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery rightJoinWithCategory() Adds a RIGHT JOIN clause and with to the query using the Category relation
  * @method     ChildUserQuery innerJoinWithCategory() Adds a INNER JOIN clause and with to the query using the Category relation
  *
- * @method     \Models\NoteQuery|\Models\CategoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildUserQuery leftJoinNotificationRelatedByUserId($relationAlias = null) Adds a LEFT JOIN clause to the query using the NotificationRelatedByUserId relation
+ * @method     ChildUserQuery rightJoinNotificationRelatedByUserId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the NotificationRelatedByUserId relation
+ * @method     ChildUserQuery innerJoinNotificationRelatedByUserId($relationAlias = null) Adds a INNER JOIN clause to the query using the NotificationRelatedByUserId relation
+ *
+ * @method     ChildUserQuery joinWithNotificationRelatedByUserId($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the NotificationRelatedByUserId relation
+ *
+ * @method     ChildUserQuery leftJoinWithNotificationRelatedByUserId() Adds a LEFT JOIN clause and with to the query using the NotificationRelatedByUserId relation
+ * @method     ChildUserQuery rightJoinWithNotificationRelatedByUserId() Adds a RIGHT JOIN clause and with to the query using the NotificationRelatedByUserId relation
+ * @method     ChildUserQuery innerJoinWithNotificationRelatedByUserId() Adds a INNER JOIN clause and with to the query using the NotificationRelatedByUserId relation
+ *
+ * @method     ChildUserQuery leftJoinNotificationRelatedByOriginTypeOriginId($relationAlias = null) Adds a LEFT JOIN clause to the query using the NotificationRelatedByOriginTypeOriginId relation
+ * @method     ChildUserQuery rightJoinNotificationRelatedByOriginTypeOriginId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the NotificationRelatedByOriginTypeOriginId relation
+ * @method     ChildUserQuery innerJoinNotificationRelatedByOriginTypeOriginId($relationAlias = null) Adds a INNER JOIN clause to the query using the NotificationRelatedByOriginTypeOriginId relation
+ *
+ * @method     ChildUserQuery joinWithNotificationRelatedByOriginTypeOriginId($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the NotificationRelatedByOriginTypeOriginId relation
+ *
+ * @method     ChildUserQuery leftJoinWithNotificationRelatedByOriginTypeOriginId() Adds a LEFT JOIN clause and with to the query using the NotificationRelatedByOriginTypeOriginId relation
+ * @method     ChildUserQuery rightJoinWithNotificationRelatedByOriginTypeOriginId() Adds a RIGHT JOIN clause and with to the query using the NotificationRelatedByOriginTypeOriginId relation
+ * @method     ChildUserQuery innerJoinWithNotificationRelatedByOriginTypeOriginId() Adds a INNER JOIN clause and with to the query using the NotificationRelatedByOriginTypeOriginId relation
+ *
+ * @method     ChildUserQuery leftJoinComment($relationAlias = null) Adds a LEFT JOIN clause to the query using the Comment relation
+ * @method     ChildUserQuery rightJoinComment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Comment relation
+ * @method     ChildUserQuery innerJoinComment($relationAlias = null) Adds a INNER JOIN clause to the query using the Comment relation
+ *
+ * @method     ChildUserQuery joinWithComment($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Comment relation
+ *
+ * @method     ChildUserQuery leftJoinWithComment() Adds a LEFT JOIN clause and with to the query using the Comment relation
+ * @method     ChildUserQuery rightJoinWithComment() Adds a RIGHT JOIN clause and with to the query using the Comment relation
+ * @method     ChildUserQuery innerJoinWithComment() Adds a INNER JOIN clause and with to the query using the Comment relation
+ *
+ * @method     ChildUserQuery leftJoinIdentity($relationAlias = null) Adds a LEFT JOIN clause to the query using the Identity relation
+ * @method     ChildUserQuery rightJoinIdentity($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Identity relation
+ * @method     ChildUserQuery innerJoinIdentity($relationAlias = null) Adds a INNER JOIN clause to the query using the Identity relation
+ *
+ * @method     ChildUserQuery joinWithIdentity($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Identity relation
+ *
+ * @method     ChildUserQuery leftJoinWithIdentity() Adds a LEFT JOIN clause and with to the query using the Identity relation
+ * @method     ChildUserQuery rightJoinWithIdentity() Adds a RIGHT JOIN clause and with to the query using the Identity relation
+ * @method     ChildUserQuery innerJoinWithIdentity() Adds a INNER JOIN clause and with to the query using the Identity relation
+ *
+ * @method     ChildUserQuery leftJoinUserGroup($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserGroup relation
+ * @method     ChildUserQuery rightJoinUserGroup($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserGroup relation
+ * @method     ChildUserQuery innerJoinUserGroup($relationAlias = null) Adds a INNER JOIN clause to the query using the UserGroup relation
+ *
+ * @method     ChildUserQuery joinWithUserGroup($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the UserGroup relation
+ *
+ * @method     ChildUserQuery leftJoinWithUserGroup() Adds a LEFT JOIN clause and with to the query using the UserGroup relation
+ * @method     ChildUserQuery rightJoinWithUserGroup() Adds a RIGHT JOIN clause and with to the query using the UserGroup relation
+ * @method     ChildUserQuery innerJoinWithUserGroup() Adds a INNER JOIN clause and with to the query using the UserGroup relation
+ *
+ * @method     ChildUserQuery leftJoinShared($relationAlias = null) Adds a LEFT JOIN clause to the query using the Shared relation
+ * @method     ChildUserQuery rightJoinShared($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Shared relation
+ * @method     ChildUserQuery innerJoinShared($relationAlias = null) Adds a INNER JOIN clause to the query using the Shared relation
+ *
+ * @method     ChildUserQuery joinWithShared($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Shared relation
+ *
+ * @method     ChildUserQuery leftJoinWithShared() Adds a LEFT JOIN clause and with to the query using the Shared relation
+ * @method     ChildUserQuery rightJoinWithShared() Adds a RIGHT JOIN clause and with to the query using the Shared relation
+ * @method     ChildUserQuery innerJoinWithShared() Adds a INNER JOIN clause and with to the query using the Shared relation
+ *
+ * @method     \Models\NoteQuery|\Models\CategoryQuery|\Models\NotificationQuery|\Models\CommentQuery|\Models\IdentityQuery|\Models\UserGroupQuery|\Models\SharedQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildUser findOne(ConnectionInterface $con = null) Return the first ChildUser matching the query
  * @method     ChildUser findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUser matching the query, or a new ChildUser object populated from the query conditions when no match is found
@@ -921,6 +981,453 @@ abstract class UserQuery extends ModelCriteria
         return $this
             ->joinCategory($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Category', '\Models\CategoryQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Notification object
+     *
+     * @param \Models\Notification|ObjectCollection $notification the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByNotificationRelatedByUserId($notification, $comparison = null)
+    {
+        if ($notification instanceof \Models\Notification) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $notification->getUserId(), $comparison);
+        } elseif ($notification instanceof ObjectCollection) {
+            return $this
+                ->useNotificationRelatedByUserIdQuery()
+                ->filterByPrimaryKeys($notification->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByNotificationRelatedByUserId() only accepts arguments of type \Models\Notification or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the NotificationRelatedByUserId relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinNotificationRelatedByUserId($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('NotificationRelatedByUserId');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'NotificationRelatedByUserId');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the NotificationRelatedByUserId relation Notification object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\NotificationQuery A secondary query class using the current class as primary query
+     */
+    public function useNotificationRelatedByUserIdQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinNotificationRelatedByUserId($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'NotificationRelatedByUserId', '\Models\NotificationQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Notification object
+     *
+     * @param \Models\Notification|ObjectCollection $notification the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByNotificationRelatedByOriginTypeOriginId($notification, $comparison = null)
+    {
+        if ($notification instanceof \Models\Notification) {
+            return $this
+                ->where("'user' = ?", $notification->getOriginType(), 2)
+                ->addUsingAlias(UserTableMap::COL_ID, $notification->getOriginId(), $comparison);
+        } else {
+            throw new PropelException('filterByNotificationRelatedByOriginTypeOriginId() only accepts arguments of type \Models\Notification');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the NotificationRelatedByOriginTypeOriginId relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinNotificationRelatedByOriginTypeOriginId($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('NotificationRelatedByOriginTypeOriginId');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'NotificationRelatedByOriginTypeOriginId');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the NotificationRelatedByOriginTypeOriginId relation Notification object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\NotificationQuery A secondary query class using the current class as primary query
+     */
+    public function useNotificationRelatedByOriginTypeOriginIdQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinNotificationRelatedByOriginTypeOriginId($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'NotificationRelatedByOriginTypeOriginId', '\Models\NotificationQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Comment object
+     *
+     * @param \Models\Comment|ObjectCollection $comment the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByComment($comment, $comparison = null)
+    {
+        if ($comment instanceof \Models\Comment) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $comment->getUserId(), $comparison);
+        } elseif ($comment instanceof ObjectCollection) {
+            return $this
+                ->useCommentQuery()
+                ->filterByPrimaryKeys($comment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByComment() only accepts arguments of type \Models\Comment or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Comment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinComment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Comment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Comment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Comment relation Comment object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\CommentQuery A secondary query class using the current class as primary query
+     */
+    public function useCommentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinComment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Comment', '\Models\CommentQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Identity object
+     *
+     * @param \Models\Identity|ObjectCollection $identity the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByIdentity($identity, $comparison = null)
+    {
+        if ($identity instanceof \Models\Identity) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $identity->getUserId(), $comparison);
+        } elseif ($identity instanceof ObjectCollection) {
+            return $this
+                ->useIdentityQuery()
+                ->filterByPrimaryKeys($identity->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByIdentity() only accepts arguments of type \Models\Identity or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Identity relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinIdentity($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Identity');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Identity');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Identity relation Identity object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\IdentityQuery A secondary query class using the current class as primary query
+     */
+    public function useIdentityQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinIdentity($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Identity', '\Models\IdentityQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\UserGroup object
+     *
+     * @param \Models\UserGroup|ObjectCollection $userGroup the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByUserGroup($userGroup, $comparison = null)
+    {
+        if ($userGroup instanceof \Models\UserGroup) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $userGroup->getUserId(), $comparison);
+        } elseif ($userGroup instanceof ObjectCollection) {
+            return $this
+                ->useUserGroupQuery()
+                ->filterByPrimaryKeys($userGroup->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByUserGroup() only accepts arguments of type \Models\UserGroup or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the UserGroup relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinUserGroup($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('UserGroup');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'UserGroup');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the UserGroup relation UserGroup object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\UserGroupQuery A secondary query class using the current class as primary query
+     */
+    public function useUserGroupQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUserGroup($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'UserGroup', '\Models\UserGroupQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\Shared object
+     *
+     * @param \Models\Shared|ObjectCollection $shared the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByShared($shared, $comparison = null)
+    {
+        if ($shared instanceof \Models\Shared) {
+            return $this
+                ->where("'user' = ?", $shared->getToType(), 2)
+                ->addUsingAlias(UserTableMap::COL_ID, $shared->getToId(), $comparison);
+        } else {
+            throw new PropelException('filterByShared() only accepts arguments of type \Models\Shared');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Shared relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinShared($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Shared');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Shared');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Shared relation Shared object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\SharedQuery A secondary query class using the current class as primary query
+     */
+    public function useSharedQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinShared($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Shared', '\Models\SharedQuery');
+    }
+
+    /**
+     * Filter the query by a related Group object
+     * using the user_group table as cross reference
+     *
+     * @param Group $group the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByGroup($group, $comparison = Criteria::EQUAL)
+    {
+        return $this
+            ->useUserGroupQuery()
+            ->filterByGroup($group, $comparison)
+            ->endUse();
     }
 
     /**

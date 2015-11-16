@@ -5,21 +5,16 @@ namespace Models\Base;
 use \DateTime;
 use \Exception;
 use \PDO;
-use Models\Category as ChildCategory;
-use Models\CategoryQuery as ChildCategoryQuery;
 use Models\Note as ChildNote;
 use Models\NoteQuery as ChildNoteQuery;
-use Models\Shared as ChildShared;
-use Models\SharedQuery as ChildSharedQuery;
-use Models\User as ChildUser;
-use Models\UserQuery as ChildUserQuery;
-use Models\Map\CategoryTableMap;
+use Models\SubNote as ChildSubNote;
+use Models\SubNoteQuery as ChildSubNoteQuery;
+use Models\Map\SubNoteTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -29,18 +24,18 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'category' table.
+ * Base class that represents a row from the 'sub_note' table.
  *
  *
  *
 * @package    propel.generator.Models.Base
 */
-abstract class Category implements ActiveRecordInterface
+abstract class SubNote implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Models\\Map\\CategoryTableMap';
+    const TABLE_MAP = '\\Models\\Map\\SubNoteTableMap';
 
 
     /**
@@ -77,25 +72,33 @@ abstract class Category implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the user_id field.
+     * The value for the note_id field.
      *
      * @var        int
      */
-    protected $user_id;
+    protected $note_id;
 
     /**
-     * The value for the name field.
+     * The value for the text field.
      *
      * @var        string
      */
-    protected $name;
+    protected $text;
 
     /**
-     * The value for the color field.
+     * The value for the state field.
      *
-     * @var        string
+     * Note: this column has a database default value of: 0
+     * @var        int
      */
-    protected $color;
+    protected $state;
+
+    /**
+     * The value for the done_at field.
+     *
+     * @var        \DateTime
+     */
+    protected $done_at;
 
     /**
      * The value for the created_at field.
@@ -112,21 +115,9 @@ abstract class Category implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildUser
+     * @var        ChildNote
      */
-    protected $aUser;
-
-    /**
-     * @var        ObjectCollection|ChildNote[] Collection to store aggregation of ChildNote objects.
-     */
-    protected $collNotes;
-    protected $collNotesPartial;
-
-    /**
-     * @var        ObjectCollection|ChildShared[] Collection to store aggregation of ChildShared objects.
-     */
-    protected $collShareds;
-    protected $collSharedsPartial;
+    protected $aNote;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -137,22 +128,23 @@ abstract class Category implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildNote[]
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
      */
-    protected $notesScheduledForDeletion = null;
+    public function applyDefaultValues()
+    {
+        $this->state = 0;
+    }
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildShared[]
-     */
-    protected $sharedsScheduledForDeletion = null;
-
-    /**
-     * Initializes internal state of Models\Base\Category object.
+     * Initializes internal state of Models\Base\SubNote object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -244,9 +236,9 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Category</code> instance.  If
-     * <code>obj</code> is an instance of <code>Category</code>, delegates to
-     * <code>equals(Category)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>SubNote</code> instance.  If
+     * <code>obj</code> is an instance of <code>SubNote</code>, delegates to
+     * <code>equals(SubNote)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -312,7 +304,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Category The current object, for fluid interface
+     * @return $this|SubNote The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -381,33 +373,62 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Get the [user_id] column value.
+     * Get the [note_id] column value.
      *
      * @return int
      */
-    public function getUserId()
+    public function getNoteId()
     {
-        return $this->user_id;
+        return $this->note_id;
     }
 
     /**
-     * Get the [name] column value.
+     * Get the [text] column value.
      *
      * @return string
      */
-    public function getName()
+    public function getText()
     {
-        return $this->name;
+        return $this->text;
     }
 
     /**
-     * Get the [color] column value.
+     * Get the [state] column value.
      *
      * @return string
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function getColor()
+    public function getState()
     {
-        return $this->color;
+        if (null === $this->state) {
+            return null;
+        }
+        $valueSet = SubNoteTableMap::getValueSet(SubNoteTableMap::COL_STATE);
+        if (!isset($valueSet[$this->state])) {
+            throw new PropelException('Unknown stored enum key: ' . $this->state);
+        }
+
+        return $valueSet[$this->state];
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [done_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw DateTime object will be returned.
+     *
+     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getDoneAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->done_at;
+        } else {
+            return $this->done_at instanceof \DateTime ? $this->done_at->format($format) : null;
+        }
     }
 
     /**
@@ -454,7 +475,7 @@ abstract class Category implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\SubNote The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -464,82 +485,107 @@ abstract class Category implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+            $this->modifiedColumns[SubNoteTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [user_id] column.
+     * Set the value of [note_id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\SubNote The current object (for fluent API support)
      */
-    public function setUserId($v)
+    public function setNoteId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_USER_ID] = true;
+        if ($this->note_id !== $v) {
+            $this->note_id = $v;
+            $this->modifiedColumns[SubNoteTableMap::COL_NOTE_ID] = true;
         }
 
-        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
-            $this->aUser = null;
+        if ($this->aNote !== null && $this->aNote->getId() !== $v) {
+            $this->aNote = null;
         }
 
         return $this;
-    } // setUserId()
+    } // setNoteId()
 
     /**
-     * Set the value of [name] column.
+     * Set the value of [text] column.
      *
      * @param string $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\SubNote The current object (for fluent API support)
      */
-    public function setName($v)
+    public function setText($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->name !== $v) {
-            $this->name = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_NAME] = true;
+        if ($this->text !== $v) {
+            $this->text = $v;
+            $this->modifiedColumns[SubNoteTableMap::COL_TEXT] = true;
         }
 
         return $this;
-    } // setName()
+    } // setText()
 
     /**
-     * Set the value of [color] column.
+     * Set the value of [state] column.
      *
-     * @param string $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @param  string $v new value
+     * @return $this|\Models\SubNote The current object (for fluent API support)
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function setColor($v)
+    public function setState($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            $valueSet = SubNoteTableMap::getValueSet(SubNoteTableMap::COL_STATE);
+            if (!in_array($v, $valueSet)) {
+                throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $v));
+            }
+            $v = array_search($v, $valueSet);
         }
 
-        if ($this->color !== $v) {
-            $this->color = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_COLOR] = true;
+        if ($this->state !== $v) {
+            $this->state = $v;
+            $this->modifiedColumns[SubNoteTableMap::COL_STATE] = true;
         }
 
         return $this;
-    } // setColor()
+    } // setState()
+
+    /**
+     * Sets the value of [done_at] column to a normalized version of the date/time value specified.
+     *
+     * @param  mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return $this|\Models\SubNote The current object (for fluent API support)
+     */
+    public function setDoneAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->done_at !== null || $dt !== null) {
+            if ($this->done_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->done_at->format("Y-m-d H:i:s")) {
+                $this->done_at = $dt === null ? null : clone $dt;
+                $this->modifiedColumns[SubNoteTableMap::COL_DONE_AT] = true;
+            }
+        } // if either are not null
+
+        return $this;
+    } // setDoneAt()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\SubNote The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -547,7 +593,7 @@ abstract class Category implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($this->created_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->created_at->format("Y-m-d H:i:s")) {
                 $this->created_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[CategoryTableMap::COL_CREATED_AT] = true;
+                $this->modifiedColumns[SubNoteTableMap::COL_CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -559,7 +605,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\SubNote The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -567,7 +613,7 @@ abstract class Category implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->updated_at->format("Y-m-d H:i:s")) {
                 $this->updated_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[CategoryTableMap::COL_UPDATED_AT] = true;
+                $this->modifiedColumns[SubNoteTableMap::COL_UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -584,6 +630,10 @@ abstract class Category implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->state !== 0) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -610,25 +660,31 @@ abstract class Category implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : SubNoteTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : SubNoteTableMap::translateFieldName('NoteId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->note_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : SubNoteTableMap::translateFieldName('Text', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->text = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : CategoryTableMap::translateFieldName('Color', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->color = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : SubNoteTableMap::translateFieldName('State', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->state = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : CategoryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : SubNoteTableMap::translateFieldName('DoneAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->done_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : SubNoteTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : CategoryTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : SubNoteTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -641,10 +697,10 @@ abstract class Category implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = CategoryTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = SubNoteTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Models\\Category'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\Models\\SubNote'), 0, $e);
         }
     }
 
@@ -663,8 +719,8 @@ abstract class Category implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
-            $this->aUser = null;
+        if ($this->aNote !== null && $this->note_id !== $this->aNote->getId()) {
+            $this->aNote = null;
         }
     } // ensureConsistency
 
@@ -689,13 +745,13 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(SubNoteTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildCategoryQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildSubNoteQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -705,11 +761,7 @@ abstract class Category implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
-            $this->collNotes = null;
-
-            $this->collShareds = null;
-
+            $this->aNote = null;
         } // if (deep)
     }
 
@@ -719,8 +771,8 @@ abstract class Category implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Category::setDeleted()
-     * @see Category::isDeleted()
+     * @see SubNote::setDeleted()
+     * @see SubNote::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -729,11 +781,11 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SubNoteTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildCategoryQuery::create()
+            $deleteQuery = ChildSubNoteQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -764,7 +816,7 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SubNoteTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -774,16 +826,16 @@ abstract class Category implements ActiveRecordInterface
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
 
-                if (!$this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
+                if (!$this->isColumnModified(SubNoteTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+                if (!$this->isColumnModified(SubNoteTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(SubNoteTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -795,7 +847,7 @@ abstract class Category implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                CategoryTableMap::addInstanceToPool($this);
+                SubNoteTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -826,11 +878,11 @@ abstract class Category implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
+            if ($this->aNote !== null) {
+                if ($this->aNote->isModified() || $this->aNote->isNew()) {
+                    $affectedRows += $this->aNote->save($con);
                 }
-                $this->setUser($this->aUser);
+                $this->setNote($this->aNote);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -842,42 +894,6 @@ abstract class Category implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
-            }
-
-            if ($this->notesScheduledForDeletion !== null) {
-                if (!$this->notesScheduledForDeletion->isEmpty()) {
-                    foreach ($this->notesScheduledForDeletion as $note) {
-                        // need to save related object because we set the relation to null
-                        $note->save($con);
-                    }
-                    $this->notesScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collNotes !== null) {
-                foreach ($this->collNotes as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->sharedsScheduledForDeletion !== null) {
-                if (!$this->sharedsScheduledForDeletion->isEmpty()) {
-                    foreach ($this->sharedsScheduledForDeletion as $shared) {
-                        // need to save related object because we set the relation to null
-                        $shared->save($con);
-                    }
-                    $this->sharedsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collShareds !== null) {
-                foreach ($this->collShareds as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
             }
 
             $this->alreadyInSave = false;
@@ -900,33 +916,36 @@ abstract class Category implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+        $this->modifiedColumns[SubNoteTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategoryTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . SubNoteTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
+        if ($this->isColumnModified(SubNoteTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
+        if ($this->isColumnModified(SubNoteTableMap::COL_NOTE_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'note_id';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'name';
+        if ($this->isColumnModified(SubNoteTableMap::COL_TEXT)) {
+            $modifiedColumns[':p' . $index++]  = 'text';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_COLOR)) {
-            $modifiedColumns[':p' . $index++]  = 'color';
+        if ($this->isColumnModified(SubNoteTableMap::COL_STATE)) {
+            $modifiedColumns[':p' . $index++]  = 'state';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
+        if ($this->isColumnModified(SubNoteTableMap::COL_DONE_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'done_at';
+        }
+        if ($this->isColumnModified(SubNoteTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+        if ($this->isColumnModified(SubNoteTableMap::COL_UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
-            'INSERT INTO category (%s) VALUES (%s)',
+            'INSERT INTO sub_note (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -938,14 +957,17 @@ abstract class Category implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                    case 'note_id':
+                        $stmt->bindValue($identifier, $this->note_id, PDO::PARAM_INT);
                         break;
-                    case 'name':
-                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
+                    case 'text':
+                        $stmt->bindValue($identifier, $this->text, PDO::PARAM_STR);
                         break;
-                    case 'color':
-                        $stmt->bindValue($identifier, $this->color, PDO::PARAM_STR);
+                    case 'state':
+                        $stmt->bindValue($identifier, $this->state, PDO::PARAM_INT);
+                        break;
+                    case 'done_at':
+                        $stmt->bindValue($identifier, $this->done_at ? $this->done_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -999,7 +1021,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = SubNoteTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -1019,18 +1041,21 @@ abstract class Category implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getUserId();
+                return $this->getNoteId();
                 break;
             case 2:
-                return $this->getName();
+                return $this->getText();
                 break;
             case 3:
-                return $this->getColor();
+                return $this->getState();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getDoneAt();
                 break;
             case 5:
+                return $this->getCreatedAt();
+                break;
+            case 6:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1057,18 +1082,19 @@ abstract class Category implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['Category'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['SubNote'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Category'][$this->hashCode()] = true;
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['SubNote'][$this->hashCode()] = true;
+        $keys = SubNoteTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getUserId(),
-            $keys[2] => $this->getName(),
-            $keys[3] => $this->getColor(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[1] => $this->getNoteId(),
+            $keys[2] => $this->getText(),
+            $keys[3] => $this->getState(),
+            $keys[4] => $this->getDoneAt(),
+            $keys[5] => $this->getCreatedAt(),
+            $keys[6] => $this->getUpdatedAt(),
         );
         if ($result[$keys[4]] instanceof \DateTime) {
             $result[$keys[4]] = $result[$keys[4]]->format('c');
@@ -1078,56 +1104,30 @@ abstract class Category implements ActiveRecordInterface
             $result[$keys[5]] = $result[$keys[5]]->format('c');
         }
 
+        if ($result[$keys[6]] instanceof \DateTime) {
+            $result[$keys[6]] = $result[$keys[6]]->format('c');
+        }
+
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
+            if (null !== $this->aNote) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
+                        $key = 'note';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'user';
+                        $key = 'note';
                         break;
                     default:
-                        $key = 'User';
+                        $key = 'Note';
                 }
 
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->collNotes) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'notes';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'notes';
-                        break;
-                    default:
-                        $key = 'Notes';
-                }
-
-                $result[$key] = $this->collNotes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collShareds) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'shareds';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'shareds';
-                        break;
-                    default:
-                        $key = 'Shareds';
-                }
-
-                $result[$key] = $this->collShareds->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aNote->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1143,11 +1143,11 @@ abstract class Category implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Models\Category
+     * @return $this|\Models\SubNote
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = SubNoteTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1158,7 +1158,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Models\Category
+     * @return $this|\Models\SubNote
      */
     public function setByPosition($pos, $value)
     {
@@ -1167,18 +1167,25 @@ abstract class Category implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setUserId($value);
+                $this->setNoteId($value);
                 break;
             case 2:
-                $this->setName($value);
+                $this->setText($value);
                 break;
             case 3:
-                $this->setColor($value);
+                $valueSet = SubNoteTableMap::getValueSet(SubNoteTableMap::COL_STATE);
+                if (isset($valueSet[$value])) {
+                    $value = $valueSet[$value];
+                }
+                $this->setState($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setDoneAt($value);
                 break;
             case 5:
+                $this->setCreatedAt($value);
+                break;
+            case 6:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1205,25 +1212,28 @@ abstract class Category implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $keys = SubNoteTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setUserId($arr[$keys[1]]);
+            $this->setNoteId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setName($arr[$keys[2]]);
+            $this->setText($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setColor($arr[$keys[3]]);
+            $this->setState($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
+            $this->setDoneAt($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setCreatedAt($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setUpdatedAt($arr[$keys[6]]);
         }
     }
 
@@ -1244,7 +1254,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Models\Category The current object, for fluid interface
+     * @return $this|\Models\SubNote The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1264,25 +1274,28 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
+        $criteria = new Criteria(SubNoteTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
-            $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(SubNoteTableMap::COL_ID)) {
+            $criteria->add(SubNoteTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_USER_ID)) {
-            $criteria->add(CategoryTableMap::COL_USER_ID, $this->user_id);
+        if ($this->isColumnModified(SubNoteTableMap::COL_NOTE_ID)) {
+            $criteria->add(SubNoteTableMap::COL_NOTE_ID, $this->note_id);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
-            $criteria->add(CategoryTableMap::COL_NAME, $this->name);
+        if ($this->isColumnModified(SubNoteTableMap::COL_TEXT)) {
+            $criteria->add(SubNoteTableMap::COL_TEXT, $this->text);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_COLOR)) {
-            $criteria->add(CategoryTableMap::COL_COLOR, $this->color);
+        if ($this->isColumnModified(SubNoteTableMap::COL_STATE)) {
+            $criteria->add(SubNoteTableMap::COL_STATE, $this->state);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
-            $criteria->add(CategoryTableMap::COL_CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(SubNoteTableMap::COL_DONE_AT)) {
+            $criteria->add(SubNoteTableMap::COL_DONE_AT, $this->done_at);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
-            $criteria->add(CategoryTableMap::COL_UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(SubNoteTableMap::COL_CREATED_AT)) {
+            $criteria->add(SubNoteTableMap::COL_CREATED_AT, $this->created_at);
+        }
+        if ($this->isColumnModified(SubNoteTableMap::COL_UPDATED_AT)) {
+            $criteria->add(SubNoteTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1300,8 +1313,8 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildCategoryQuery::create();
-        $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        $criteria = ChildSubNoteQuery::create();
+        $criteria->add(SubNoteTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1363,38 +1376,19 @@ abstract class Category implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Models\Category (or compatible) type.
+     * @param      object $copyObj An object of \Models\SubNote (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setUserId($this->getUserId());
-        $copyObj->setName($this->getName());
-        $copyObj->setColor($this->getColor());
+        $copyObj->setNoteId($this->getNoteId());
+        $copyObj->setText($this->getText());
+        $copyObj->setState($this->getState());
+        $copyObj->setDoneAt($this->getDoneAt());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getNotes() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addNote($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getShareds() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addShared($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1410,7 +1404,7 @@ abstract class Category implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Models\Category Clone of current object.
+     * @return \Models\SubNote Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1424,26 +1418,26 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildUser object.
+     * Declares an association between this object and a ChildNote object.
      *
-     * @param  ChildUser $v
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @param  ChildNote $v
+     * @return $this|\Models\SubNote The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setUser(ChildUser $v = null)
+    public function setNote(ChildNote $v = null)
     {
         if ($v === null) {
-            $this->setUserId(NULL);
+            $this->setNoteId(NULL);
         } else {
-            $this->setUserId($v->getId());
+            $this->setNoteId($v->getId());
         }
 
-        $this->aUser = $v;
+        $this->aNote = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
+        // If this object has already been added to the ChildNote object, it will not be re-added.
         if ($v !== null) {
-            $v->addCategory($this);
+            $v->addSubNote($this);
         }
 
 
@@ -1452,581 +1446,26 @@ abstract class Category implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildUser object
+     * Get the associated ChildNote object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
+     * @return ChildNote The associated ChildNote object.
      * @throws PropelException
      */
-    public function getUser(ConnectionInterface $con = null)
+    public function getNote(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
+        if ($this->aNote === null && ($this->note_id !== null)) {
+            $this->aNote = ChildNoteQuery::create()->findPk($this->note_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aUser->addCategories($this);
+                $this->aNote->addSubNotes($this);
              */
         }
 
-        return $this->aUser;
-    }
-
-
-    /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
-     *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('Note' == $relationName) {
-            return $this->initNotes();
-        }
-        if ('Shared' == $relationName) {
-            return $this->initShareds();
-        }
-    }
-
-    /**
-     * Clears out the collNotes collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addNotes()
-     */
-    public function clearNotes()
-    {
-        $this->collNotes = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collNotes collection loaded partially.
-     */
-    public function resetPartialNotes($v = true)
-    {
-        $this->collNotesPartial = $v;
-    }
-
-    /**
-     * Initializes the collNotes collection.
-     *
-     * By default this just sets the collNotes collection to an empty array (like clearcollNotes());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initNotes($overrideExisting = true)
-    {
-        if (null !== $this->collNotes && !$overrideExisting) {
-            return;
-        }
-        $this->collNotes = new ObjectCollection();
-        $this->collNotes->setModel('\Models\Note');
-    }
-
-    /**
-     * Gets an array of ChildNote objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
-     * @throws PropelException
-     */
-    public function getNotes(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
-                // return empty collection
-                $this->initNotes();
-            } else {
-                $collNotes = ChildNoteQuery::create(null, $criteria)
-                    ->filterByCategory($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collNotesPartial && count($collNotes)) {
-                        $this->initNotes(false);
-
-                        foreach ($collNotes as $obj) {
-                            if (false == $this->collNotes->contains($obj)) {
-                                $this->collNotes->append($obj);
-                            }
-                        }
-
-                        $this->collNotesPartial = true;
-                    }
-
-                    return $collNotes;
-                }
-
-                if ($partial && $this->collNotes) {
-                    foreach ($this->collNotes as $obj) {
-                        if ($obj->isNew()) {
-                            $collNotes[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collNotes = $collNotes;
-                $this->collNotesPartial = false;
-            }
-        }
-
-        return $this->collNotes;
-    }
-
-    /**
-     * Sets a collection of ChildNote objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $notes A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function setNotes(Collection $notes, ConnectionInterface $con = null)
-    {
-        /** @var ChildNote[] $notesToDelete */
-        $notesToDelete = $this->getNotes(new Criteria(), $con)->diff($notes);
-
-
-        $this->notesScheduledForDeletion = $notesToDelete;
-
-        foreach ($notesToDelete as $noteRemoved) {
-            $noteRemoved->setCategory(null);
-        }
-
-        $this->collNotes = null;
-        foreach ($notes as $note) {
-            $this->addNote($note);
-        }
-
-        $this->collNotes = $notes;
-        $this->collNotesPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related Note objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Note objects.
-     * @throws PropelException
-     */
-    public function countNotes(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getNotes());
-            }
-
-            $query = ChildNoteQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByCategory($this)
-                ->count($con);
-        }
-
-        return count($this->collNotes);
-    }
-
-    /**
-     * Method called to associate a ChildNote object to this object
-     * through the ChildNote foreign key attribute.
-     *
-     * @param  ChildNote $l ChildNote
-     * @return $this|\Models\Category The current object (for fluent API support)
-     */
-    public function addNote(ChildNote $l)
-    {
-        if ($this->collNotes === null) {
-            $this->initNotes();
-            $this->collNotesPartial = true;
-        }
-
-        if (!$this->collNotes->contains($l)) {
-            $this->doAddNote($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildNote $note The ChildNote object to add.
-     */
-    protected function doAddNote(ChildNote $note)
-    {
-        $this->collNotes[]= $note;
-        $note->setCategory($this);
-    }
-
-    /**
-     * @param  ChildNote $note The ChildNote object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function removeNote(ChildNote $note)
-    {
-        if ($this->getNotes()->contains($note)) {
-            $pos = $this->collNotes->search($note);
-            $this->collNotes->remove($pos);
-            if (null === $this->notesScheduledForDeletion) {
-                $this->notesScheduledForDeletion = clone $this->collNotes;
-                $this->notesScheduledForDeletion->clear();
-            }
-            $this->notesScheduledForDeletion[]= $note;
-            $note->setCategory(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Notes from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
-     */
-    public function getNotesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildNoteQuery::create(null, $criteria);
-        $query->joinWith('User', $joinBehavior);
-
-        return $this->getNotes($query, $con);
-    }
-
-    /**
-     * Clears out the collShareds collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addShareds()
-     */
-    public function clearShareds()
-    {
-        $this->collShareds = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collShareds collection loaded partially.
-     */
-    public function resetPartialShareds($v = true)
-    {
-        $this->collSharedsPartial = $v;
-    }
-
-    /**
-     * Initializes the collShareds collection.
-     *
-     * By default this just sets the collShareds collection to an empty array (like clearcollShareds());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initShareds($overrideExisting = true)
-    {
-        if (null !== $this->collShareds && !$overrideExisting) {
-            return;
-        }
-        $this->collShareds = new ObjectCollection();
-        $this->collShareds->setModel('\Models\Shared');
-    }
-
-    /**
-     * Gets an array of ChildShared objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     * @throws PropelException
-     */
-    public function getShareds(Criteria $criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSharedsPartial && !$this->isNew();
-        if (null === $this->collShareds || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collShareds) {
-                // return empty collection
-                $this->initShareds();
-            } else {
-                $collShareds = ChildSharedQuery::create(null, $criteria)
-                    ->filterByCategory($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collSharedsPartial && count($collShareds)) {
-                        $this->initShareds(false);
-
-                        foreach ($collShareds as $obj) {
-                            if (false == $this->collShareds->contains($obj)) {
-                                $this->collShareds->append($obj);
-                            }
-                        }
-
-                        $this->collSharedsPartial = true;
-                    }
-
-                    return $collShareds;
-                }
-
-                if ($partial && $this->collShareds) {
-                    foreach ($this->collShareds as $obj) {
-                        if ($obj->isNew()) {
-                            $collShareds[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collShareds = $collShareds;
-                $this->collSharedsPartial = false;
-            }
-        }
-
-        return $this->collShareds;
-    }
-
-    /**
-     * Sets a collection of ChildShared objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $shareds A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function setShareds(Collection $shareds, ConnectionInterface $con = null)
-    {
-        /** @var ChildShared[] $sharedsToDelete */
-        $sharedsToDelete = $this->getShareds(new Criteria(), $con)->diff($shareds);
-
-
-        $this->sharedsScheduledForDeletion = $sharedsToDelete;
-
-        foreach ($sharedsToDelete as $sharedRemoved) {
-            $sharedRemoved->setCategory(null);
-        }
-
-        $this->collShareds = null;
-        foreach ($shareds as $shared) {
-            $this->addShared($shared);
-        }
-
-        $this->collShareds = $shareds;
-        $this->collSharedsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related Shared objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related Shared objects.
-     * @throws PropelException
-     */
-    public function countShareds(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collSharedsPartial && !$this->isNew();
-        if (null === $this->collShareds || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collShareds) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getShareds());
-            }
-
-            $query = ChildSharedQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByCategory($this)
-                ->count($con);
-        }
-
-        return count($this->collShareds);
-    }
-
-    /**
-     * Method called to associate a ChildShared object to this object
-     * through the ChildShared foreign key attribute.
-     *
-     * @param  ChildShared $l ChildShared
-     * @return $this|\Models\Category The current object (for fluent API support)
-     */
-    public function addShared(ChildShared $l)
-    {
-        if ($this->collShareds === null) {
-            $this->initShareds();
-            $this->collSharedsPartial = true;
-        }
-
-        if (!$this->collShareds->contains($l)) {
-            $this->doAddShared($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param ChildShared $shared The ChildShared object to add.
-     */
-    protected function doAddShared(ChildShared $shared)
-    {
-        $this->collShareds[]= $shared;
-        $shared->setCategory($this);
-    }
-
-    /**
-     * @param  ChildShared $shared The ChildShared object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
-     */
-    public function removeShared(ChildShared $shared)
-    {
-        if ($this->getShareds()->contains($shared)) {
-            $pos = $this->collShareds->search($shared);
-            $this->collShareds->remove($pos);
-            if (null === $this->sharedsScheduledForDeletion) {
-                $this->sharedsScheduledForDeletion = clone $this->collShareds;
-                $this->sharedsScheduledForDeletion->clear();
-            }
-            $this->sharedsScheduledForDeletion[]= clone $shared;
-            $shared->setCategory(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Shareds from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     */
-    public function getSharedsJoinNote(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildSharedQuery::create(null, $criteria);
-        $query->joinWith('Note', $joinBehavior);
-
-        return $this->getShareds($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Shareds from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     */
-    public function getSharedsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildSharedQuery::create(null, $criteria);
-        $query->joinWith('User', $joinBehavior);
-
-        return $this->getShareds($query, $con);
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Shareds from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
-     */
-    public function getSharedsJoinGroup(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildSharedQuery::create(null, $criteria);
-        $query->joinWith('Group', $joinBehavior);
-
-        return $this->getShareds($query, $con);
+        return $this->aNote;
     }
 
     /**
@@ -2036,17 +1475,19 @@ abstract class Category implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeCategory($this);
+        if (null !== $this->aNote) {
+            $this->aNote->removeSubNote($this);
         }
         $this->id = null;
-        $this->user_id = null;
-        $this->name = null;
-        $this->color = null;
+        $this->note_id = null;
+        $this->text = null;
+        $this->state = null;
+        $this->done_at = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -2063,21 +1504,9 @@ abstract class Category implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collNotes) {
-                foreach ($this->collNotes as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collShareds) {
-                foreach ($this->collShareds as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collNotes = null;
-        $this->collShareds = null;
-        $this->aUser = null;
+        $this->aNote = null;
     }
 
     /**
@@ -2087,7 +1516,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(CategoryTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(SubNoteTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -2095,11 +1524,11 @@ abstract class Category implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     $this|ChildCategory The current object (for fluent API support)
+     * @return     $this|ChildSubNote The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[CategoryTableMap::COL_UPDATED_AT] = true;
+        $this->modifiedColumns[SubNoteTableMap::COL_UPDATED_AT] = true;
 
         return $this;
     }

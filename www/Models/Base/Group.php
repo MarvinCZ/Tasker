@@ -5,15 +5,15 @@ namespace Models\Base;
 use \DateTime;
 use \Exception;
 use \PDO;
-use Models\Category as ChildCategory;
-use Models\CategoryQuery as ChildCategoryQuery;
-use Models\Note as ChildNote;
-use Models\NoteQuery as ChildNoteQuery;
+use Models\Group as ChildGroup;
+use Models\GroupQuery as ChildGroupQuery;
 use Models\Shared as ChildShared;
 use Models\SharedQuery as ChildSharedQuery;
 use Models\User as ChildUser;
+use Models\UserGroup as ChildUserGroup;
+use Models\UserGroupQuery as ChildUserGroupQuery;
 use Models\UserQuery as ChildUserQuery;
-use Models\Map\CategoryTableMap;
+use Models\Map\GroupTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -29,18 +29,18 @@ use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 
 /**
- * Base class that represents a row from the 'category' table.
+ * Base class that represents a row from the 'group' table.
  *
  *
  *
 * @package    propel.generator.Models.Base
 */
-abstract class Category implements ActiveRecordInterface
+abstract class Group implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Models\\Map\\CategoryTableMap';
+    const TABLE_MAP = '\\Models\\Map\\GroupTableMap';
 
 
     /**
@@ -77,25 +77,11 @@ abstract class Category implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the user_id field.
-     *
-     * @var        int
-     */
-    protected $user_id;
-
-    /**
      * The value for the name field.
      *
      * @var        string
      */
     protected $name;
-
-    /**
-     * The value for the color field.
-     *
-     * @var        string
-     */
-    protected $color;
 
     /**
      * The value for the created_at field.
@@ -112,21 +98,26 @@ abstract class Category implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        ChildUser
+     * @var        ObjectCollection|ChildUserGroup[] Collection to store aggregation of ChildUserGroup objects.
      */
-    protected $aUser;
-
-    /**
-     * @var        ObjectCollection|ChildNote[] Collection to store aggregation of ChildNote objects.
-     */
-    protected $collNotes;
-    protected $collNotesPartial;
+    protected $collUserGroups;
+    protected $collUserGroupsPartial;
 
     /**
      * @var        ObjectCollection|ChildShared[] Collection to store aggregation of ChildShared objects.
      */
     protected $collShareds;
     protected $collSharedsPartial;
+
+    /**
+     * @var        ObjectCollection|ChildUser[] Cross Collection to store aggregation of ChildUser objects.
+     */
+    protected $collUsers;
+
+    /**
+     * @var bool
+     */
+    protected $collUsersPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -138,9 +129,15 @@ abstract class Category implements ActiveRecordInterface
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildNote[]
+     * @var ObjectCollection|ChildUser[]
      */
-    protected $notesScheduledForDeletion = null;
+    protected $usersScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildUserGroup[]
+     */
+    protected $userGroupsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -149,7 +146,7 @@ abstract class Category implements ActiveRecordInterface
     protected $sharedsScheduledForDeletion = null;
 
     /**
-     * Initializes internal state of Models\Base\Category object.
+     * Initializes internal state of Models\Base\Group object.
      */
     public function __construct()
     {
@@ -244,9 +241,9 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Category</code> instance.  If
-     * <code>obj</code> is an instance of <code>Category</code>, delegates to
-     * <code>equals(Category)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Group</code> instance.  If
+     * <code>obj</code> is an instance of <code>Group</code>, delegates to
+     * <code>equals(Group)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -312,7 +309,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Category The current object, for fluid interface
+     * @return $this|Group The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -381,16 +378,6 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Get the [user_id] column value.
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
      * Get the [name] column value.
      *
      * @return string
@@ -398,16 +385,6 @@ abstract class Category implements ActiveRecordInterface
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Get the [color] column value.
-     *
-     * @return string
-     */
-    public function getColor()
-    {
-        return $this->color;
     }
 
     /**
@@ -454,7 +431,7 @@ abstract class Category implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Group The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -464,41 +441,17 @@ abstract class Category implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+            $this->modifiedColumns[GroupTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [user_id] column.
-     *
-     * @param int $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
-     */
-    public function setUserId($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_USER_ID] = true;
-        }
-
-        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
-            $this->aUser = null;
-        }
-
-        return $this;
-    } // setUserId()
-
-    /**
      * Set the value of [name] column.
      *
      * @param string $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Group The current object (for fluent API support)
      */
     public function setName($v)
     {
@@ -508,38 +461,18 @@ abstract class Category implements ActiveRecordInterface
 
         if ($this->name !== $v) {
             $this->name = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_NAME] = true;
+            $this->modifiedColumns[GroupTableMap::COL_NAME] = true;
         }
 
         return $this;
     } // setName()
 
     /**
-     * Set the value of [color] column.
-     *
-     * @param string $v new value
-     * @return $this|\Models\Category The current object (for fluent API support)
-     */
-    public function setColor($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->color !== $v) {
-            $this->color = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_COLOR] = true;
-        }
-
-        return $this;
-    } // setColor()
-
-    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Group The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -547,7 +480,7 @@ abstract class Category implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($this->created_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->created_at->format("Y-m-d H:i:s")) {
                 $this->created_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[CategoryTableMap::COL_CREATED_AT] = true;
+                $this->modifiedColumns[GroupTableMap::COL_CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -559,7 +492,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Group The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -567,7 +500,7 @@ abstract class Category implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($this->updated_at === null || $dt === null || $dt->format("Y-m-d H:i:s") !== $this->updated_at->format("Y-m-d H:i:s")) {
                 $this->updated_at = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[CategoryTableMap::COL_UPDATED_AT] = true;
+                $this->modifiedColumns[GroupTableMap::COL_UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -610,25 +543,19 @@ abstract class Category implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : GroupTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : GroupTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
             $this->name = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : CategoryTableMap::translateFieldName('Color', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->color = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : CategoryTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : GroupTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : CategoryTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : GroupTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -641,10 +568,10 @@ abstract class Category implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = CategoryTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = GroupTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Models\\Category'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\Models\\Group'), 0, $e);
         }
     }
 
@@ -663,9 +590,6 @@ abstract class Category implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
-            $this->aUser = null;
-        }
     } // ensureConsistency
 
     /**
@@ -689,13 +613,13 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(GroupTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildCategoryQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildGroupQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -705,11 +629,11 @@ abstract class Category implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
-            $this->collNotes = null;
+            $this->collUserGroups = null;
 
             $this->collShareds = null;
 
+            $this->collUsers = null;
         } // if (deep)
     }
 
@@ -719,8 +643,8 @@ abstract class Category implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Category::setDeleted()
-     * @see Category::isDeleted()
+     * @see Group::setDeleted()
+     * @see Group::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -729,11 +653,11 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(GroupTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildCategoryQuery::create()
+            $deleteQuery = ChildGroupQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -764,7 +688,7 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(GroupTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -774,16 +698,16 @@ abstract class Category implements ActiveRecordInterface
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
 
-                if (!$this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
+                if (!$this->isColumnModified(GroupTableMap::COL_CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+                if (!$this->isColumnModified(GroupTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(GroupTableMap::COL_UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -795,7 +719,7 @@ abstract class Category implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                CategoryTableMap::addInstanceToPool($this);
+                GroupTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -821,18 +745,6 @@ abstract class Category implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
-            // We call the save method on the following object(s) if they
-            // were passed to this object by their corresponding set
-            // method.  This object relates to these object(s) by a
-            // foreign key reference.
-
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
-                }
-                $this->setUser($this->aUser);
-            }
-
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -844,18 +756,46 @@ abstract class Category implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->notesScheduledForDeletion !== null) {
-                if (!$this->notesScheduledForDeletion->isEmpty()) {
-                    foreach ($this->notesScheduledForDeletion as $note) {
-                        // need to save related object because we set the relation to null
-                        $note->save($con);
+            if ($this->usersScheduledForDeletion !== null) {
+                if (!$this->usersScheduledForDeletion->isEmpty()) {
+                    $pks = array();
+                    foreach ($this->usersScheduledForDeletion as $entry) {
+                        $entryPk = [];
+
+                        $entryPk[1] = $this->getId();
+                        $entryPk[0] = $entry->getId();
+                        $pks[] = $entryPk;
                     }
-                    $this->notesScheduledForDeletion = null;
+
+                    \Models\UserGroupQuery::create()
+                        ->filterByPrimaryKeys($pks)
+                        ->delete($con);
+
+                    $this->usersScheduledForDeletion = null;
+                }
+
+            }
+
+            if ($this->collUsers) {
+                foreach ($this->collUsers as $user) {
+                    if (!$user->isDeleted() && ($user->isNew() || $user->isModified())) {
+                        $user->save($con);
+                    }
                 }
             }
 
-            if ($this->collNotes !== null) {
-                foreach ($this->collNotes as $referrerFK) {
+
+            if ($this->userGroupsScheduledForDeletion !== null) {
+                if (!$this->userGroupsScheduledForDeletion->isEmpty()) {
+                    \Models\UserGroupQuery::create()
+                        ->filterByPrimaryKeys($this->userGroupsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->userGroupsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collUserGroups !== null) {
+                foreach ($this->collUserGroups as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -900,33 +840,27 @@ abstract class Category implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+        $this->modifiedColumns[GroupTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategoryTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . GroupTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
+        if ($this->isColumnModified(GroupTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
-        }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
+        if ($this->isColumnModified(GroupTableMap::COL_NAME)) {
             $modifiedColumns[':p' . $index++]  = 'name';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_COLOR)) {
-            $modifiedColumns[':p' . $index++]  = 'color';
-        }
-        if ($this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
+        if ($this->isColumnModified(GroupTableMap::COL_CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'created_at';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
+        if ($this->isColumnModified(GroupTableMap::COL_UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'updated_at';
         }
 
         $sql = sprintf(
-            'INSERT INTO category (%s) VALUES (%s)',
+            'INSERT INTO group (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -938,14 +872,8 @@ abstract class Category implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
-                        break;
                     case 'name':
                         $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
-                        break;
-                    case 'color':
-                        $stmt->bindValue($identifier, $this->color, PDO::PARAM_STR);
                         break;
                     case 'created_at':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -999,7 +927,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = GroupTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -1019,18 +947,12 @@ abstract class Category implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getUserId();
-                break;
-            case 2:
                 return $this->getName();
                 break;
-            case 3:
-                return $this->getColor();
-                break;
-            case 4:
+            case 2:
                 return $this->getCreatedAt();
                 break;
-            case 5:
+            case 3:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1057,25 +979,23 @@ abstract class Category implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['Category'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['Group'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Category'][$this->hashCode()] = true;
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Group'][$this->hashCode()] = true;
+        $keys = GroupTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getUserId(),
-            $keys[2] => $this->getName(),
-            $keys[3] => $this->getColor(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[1] => $this->getName(),
+            $keys[2] => $this->getCreatedAt(),
+            $keys[3] => $this->getUpdatedAt(),
         );
-        if ($result[$keys[4]] instanceof \DateTime) {
-            $result[$keys[4]] = $result[$keys[4]]->format('c');
+        if ($result[$keys[2]] instanceof \DateTime) {
+            $result[$keys[2]] = $result[$keys[2]]->format('c');
         }
 
-        if ($result[$keys[5]] instanceof \DateTime) {
-            $result[$keys[5]] = $result[$keys[5]]->format('c');
+        if ($result[$keys[3]] instanceof \DateTime) {
+            $result[$keys[3]] = $result[$keys[3]]->format('c');
         }
 
         $virtualColumns = $this->virtualColumns;
@@ -1084,35 +1004,20 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
+            if (null !== $this->collUserGroups) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
+                        $key = 'userGroups';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'user';
+                        $key = 'user_groups';
                         break;
                     default:
-                        $key = 'User';
+                        $key = 'UserGroups';
                 }
 
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->collNotes) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'notes';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'notes';
-                        break;
-                    default:
-                        $key = 'Notes';
-                }
-
-                $result[$key] = $this->collNotes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->collUserGroups->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collShareds) {
 
@@ -1143,11 +1048,11 @@ abstract class Category implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Models\Category
+     * @return $this|\Models\Group
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = GroupTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1158,7 +1063,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\Models\Category
+     * @return $this|\Models\Group
      */
     public function setByPosition($pos, $value)
     {
@@ -1167,18 +1072,12 @@ abstract class Category implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setUserId($value);
-                break;
-            case 2:
                 $this->setName($value);
                 break;
-            case 3:
-                $this->setColor($value);
-                break;
-            case 4:
+            case 2:
                 $this->setCreatedAt($value);
                 break;
-            case 5:
+            case 3:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1205,25 +1104,19 @@ abstract class Category implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $keys = GroupTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setUserId($arr[$keys[1]]);
+            $this->setName($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setName($arr[$keys[2]]);
+            $this->setCreatedAt($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setColor($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setCreatedAt($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setUpdatedAt($arr[$keys[5]]);
+            $this->setUpdatedAt($arr[$keys[3]]);
         }
     }
 
@@ -1244,7 +1137,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\Models\Category The current object, for fluid interface
+     * @return $this|\Models\Group The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1264,25 +1157,19 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
+        $criteria = new Criteria(GroupTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
-            $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(GroupTableMap::COL_ID)) {
+            $criteria->add(GroupTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_USER_ID)) {
-            $criteria->add(CategoryTableMap::COL_USER_ID, $this->user_id);
+        if ($this->isColumnModified(GroupTableMap::COL_NAME)) {
+            $criteria->add(GroupTableMap::COL_NAME, $this->name);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
-            $criteria->add(CategoryTableMap::COL_NAME, $this->name);
+        if ($this->isColumnModified(GroupTableMap::COL_CREATED_AT)) {
+            $criteria->add(GroupTableMap::COL_CREATED_AT, $this->created_at);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_COLOR)) {
-            $criteria->add(CategoryTableMap::COL_COLOR, $this->color);
-        }
-        if ($this->isColumnModified(CategoryTableMap::COL_CREATED_AT)) {
-            $criteria->add(CategoryTableMap::COL_CREATED_AT, $this->created_at);
-        }
-        if ($this->isColumnModified(CategoryTableMap::COL_UPDATED_AT)) {
-            $criteria->add(CategoryTableMap::COL_UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(GroupTableMap::COL_UPDATED_AT)) {
+            $criteria->add(GroupTableMap::COL_UPDATED_AT, $this->updated_at);
         }
 
         return $criteria;
@@ -1300,8 +1187,8 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildCategoryQuery::create();
-        $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        $criteria = ChildGroupQuery::create();
+        $criteria->add(GroupTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1363,16 +1250,14 @@ abstract class Category implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Models\Category (or compatible) type.
+     * @param      object $copyObj An object of \Models\Group (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setUserId($this->getUserId());
         $copyObj->setName($this->getName());
-        $copyObj->setColor($this->getColor());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -1381,9 +1266,9 @@ abstract class Category implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
-            foreach ($this->getNotes() as $relObj) {
+            foreach ($this->getUserGroups() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addNote($relObj->copy($deepCopy));
+                    $copyObj->addUserGroup($relObj->copy($deepCopy));
                 }
             }
 
@@ -1410,7 +1295,7 @@ abstract class Category implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Models\Category Clone of current object.
+     * @return \Models\Group Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1421,57 +1306,6 @@ abstract class Category implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
-    }
-
-    /**
-     * Declares an association between this object and a ChildUser object.
-     *
-     * @param  ChildUser $v
-     * @return $this|\Models\Category The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setUser(ChildUser $v = null)
-    {
-        if ($v === null) {
-            $this->setUserId(NULL);
-        } else {
-            $this->setUserId($v->getId());
-        }
-
-        $this->aUser = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
-        if ($v !== null) {
-            $v->addCategory($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildUser object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
-     * @throws PropelException
-     */
-    public function getUser(ConnectionInterface $con = null)
-    {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()->findPk($this->user_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aUser->addCategories($this);
-             */
-        }
-
-        return $this->aUser;
     }
 
 
@@ -1485,8 +1319,8 @@ abstract class Category implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
-        if ('Note' == $relationName) {
-            return $this->initNotes();
+        if ('UserGroup' == $relationName) {
+            return $this->initUserGroups();
         }
         if ('Shared' == $relationName) {
             return $this->initShareds();
@@ -1494,31 +1328,31 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Clears out the collNotes collection
+     * Clears out the collUserGroups collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addNotes()
+     * @see        addUserGroups()
      */
-    public function clearNotes()
+    public function clearUserGroups()
     {
-        $this->collNotes = null; // important to set this to NULL since that means it is uninitialized
+        $this->collUserGroups = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collNotes collection loaded partially.
+     * Reset is the collUserGroups collection loaded partially.
      */
-    public function resetPartialNotes($v = true)
+    public function resetPartialUserGroups($v = true)
     {
-        $this->collNotesPartial = $v;
+        $this->collUserGroupsPartial = $v;
     }
 
     /**
-     * Initializes the collNotes collection.
+     * Initializes the collUserGroups collection.
      *
-     * By default this just sets the collNotes collection to an empty array (like clearcollNotes());
+     * By default this just sets the collUserGroups collection to an empty array (like clearcollUserGroups());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1527,185 +1361,188 @@ abstract class Category implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initNotes($overrideExisting = true)
+    public function initUserGroups($overrideExisting = true)
     {
-        if (null !== $this->collNotes && !$overrideExisting) {
+        if (null !== $this->collUserGroups && !$overrideExisting) {
             return;
         }
-        $this->collNotes = new ObjectCollection();
-        $this->collNotes->setModel('\Models\Note');
+        $this->collUserGroups = new ObjectCollection();
+        $this->collUserGroups->setModel('\Models\UserGroup');
     }
 
     /**
-     * Gets an array of ChildNote objects which contain a foreign key that references this object.
+     * Gets an array of ChildUserGroup objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
+     * If this ChildGroup is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
+     * @return ObjectCollection|ChildUserGroup[] List of ChildUserGroup objects
      * @throws PropelException
      */
-    public function getNotes(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getUserGroups(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
+        $partial = $this->collUserGroupsPartial && !$this->isNew();
+        if (null === $this->collUserGroups || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collUserGroups) {
                 // return empty collection
-                $this->initNotes();
+                $this->initUserGroups();
             } else {
-                $collNotes = ChildNoteQuery::create(null, $criteria)
-                    ->filterByCategory($this)
+                $collUserGroups = ChildUserGroupQuery::create(null, $criteria)
+                    ->filterByGroup($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collNotesPartial && count($collNotes)) {
-                        $this->initNotes(false);
+                    if (false !== $this->collUserGroupsPartial && count($collUserGroups)) {
+                        $this->initUserGroups(false);
 
-                        foreach ($collNotes as $obj) {
-                            if (false == $this->collNotes->contains($obj)) {
-                                $this->collNotes->append($obj);
+                        foreach ($collUserGroups as $obj) {
+                            if (false == $this->collUserGroups->contains($obj)) {
+                                $this->collUserGroups->append($obj);
                             }
                         }
 
-                        $this->collNotesPartial = true;
+                        $this->collUserGroupsPartial = true;
                     }
 
-                    return $collNotes;
+                    return $collUserGroups;
                 }
 
-                if ($partial && $this->collNotes) {
-                    foreach ($this->collNotes as $obj) {
+                if ($partial && $this->collUserGroups) {
+                    foreach ($this->collUserGroups as $obj) {
                         if ($obj->isNew()) {
-                            $collNotes[] = $obj;
+                            $collUserGroups[] = $obj;
                         }
                     }
                 }
 
-                $this->collNotes = $collNotes;
-                $this->collNotesPartial = false;
+                $this->collUserGroups = $collUserGroups;
+                $this->collUserGroupsPartial = false;
             }
         }
 
-        return $this->collNotes;
+        return $this->collUserGroups;
     }
 
     /**
-     * Sets a collection of ChildNote objects related by a one-to-many relationship
+     * Sets a collection of ChildUserGroup objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $notes A Propel collection.
+     * @param      Collection $userGroups A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @return $this|ChildGroup The current object (for fluent API support)
      */
-    public function setNotes(Collection $notes, ConnectionInterface $con = null)
+    public function setUserGroups(Collection $userGroups, ConnectionInterface $con = null)
     {
-        /** @var ChildNote[] $notesToDelete */
-        $notesToDelete = $this->getNotes(new Criteria(), $con)->diff($notes);
+        /** @var ChildUserGroup[] $userGroupsToDelete */
+        $userGroupsToDelete = $this->getUserGroups(new Criteria(), $con)->diff($userGroups);
 
 
-        $this->notesScheduledForDeletion = $notesToDelete;
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->userGroupsScheduledForDeletion = clone $userGroupsToDelete;
 
-        foreach ($notesToDelete as $noteRemoved) {
-            $noteRemoved->setCategory(null);
+        foreach ($userGroupsToDelete as $userGroupRemoved) {
+            $userGroupRemoved->setGroup(null);
         }
 
-        $this->collNotes = null;
-        foreach ($notes as $note) {
-            $this->addNote($note);
+        $this->collUserGroups = null;
+        foreach ($userGroups as $userGroup) {
+            $this->addUserGroup($userGroup);
         }
 
-        $this->collNotes = $notes;
-        $this->collNotesPartial = false;
+        $this->collUserGroups = $userGroups;
+        $this->collUserGroupsPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related Note objects.
+     * Returns the number of related UserGroup objects.
      *
      * @param      Criteria $criteria
      * @param      boolean $distinct
      * @param      ConnectionInterface $con
-     * @return int             Count of related Note objects.
+     * @return int             Count of related UserGroup objects.
      * @throws PropelException
      */
-    public function countNotes(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countUserGroups(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collNotesPartial && !$this->isNew();
-        if (null === $this->collNotes || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collNotes) {
+        $partial = $this->collUserGroupsPartial && !$this->isNew();
+        if (null === $this->collUserGroups || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collUserGroups) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getNotes());
+                return count($this->getUserGroups());
             }
 
-            $query = ChildNoteQuery::create(null, $criteria);
+            $query = ChildUserGroupQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
 
             return $query
-                ->filterByCategory($this)
+                ->filterByGroup($this)
                 ->count($con);
         }
 
-        return count($this->collNotes);
+        return count($this->collUserGroups);
     }
 
     /**
-     * Method called to associate a ChildNote object to this object
-     * through the ChildNote foreign key attribute.
+     * Method called to associate a ChildUserGroup object to this object
+     * through the ChildUserGroup foreign key attribute.
      *
-     * @param  ChildNote $l ChildNote
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @param  ChildUserGroup $l ChildUserGroup
+     * @return $this|\Models\Group The current object (for fluent API support)
      */
-    public function addNote(ChildNote $l)
+    public function addUserGroup(ChildUserGroup $l)
     {
-        if ($this->collNotes === null) {
-            $this->initNotes();
-            $this->collNotesPartial = true;
+        if ($this->collUserGroups === null) {
+            $this->initUserGroups();
+            $this->collUserGroupsPartial = true;
         }
 
-        if (!$this->collNotes->contains($l)) {
-            $this->doAddNote($l);
+        if (!$this->collUserGroups->contains($l)) {
+            $this->doAddUserGroup($l);
         }
 
         return $this;
     }
 
     /**
-     * @param ChildNote $note The ChildNote object to add.
+     * @param ChildUserGroup $userGroup The ChildUserGroup object to add.
      */
-    protected function doAddNote(ChildNote $note)
+    protected function doAddUserGroup(ChildUserGroup $userGroup)
     {
-        $this->collNotes[]= $note;
-        $note->setCategory($this);
+        $this->collUserGroups[]= $userGroup;
+        $userGroup->setGroup($this);
     }
 
     /**
-     * @param  ChildNote $note The ChildNote object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @param  ChildUserGroup $userGroup The ChildUserGroup object to remove.
+     * @return $this|ChildGroup The current object (for fluent API support)
      */
-    public function removeNote(ChildNote $note)
+    public function removeUserGroup(ChildUserGroup $userGroup)
     {
-        if ($this->getNotes()->contains($note)) {
-            $pos = $this->collNotes->search($note);
-            $this->collNotes->remove($pos);
-            if (null === $this->notesScheduledForDeletion) {
-                $this->notesScheduledForDeletion = clone $this->collNotes;
-                $this->notesScheduledForDeletion->clear();
+        if ($this->getUserGroups()->contains($userGroup)) {
+            $pos = $this->collUserGroups->search($userGroup);
+            $this->collUserGroups->remove($pos);
+            if (null === $this->userGroupsScheduledForDeletion) {
+                $this->userGroupsScheduledForDeletion = clone $this->collUserGroups;
+                $this->userGroupsScheduledForDeletion->clear();
             }
-            $this->notesScheduledForDeletion[]= $note;
-            $note->setCategory(null);
+            $this->userGroupsScheduledForDeletion[]= clone $userGroup;
+            $userGroup->setGroup(null);
         }
 
         return $this;
@@ -1715,25 +1552,25 @@ abstract class Category implements ActiveRecordInterface
     /**
      * If this collection has already been initialized with
      * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Notes from storage.
+     * Otherwise if this Group is new, it will return
+     * an empty collection; or if this Group has previously
+     * been saved, it will retrieve related UserGroups from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
+     * actually need in Group.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildNote[] List of ChildNote objects
+     * @return ObjectCollection|ChildUserGroup[] List of ChildUserGroup objects
      */
-    public function getNotesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getUserGroupsJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
-        $query = ChildNoteQuery::create(null, $criteria);
+        $query = ChildUserGroupQuery::create(null, $criteria);
         $query->joinWith('User', $joinBehavior);
 
-        return $this->getNotes($query, $con);
+        return $this->getUserGroups($query, $con);
     }
 
     /**
@@ -1785,7 +1622,7 @@ abstract class Category implements ActiveRecordInterface
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
+     * If this ChildGroup is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
@@ -1802,7 +1639,7 @@ abstract class Category implements ActiveRecordInterface
                 $this->initShareds();
             } else {
                 $collShareds = ChildSharedQuery::create(null, $criteria)
-                    ->filterByCategory($this)
+                    ->filterByGroup($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -1845,7 +1682,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param      Collection $shareds A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @return $this|ChildGroup The current object (for fluent API support)
      */
     public function setShareds(Collection $shareds, ConnectionInterface $con = null)
     {
@@ -1856,7 +1693,7 @@ abstract class Category implements ActiveRecordInterface
         $this->sharedsScheduledForDeletion = $sharedsToDelete;
 
         foreach ($sharedsToDelete as $sharedRemoved) {
-            $sharedRemoved->setCategory(null);
+            $sharedRemoved->setGroup(null);
         }
 
         $this->collShareds = null;
@@ -1897,7 +1734,7 @@ abstract class Category implements ActiveRecordInterface
             }
 
             return $query
-                ->filterByCategory($this)
+                ->filterByGroup($this)
                 ->count($con);
         }
 
@@ -1909,7 +1746,7 @@ abstract class Category implements ActiveRecordInterface
      * through the ChildShared foreign key attribute.
      *
      * @param  ChildShared $l ChildShared
-     * @return $this|\Models\Category The current object (for fluent API support)
+     * @return $this|\Models\Group The current object (for fluent API support)
      */
     public function addShared(ChildShared $l)
     {
@@ -1931,12 +1768,12 @@ abstract class Category implements ActiveRecordInterface
     protected function doAddShared(ChildShared $shared)
     {
         $this->collShareds[]= $shared;
-        $shared->setCategory($this);
+        $shared->setGroup($this);
     }
 
     /**
      * @param  ChildShared $shared The ChildShared object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @return $this|ChildGroup The current object (for fluent API support)
      */
     public function removeShared(ChildShared $shared)
     {
@@ -1948,7 +1785,7 @@ abstract class Category implements ActiveRecordInterface
                 $this->sharedsScheduledForDeletion->clear();
             }
             $this->sharedsScheduledForDeletion[]= clone $shared;
-            $shared->setCategory(null);
+            $shared->setGroup(null);
         }
 
         return $this;
@@ -1958,13 +1795,13 @@ abstract class Category implements ActiveRecordInterface
     /**
      * If this collection has already been initialized with
      * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
+     * Otherwise if this Group is new, it will return
+     * an empty collection; or if this Group has previously
      * been saved, it will retrieve related Shareds from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
+     * actually need in Group.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
@@ -1983,13 +1820,38 @@ abstract class Category implements ActiveRecordInterface
     /**
      * If this collection has already been initialized with
      * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
+     * Otherwise if this Group is new, it will return
+     * an empty collection; or if this Group has previously
      * been saved, it will retrieve related Shareds from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
+     * actually need in Group.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     */
+    public function getSharedsJoinCategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildSharedQuery::create(null, $criteria);
+        $query->joinWith('Category', $joinBehavior);
+
+        return $this->getShareds($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Group is new, it will return
+     * an empty collection; or if this Group has previously
+     * been saved, it will retrieve related Shareds from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Group.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
@@ -2004,29 +1866,246 @@ abstract class Category implements ActiveRecordInterface
         return $this->getShareds($query, $con);
     }
 
+    /**
+     * Clears out the collUsers collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addUsers()
+     */
+    public function clearUsers()
+    {
+        $this->collUsers = null; // important to set this to NULL since that means it is uninitialized
+    }
 
     /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related Shareds from storage.
+     * Initializes the collUsers crossRef collection.
      *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
+     * By default this just sets the collUsers collection to an empty collection (like clearUsers());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
      *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildShared[] List of ChildShared objects
+     * @return void
      */
-    public function getSharedsJoinGroup(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function initUsers()
     {
-        $query = ChildSharedQuery::create(null, $criteria);
-        $query->joinWith('Group', $joinBehavior);
+        $this->collUsers = new ObjectCollection();
+        $this->collUsersPartial = true;
 
-        return $this->getShareds($query, $con);
+        $this->collUsers->setModel('\Models\User');
+    }
+
+    /**
+     * Checks if the collUsers collection is loaded.
+     *
+     * @return bool
+     */
+    public function isUsersLoaded()
+    {
+        return null !== $this->collUsers;
+    }
+
+    /**
+     * Gets a collection of ChildUser objects related by a many-to-many relationship
+     * to the current object by way of the user_group cross-reference table.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildGroup is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria Optional query object to filter the query
+     * @param      ConnectionInterface $con Optional connection object
+     *
+     * @return ObjectCollection|ChildUser[] List of ChildUser objects
+     */
+    public function getUsers(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collUsersPartial && !$this->isNew();
+        if (null === $this->collUsers || null !== $criteria || $partial) {
+            if ($this->isNew()) {
+                // return empty collection
+                if (null === $this->collUsers) {
+                    $this->initUsers();
+                }
+            } else {
+
+                $query = ChildUserQuery::create(null, $criteria)
+                    ->filterByGroup($this);
+                $collUsers = $query->find($con);
+                if (null !== $criteria) {
+                    return $collUsers;
+                }
+
+                if ($partial && $this->collUsers) {
+                    //make sure that already added objects gets added to the list of the database.
+                    foreach ($this->collUsers as $obj) {
+                        if (!$collUsers->contains($obj)) {
+                            $collUsers[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collUsers = $collUsers;
+                $this->collUsersPartial = false;
+            }
+        }
+
+        return $this->collUsers;
+    }
+
+    /**
+     * Sets a collection of User objects related by a many-to-many relationship
+     * to the current object by way of the user_group cross-reference table.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param  Collection $users A Propel collection.
+     * @param  ConnectionInterface $con Optional connection object
+     * @return $this|ChildGroup The current object (for fluent API support)
+     */
+    public function setUsers(Collection $users, ConnectionInterface $con = null)
+    {
+        $this->clearUsers();
+        $currentUsers = $this->getUsers();
+
+        $usersScheduledForDeletion = $currentUsers->diff($users);
+
+        foreach ($usersScheduledForDeletion as $toDelete) {
+            $this->removeUser($toDelete);
+        }
+
+        foreach ($users as $user) {
+            if (!$currentUsers->contains($user)) {
+                $this->doAddUser($user);
+            }
+        }
+
+        $this->collUsersPartial = false;
+        $this->collUsers = $users;
+
+        return $this;
+    }
+
+    /**
+     * Gets the number of User objects related by a many-to-many relationship
+     * to the current object by way of the user_group cross-reference table.
+     *
+     * @param      Criteria $criteria Optional query object to filter the query
+     * @param      boolean $distinct Set to true to force count distinct
+     * @param      ConnectionInterface $con Optional connection object
+     *
+     * @return int the number of related User objects
+     */
+    public function countUsers(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collUsersPartial && !$this->isNew();
+        if (null === $this->collUsers || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collUsers) {
+                return 0;
+            } else {
+
+                if ($partial && !$criteria) {
+                    return count($this->getUsers());
+                }
+
+                $query = ChildUserQuery::create(null, $criteria);
+                if ($distinct) {
+                    $query->distinct();
+                }
+
+                return $query
+                    ->filterByGroup($this)
+                    ->count($con);
+            }
+        } else {
+            return count($this->collUsers);
+        }
+    }
+
+    /**
+     * Associate a ChildUser to this object
+     * through the user_group cross reference table.
+     *
+     * @param ChildUser $user
+     * @return ChildGroup The current object (for fluent API support)
+     */
+    public function addUser(ChildUser $user)
+    {
+        if ($this->collUsers === null) {
+            $this->initUsers();
+        }
+
+        if (!$this->getUsers()->contains($user)) {
+            // only add it if the **same** object is not already associated
+            $this->collUsers->push($user);
+            $this->doAddUser($user);
+        }
+
+        return $this;
+    }
+
+    /**
+     *
+     * @param ChildUser $user
+     */
+    protected function doAddUser(ChildUser $user)
+    {
+        $userGroup = new ChildUserGroup();
+
+        $userGroup->setUser($user);
+
+        $userGroup->setGroup($this);
+
+        $this->addUserGroup($userGroup);
+
+        // set the back reference to this object directly as using provided method either results
+        // in endless loop or in multiple relations
+        if (!$user->isGroupsLoaded()) {
+            $user->initGroups();
+            $user->getGroups()->push($this);
+        } elseif (!$user->getGroups()->contains($this)) {
+            $user->getGroups()->push($this);
+        }
+
+    }
+
+    /**
+     * Remove user of this object
+     * through the user_group cross reference table.
+     *
+     * @param ChildUser $user
+     * @return ChildGroup The current object (for fluent API support)
+     */
+    public function removeUser(ChildUser $user)
+    {
+        if ($this->getUsers()->contains($user)) { $userGroup = new ChildUserGroup();
+
+            $userGroup->setUser($user);
+            if ($user->isGroupsLoaded()) {
+                //remove the back reference if available
+                $user->getGroups()->removeObject($this);
+            }
+
+            $userGroup->setGroup($this);
+            $this->removeUserGroup(clone $userGroup);
+            $userGroup->clear();
+
+            $this->collUsers->remove($this->collUsers->search($user));
+
+            if (null === $this->usersScheduledForDeletion) {
+                $this->usersScheduledForDeletion = clone $this->collUsers;
+                $this->usersScheduledForDeletion->clear();
+            }
+
+            $this->usersScheduledForDeletion->push($user);
+        }
+
+
+        return $this;
     }
 
     /**
@@ -2036,13 +2115,8 @@ abstract class Category implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeCategory($this);
-        }
         $this->id = null;
-        $this->user_id = null;
         $this->name = null;
-        $this->color = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -2063,8 +2137,8 @@ abstract class Category implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collNotes) {
-                foreach ($this->collNotes as $o) {
+            if ($this->collUserGroups) {
+                foreach ($this->collUserGroups as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
@@ -2073,11 +2147,16 @@ abstract class Category implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collUsers) {
+                foreach ($this->collUsers as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
-        $this->collNotes = null;
+        $this->collUserGroups = null;
         $this->collShareds = null;
-        $this->aUser = null;
+        $this->collUsers = null;
     }
 
     /**
@@ -2087,7 +2166,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(CategoryTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(GroupTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -2095,11 +2174,11 @@ abstract class Category implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     $this|ChildCategory The current object (for fluent API support)
+     * @return     $this|ChildGroup The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[CategoryTableMap::COL_UPDATED_AT] = true;
+        $this->modifiedColumns[GroupTableMap::COL_UPDATED_AT] = true;
 
         return $this;
     }

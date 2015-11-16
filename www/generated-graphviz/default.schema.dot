@@ -1,0 +1,31 @@
+digraph G {
+nodeuser [label="{<table>user|<cols>id (INTEGER) [PK]\lnick (VARCHAR)\lemail (VARCHAR)\lrights (INTEGER)\lemail_confirmed_at (TIMESTAMP)\lpassword (VARCHAR)\lpassword_reset_token (VARCHAR)\lsignin_count (INTEGER)\lemail_confirm_token (VARCHAR)\lavatar_path (VARCHAR)\llast_signin_at (TIMESTAMP)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodenote [label="{<table>note|<cols>id (INTEGER) [PK]\luser_id (INTEGER) [FK]\limportance (INTEGER)\ltitle (VARCHAR)\ldeadline (TIMESTAMP)\lcategory_id (INTEGER) [FK]\lstate (ENUM)\lrepeat_after (INTEGER)\ldone_at (TIMESTAMP)\lpublic (BOOLEAN)\ldescription (VARCHAR)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodesub_note [label="{<table>sub_note|<cols>id (INTEGER) [PK]\lnote_id (INTEGER) [FK]\ltext (VARCHAR)\lstate (ENUM)\ldone_at (TIMESTAMP)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodefile [label="{<table>file|<cols>id (INTEGER) [PK]\lnote_id (INTEGER) [FK]\lpath (VARCHAR)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodecategory [label="{<table>category|<cols>id (INTEGER) [PK]\luser_id (INTEGER) [FK]\lname (VARCHAR)\lcolor (VARCHAR)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodenotification [label="{<table>notification|<cols>id (INTEGER) [PK]\luser_id (INTEGER) [FK]\lorigin_id (INTEGER) [FK]\lorigin_type (VARCHAR) [FK]\ltype (ENUM)\ltext (VARCHAR)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodecomment [label="{<table>comment|<cols>id (INTEGER) [PK]\luser_id (INTEGER) [FK]\lnote_id (INTEGER) [FK]\ltext (VARCHAR)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodeidentity [label="{<table>identity|<cols>id (INTEGER) [PK]\luser_id (INTEGER) [FK]\lprovider (VARCHAR)\luid (INTEGER)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodegroup [label="{<table>group|<cols>id (INTEGER) [PK]\lname (VARCHAR)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+nodeuser_group [label="{<table>user_group|<cols>user_id (INTEGER) [FK]\lgroup_id (INTEGER) [FK]\lrights (INTEGER)\l}", shape=record];
+nodeshared [label="{<table>shared|<cols>id (INTEGER) [PK]\lwhat_id (INTEGER) [FK]\lwhat_type (VARCHAR) [FK]\lto_id (INTEGER) [FK]\lto_type (VARCHAR) [FK]\lrights (INTEGER)\lcreated_at (TIMESTAMP)\lupdated_at (TIMESTAMP)\l}", shape=record];
+
+nodenote:cols -> nodeuser:table [label="user_id=id ", color=gray];
+nodenote:cols -> nodecategory:table [label="category_id=id ", color=gray];
+nodesub_note:cols -> nodenote:table [label="note_id=id ", color=gray];
+nodefile:cols -> nodenote:table [label="note_id=id ", color=gray];
+nodecategory:cols -> nodeuser:table [label="user_id=id ", color=gray];
+nodenotification:cols -> nodeuser:table [label="user_id=id ", color=gray];
+nodenotification:cols -> nodeuser:table [label="origin_type='user'\lorigin_id=id ", color=gray];
+nodenotification:cols -> nodenote:table [label="origin_type='note'\lorigin_id=id ", color=gray];
+nodecomment:cols -> nodeuser:table [label="user_id=id ", color=gray];
+nodecomment:cols -> nodenote:table [label="note_id=id ", color=gray];
+nodeidentity:cols -> nodeuser:table [label="user_id=id ", color=gray];
+nodeuser_group:cols -> nodeuser:table [label="user_id=id ", color=gray];
+nodeuser_group:cols -> nodegroup:table [label="group_id=id ", color=gray];
+nodeshared:cols -> nodenote:table [label="what_type='note'\lwhat_id=id ", color=gray];
+nodeshared:cols -> nodecategory:table [label="what_type='category'\lwhat_id=id ", color=gray];
+nodeshared:cols -> nodeuser:table [label="to_type='user'\lto_id=id ", color=gray];
+nodeshared:cols -> nodegroup:table [label="to_type='group'\lto_id=id ", color=gray];
+}

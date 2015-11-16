@@ -2,8 +2,8 @@
 
 namespace Models\Map;
 
-use Models\Category;
-use Models\CategoryQuery;
+use Models\Shared;
+use Models\SharedQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'category' table.
+ * This class defines the structure of the 'shared' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class CategoryTableMap extends TableMap
+class SharedTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class CategoryTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'Models.Map.CategoryTableMap';
+    const CLASS_NAME = 'Models.Map.SharedTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class CategoryTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'category';
+    const TABLE_NAME = 'shared';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Models\\Category';
+    const OM_CLASS = '\\Models\\Shared';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Models.Category';
+    const CLASS_DEFAULT = 'Models.Shared';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 8;
 
     /**
      * The number of lazy-loaded columns
@@ -69,37 +69,47 @@ class CategoryTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 8;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'category.id';
+    const COL_ID = 'shared.id';
 
     /**
-     * the column name for the user_id field
+     * the column name for the what_id field
      */
-    const COL_USER_ID = 'category.user_id';
+    const COL_WHAT_ID = 'shared.what_id';
 
     /**
-     * the column name for the name field
+     * the column name for the what_type field
      */
-    const COL_NAME = 'category.name';
+    const COL_WHAT_TYPE = 'shared.what_type';
 
     /**
-     * the column name for the color field
+     * the column name for the to_id field
      */
-    const COL_COLOR = 'category.color';
+    const COL_TO_ID = 'shared.to_id';
+
+    /**
+     * the column name for the to_type field
+     */
+    const COL_TO_TYPE = 'shared.to_type';
+
+    /**
+     * the column name for the rights field
+     */
+    const COL_RIGHTS = 'shared.rights';
 
     /**
      * the column name for the created_at field
      */
-    const COL_CREATED_AT = 'category.created_at';
+    const COL_CREATED_AT = 'shared.created_at';
 
     /**
      * the column name for the updated_at field
      */
-    const COL_UPDATED_AT = 'category.updated_at';
+    const COL_UPDATED_AT = 'shared.updated_at';
 
     /**
      * The default string format for model objects of the related table
@@ -113,11 +123,11 @@ class CategoryTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'UserId', 'Name', 'Color', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'userId', 'name', 'color', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(CategoryTableMap::COL_ID, CategoryTableMap::COL_USER_ID, CategoryTableMap::COL_NAME, CategoryTableMap::COL_COLOR, CategoryTableMap::COL_CREATED_AT, CategoryTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'user_id', 'name', 'color', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'WhatId', 'WhatType', 'ToId', 'ToType', 'Rights', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_CAMELNAME     => array('id', 'whatId', 'whatType', 'toId', 'toType', 'rights', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(SharedTableMap::COL_ID, SharedTableMap::COL_WHAT_ID, SharedTableMap::COL_WHAT_TYPE, SharedTableMap::COL_TO_ID, SharedTableMap::COL_TO_TYPE, SharedTableMap::COL_RIGHTS, SharedTableMap::COL_CREATED_AT, SharedTableMap::COL_UPDATED_AT, ),
+        self::TYPE_FIELDNAME     => array('id', 'what_id', 'what_type', 'to_id', 'to_type', 'rights', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -127,11 +137,11 @@ class CategoryTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'UserId' => 1, 'Name' => 2, 'Color' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'userId' => 1, 'name' => 2, 'color' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(CategoryTableMap::COL_ID => 0, CategoryTableMap::COL_USER_ID => 1, CategoryTableMap::COL_NAME => 2, CategoryTableMap::COL_COLOR => 3, CategoryTableMap::COL_CREATED_AT => 4, CategoryTableMap::COL_UPDATED_AT => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'name' => 2, 'color' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'WhatId' => 1, 'WhatType' => 2, 'ToId' => 3, 'ToType' => 4, 'Rights' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'whatId' => 1, 'whatType' => 2, 'toId' => 3, 'toType' => 4, 'rights' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
+        self::TYPE_COLNAME       => array(SharedTableMap::COL_ID => 0, SharedTableMap::COL_WHAT_ID => 1, SharedTableMap::COL_WHAT_TYPE => 2, SharedTableMap::COL_TO_ID => 3, SharedTableMap::COL_TO_TYPE => 4, SharedTableMap::COL_RIGHTS => 5, SharedTableMap::COL_CREATED_AT => 6, SharedTableMap::COL_UPDATED_AT => 7, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'what_id' => 1, 'what_type' => 2, 'to_id' => 3, 'to_type' => 4, 'rights' => 5, 'created_at' => 6, 'updated_at' => 7, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -144,17 +154,23 @@ class CategoryTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('category');
-        $this->setPhpName('Category');
+        $this->setName('shared');
+        $this->setPhpName('Shared');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Models\\Category');
+        $this->setClassName('\\Models\\Shared');
         $this->setPackage('Models');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', false, 20, null);
-        $this->addColumn('color', 'Color', 'VARCHAR', true, 6, null);
+        $this->addForeignKey('what_id', 'WhatId', 'INTEGER', 'note', 'id', false, null, null);
+        $this->addForeignKey('what_id', 'WhatId', 'INTEGER', 'category', 'id', false, null, null);
+        $this->addForeignKey('what_type', 'WhatType', 'VARCHAR', 'note', '', false, 55, null);
+        $this->addForeignKey('what_type', 'WhatType', 'VARCHAR', 'category', '', false, 55, null);
+        $this->addForeignKey('to_id', 'ToId', 'INTEGER', 'user', 'id', false, null, null);
+        $this->addForeignKey('to_id', 'ToId', 'INTEGER', 'group', 'id', false, null, null);
+        $this->addForeignKey('to_type', 'ToType', 'VARCHAR', 'user', '', false, 55, null);
+        $this->addForeignKey('to_type', 'ToType', 'VARCHAR', 'group', '', false, 55, null);
+        $this->addColumn('rights', 'Rights', 'INTEGER', true, null, 0);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -164,21 +180,19 @@ class CategoryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('User', '\\Models\\User', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Note', '\\Models\\Note', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':user_id',
-    1 => ':id',
+    0 => ':what_type',
+    1 => 'note',
   ),
-), null, null, null, false);
-        $this->addRelation('Note', '\\Models\\Note', RelationMap::ONE_TO_MANY, array (
-  0 =>
+  1 =>
   array (
-    0 => ':category_id',
+    0 => ':what_id',
     1 => ':id',
   ),
-), null, null, 'Notes', false);
-        $this->addRelation('Shared', '\\Models\\Shared', RelationMap::ONE_TO_MANY, array (
+), null, null, null, true);
+        $this->addRelation('Category', '\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':what_type',
@@ -189,7 +203,31 @@ class CategoryTableMap extends TableMap
     0 => ':what_id',
     1 => ':id',
   ),
-), null, null, 'Shareds', true);
+), null, null, null, true);
+        $this->addRelation('User', '\\Models\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':to_type',
+    1 => 'user',
+  ),
+  1 =>
+  array (
+    0 => ':to_id',
+    1 => ':id',
+  ),
+), null, null, null, true);
+        $this->addRelation('Group', '\\Models\\Group', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':to_type',
+    1 => 'group',
+  ),
+  1 =>
+  array (
+    0 => ':to_id',
+    1 => ':id',
+  ),
+), null, null, null, true);
     } // buildRelations()
 
     /**
@@ -262,7 +300,7 @@ class CategoryTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? CategoryTableMap::CLASS_DEFAULT : CategoryTableMap::OM_CLASS;
+        return $withPrefix ? SharedTableMap::CLASS_DEFAULT : SharedTableMap::OM_CLASS;
     }
 
     /**
@@ -276,22 +314,22 @@ class CategoryTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Category object, last column rank)
+     * @return array           (Shared object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = CategoryTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = CategoryTableMap::getInstanceFromPool($key))) {
+        $key = SharedTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = SharedTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + CategoryTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + SharedTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = CategoryTableMap::OM_CLASS;
-            /** @var Category $obj */
+            $cls = SharedTableMap::OM_CLASS;
+            /** @var Shared $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            CategoryTableMap::addInstanceToPool($obj, $key);
+            SharedTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -314,18 +352,18 @@ class CategoryTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = CategoryTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = CategoryTableMap::getInstanceFromPool($key))) {
+            $key = SharedTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = SharedTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Category $obj */
+                /** @var Shared $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                CategoryTableMap::addInstanceToPool($obj, $key);
+                SharedTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -346,17 +384,21 @@ class CategoryTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(CategoryTableMap::COL_ID);
-            $criteria->addSelectColumn(CategoryTableMap::COL_USER_ID);
-            $criteria->addSelectColumn(CategoryTableMap::COL_NAME);
-            $criteria->addSelectColumn(CategoryTableMap::COL_COLOR);
-            $criteria->addSelectColumn(CategoryTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(CategoryTableMap::COL_UPDATED_AT);
+            $criteria->addSelectColumn(SharedTableMap::COL_ID);
+            $criteria->addSelectColumn(SharedTableMap::COL_WHAT_ID);
+            $criteria->addSelectColumn(SharedTableMap::COL_WHAT_TYPE);
+            $criteria->addSelectColumn(SharedTableMap::COL_TO_ID);
+            $criteria->addSelectColumn(SharedTableMap::COL_TO_TYPE);
+            $criteria->addSelectColumn(SharedTableMap::COL_RIGHTS);
+            $criteria->addSelectColumn(SharedTableMap::COL_CREATED_AT);
+            $criteria->addSelectColumn(SharedTableMap::COL_UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.user_id');
-            $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.color');
+            $criteria->addSelectColumn($alias . '.what_id');
+            $criteria->addSelectColumn($alias . '.what_type');
+            $criteria->addSelectColumn($alias . '.to_id');
+            $criteria->addSelectColumn($alias . '.to_type');
+            $criteria->addSelectColumn($alias . '.rights');
             $criteria->addSelectColumn($alias . '.created_at');
             $criteria->addSelectColumn($alias . '.updated_at');
         }
@@ -371,7 +413,7 @@ class CategoryTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(CategoryTableMap::DATABASE_NAME)->getTable(CategoryTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(SharedTableMap::DATABASE_NAME)->getTable(SharedTableMap::TABLE_NAME);
     }
 
     /**
@@ -379,16 +421,16 @@ class CategoryTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(CategoryTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(CategoryTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new CategoryTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(SharedTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(SharedTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new SharedTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Category or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Shared or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Category object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Shared object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -399,27 +441,27 @@ class CategoryTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SharedTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Models\Category) { // it's a model object
+        } elseif ($values instanceof \Models\Shared) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
-            $criteria->add(CategoryTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(SharedTableMap::DATABASE_NAME);
+            $criteria->add(SharedTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = CategoryQuery::create()->mergeWith($criteria);
+        $query = SharedQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            CategoryTableMap::clearInstancePool();
+            SharedTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                CategoryTableMap::removeInstanceFromPool($singleval);
+                SharedTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -427,20 +469,20 @@ class CategoryTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the category table.
+     * Deletes all rows from the shared table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return CategoryQuery::create()->doDeleteAll($con);
+        return SharedQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Category or Criteria object.
+     * Performs an INSERT on the database, given a Shared or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Category object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Shared object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -449,22 +491,22 @@ class CategoryTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(SharedTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Category object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Shared object
         }
 
-        if ($criteria->containsKey(CategoryTableMap::COL_ID) && $criteria->keyContainsValue(CategoryTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.CategoryTableMap::COL_ID.')');
+        if ($criteria->containsKey(SharedTableMap::COL_ID) && $criteria->keyContainsValue(SharedTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.SharedTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = CategoryQuery::create()->mergeWith($criteria);
+        $query = SharedQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -473,7 +515,7 @@ class CategoryTableMap extends TableMap
         });
     }
 
-} // CategoryTableMap
+} // SharedTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-CategoryTableMap::buildTableMap();
+SharedTableMap::buildTableMap();
