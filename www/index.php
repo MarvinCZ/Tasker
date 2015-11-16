@@ -1,6 +1,9 @@
 <?php
 
 use Aura\Router\RouterFactory;
+use Propel\Runtime\Propel;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 use Controllers\HomePageController;
 
@@ -28,6 +31,27 @@ spl_autoload_register(function ($class) {
     }
 });
 
+//Create new logger
+$log = new Logger('dafaultLogger');
+$handler = new StreamHandler('app.log', Logger::INFO);
+$handler->setFormatter(new \Monolog\Formatter\LineFormatter("[%datetime%] %level_name%: %message%\n"));
+$log->pushHandler($handler);
+
+//Add logger to Propel
+Propel::getServiceContainer()->setLogger('defaultLogger', $log);
+
+//Log request
+$server_info = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI'];
+$log->addInfo($server_info);
+if($_SERVER['REQUEST_METHOD'] == "GET"){
+	$params = var_export($_GET, true);
+	$log->addInfo('PARAMS: ' . $params);
+}
+else{
+	$params = var_export($_POST, true);
+	$log->addInfo('PARAMS: ' . $params);
+}
+
 //And the magic comes
 $router_factory = new RouterFactory;
 $router = $router_factory->newInstance();
@@ -37,6 +61,7 @@ require_once("routes.php");
 
 //Get route
 $route = $router->match(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_SERVER);
+
 
 //Dispatch route
 if (isset($route->params['action'])){

@@ -15,13 +15,19 @@ var show_right = function(){
 	$('.page-right').css("left", "0");
 }
 $(document).ready(function(){
-	var left = new Hammer($('.page-left')[0]);
-	var middle = new Hammer($('.page-middle')[0]);
-	var right = new Hammer($('.page-right')[0]);
-	left.on( "swipeleft", show_middle );
-	middle.on( "swipeleft", show_right );
-	middle.on( "swiperight", show_left );
-	right.on( "swiperight", show_middle );
+	if($('.page-left').length > 0){
+		var left = new Hammer($('.page-left')[0]);
+		left.on( "swipeleft", show_middle );
+	}
+	if($('.page-middle').length > 0){
+		var middle = new Hammer($('.page-middle')[0]);
+		middle.on( "swipeleft", show_right );
+		middle.on( "swiperight", show_left );
+	}
+	if($('.page-right').length > 0){
+		var right = new Hammer($('.page-right')[0]);
+		right.on( "swiperight", show_middle );
+	}
 	$('.page-show-middle').click(function(){
 		show_middle();
 	});
