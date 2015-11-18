@@ -16,6 +16,7 @@ body{
 	h3{
 		margin-top: 0;
 		font-size: 2.5em;
+		font-weight: bold;
 	}
 	.menu-img{
 		height: 100px;
@@ -81,7 +82,6 @@ body{
 	position: absolute;
 	width: 100%;
 	min-height: 100%;
-	transition: 300ms;
 	.header{
 		position: relative;
 		background-color: white;

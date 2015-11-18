@@ -15,7 +15,8 @@ body {
   margin-top: 20px; }
   .inner-box h3 {
     margin-top: 0;
-    font-size: 2.5em; }
+    font-size: 2.5em;
+    font-weight: bold; }
   .inner-box .menu-img {
     height: 100px;
     width: 100px;
@@ -63,8 +64,7 @@ body {
 .page {
   position: absolute;
   width: 100%;
-  min-height: 100%;
-  transition: 300ms; }
+  min-height: 100%; }
   .page .header {
     position: relative;
     background-color: white;

@@ -1,18 +1,57 @@
-var shown = "middle";
+var time = 300;
+var left_done = function(){
+	$('.page-right').css("display", "none");
+	$('.page-middle').css("display", "none");
+}
+var middle_done = function(){
+	$('.page-left').css("display", "none");
+	$('.page-right').css("display", "none");
+}
+var right_done = function(){
+	$('.page-left').css("display", "none");
+	$('.page-middle').css("display", "none");
+}
 var show_left = function(){
-	$('.page-left').css("left", "0");
-	$('.page-middle').css("left", "100%");
-	$('.page-right').css("left", "200%");
+	$('.page-left').css("display", "block");
+	$('.page-right').css("display", "block");
+	$('.page-middle').css("display", "block");
+	$('.page-left').animate({
+    	left: "0"
+  	}, time);
+	$('.page-middle').animate({
+    	left: "100%"
+  	}, time);
+	$('.page-right').animate({
+    	left: "200%"
+  	}, time, left_done);
 }
 var show_middle = function(){
-	$('.page-left').css("left", "-100%");
-	$('.page-middle').css("left", "0");
-	$('.page-right').css("left", "100%");
+	$('.page-left').css("display", "block");
+	$('.page-right').css("display", "block");
+	$('.page-middle').css("display", "block");
+	$('.page-left').animate({
+    	left: "-100%"
+  	}, time);
+	$('.page-middle').animate({
+    	left: "0"
+  	}, time);
+	$('.page-right').animate({
+    	left: "100%"
+  	}, time, middle_done);
 }
 var show_right = function(){
-	$('.page-left').css("left", "-200%");
-	$('.page-middle').css("left", "-100%");
-	$('.page-right').css("left", "0");
+	$('.page-left').css("display", "block");
+	$('.page-right').css("display", "block");
+	$('.page-middle').css("display", "block");
+	$('.page-left').animate({
+    	left: "-200%"
+  	}, time);
+	$('.page-middle').animate({
+    	left: "-100%"
+  	}, time);
+	$('.page-right').animate({
+    	left: "0"
+  	}, time, right_done);
 }
 $(document).ready(function(){
 	if($('.page-left').length > 0){
