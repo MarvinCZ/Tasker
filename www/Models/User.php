@@ -24,4 +24,12 @@ class User extends BaseUser
 		return "Uploads/Avatars/".$path;
 	}
 
+	public function getDisplayName(){
+		return $this->getNick();
+	}
+
+	public function getPath(){
+		return "users/".$this->getId();
+	}
+
 }

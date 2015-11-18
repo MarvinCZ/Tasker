@@ -8,6 +8,75 @@ body{
 .clear{
 	clear: both;
 }
+.inner-box{
+	box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+	background-color: white;
+	padding: 10px;
+	margin-top: 20px;
+	h3{
+		margin-top: 0;
+		font-size: 2.5em;
+	}
+	.menu-img{
+		height: 100px;
+		width: 100px;
+		float: left;
+	}
+	.title{
+		font-size: 3em;
+		font-weight: bold;
+		height: 100px;
+		line-height: 100px;
+		padding-left: 130px;
+		color: #333;
+	}
+	.notification{
+		margin-top: 15px;
+		margin-bottom: 5px;
+		padding-left: 10px;
+		padding-right: 10px;
+		box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+		.text{
+			font-size: 1.5em;
+			height: 47px;
+			line-height: 47px;
+		}
+		i{
+			float: left;
+			margin-right: 10px;
+			font-size: 2.5em;
+			line-height: 47px;
+		}
+		&:hover{
+			box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+		}
+	}
+	nav{
+		ul{
+			list-style-type: none;
+			padding: 0;
+			a{
+				color: #333;
+				li{
+					padding: 15px;
+					font-size: 2em;
+					box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+					&:hover{
+						box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+					}
+				}
+				&:last-of-type{
+					li{
+						box-shadow: none;
+					}
+				}
+				&:hover{
+					text-decoration: none;
+				}
+			}
+		}
+	}
+}
 .page{
 	position: absolute;
 	width: 100%;
@@ -51,7 +120,14 @@ body{
 .page-right{
 	left: 100%;
 }
-a.nounderline{text-decoration: none}
+a{
+	text-decoration: inherit;
+	color: inherit;
+	&:hover{
+		text-decoration: inherit;
+		color: inherit;
+	}
+}
 .notes{
 	margin-top: 10px;
 }
@@ -129,4 +205,14 @@ a.nounderline{text-decoration: none}
 	text-align: center;
 	font-size: 4em;
 	padding: 0;
+}
+.no-padding{
+	padding: 0;
+}
+.no-side-padding{
+	padding-left: 0;
+	padding-right: 0;
+	&>h3{
+		margin-left: 10px;
+	}
 }

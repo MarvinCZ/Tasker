@@ -24,4 +24,21 @@ class Notification extends BaseNotification
 			return $this->getNote();
 		return null;
 	}
+
+	public function getIcon(){
+		switch ($this->getType()) {
+			case 'info':
+				return '<i class="fa fa-info-circle text-info"></i>';
+			case 'warning':
+				return '<i class="fa fa-exclamation-triangle text-warning"></i>';
+			case 'request':
+				return '<i class="fa fa-bell-o text-warning"></i>';
+			case 'success':
+				return '<i class="fa fa-check text-success"></i>';
+		}
+	}
+
+	public function getLink(){
+		return "/";
+	}
 }

@@ -9,6 +9,8 @@ use Models\Note;
 use Models\NoteQuery;
 use Models\Category;
 use Models\CategoryQuery;
+use Models\Notification;
+use Models\NotificationQuery;
 use \DateTime;
 
 class NoteController extends ApplicationController{
@@ -16,6 +18,9 @@ class NoteController extends ApplicationController{
 		$this->params['notes'] = NoteQuery::create()->
 			filterByUser($this->params['user'])->
 			leftJoinWith('Note.Category')->
+			find();
+		$this->params['notifications'] = NotificationQuery::create()->
+			filterByUser($this->params['user'])->
 			find();
 	}
 
