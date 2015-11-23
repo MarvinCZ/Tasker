@@ -19,6 +19,7 @@ include("generated-conf/config.php");
 
 //Load helper classes.
 require_once("Helpers/BasicHelper.php");
+require_once("Helpers/ComponentsHelper.php");
 
 //Load by namespace in thi project
 spl_autoload_register(function ($class) {

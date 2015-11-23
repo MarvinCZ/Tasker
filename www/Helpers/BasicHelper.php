@@ -19,29 +19,6 @@ function renderToString($file, $params = array()){
     return ob_get_clean();
 }
 
-//Returns string with html for select component
-function select($title, $name, $multiple, $options){
-	$params = array('name' => strtolower($name),
-					'display_name' => $title,
-					'multiple' => $multiple,
-					'options' => $options);
-	return renderToString('Views/Components/select.phtml',$params);
-}
-
-//Create array for select component
-function options_for_select($array, $selected = null){
-	$options = array();
-	for($i = 0; $i < count($array); $i++){
-		array_push($options, array(
-			'name' => strtolower($array[$i]),
-			'display_name' => ucfirst($array[$i]),
-			'selected' => $array[$i] == $selected || ($selected == -1 && $i == 0) ? 'checked' : ''
-			));
-	}
-	return $options;
-}
-
-
 //Smart link_to methond. Made to simplify views
 function link_to($link, $text, $title, $params){
 	$link = '<a href="' . $link . '" ';

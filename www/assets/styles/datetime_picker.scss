@@ -1,0 +1,28 @@
+.datetime_picker{
+	.controll{
+		text-align: center;
+		font-size: 2em;
+		&:hover{
+			cursor: pointer;
+		}
+	}
+	.head{
+		text-align: center;
+	}
+	.with-end-char{
+		input{
+			float: left;
+			width: 80%;
+			margin-right: 5px;
+		}
+		.end-char{
+			display: block;
+			font-size: 3em;
+			line-height: 39px;
+			height: 35px;
+		}
+		.end-char-colon{
+			line-height: 27px;
+		}
+	}
+}

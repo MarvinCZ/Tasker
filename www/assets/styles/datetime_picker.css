@@ -1,0 +1,20 @@
+.datetime_picker .controll {
+  text-align: center;
+  font-size: 2em; }
+  .datetime_picker .controll:hover {
+    cursor: pointer; }
+.datetime_picker .head {
+  text-align: center; }
+.datetime_picker .with-end-char input {
+  float: left;
+  width: 80%;
+  margin-right: 5px; }
+.datetime_picker .with-end-char .end-char {
+  display: block;
+  font-size: 3em;
+  line-height: 39px;
+  height: 35px; }
+.datetime_picker .with-end-char .end-char-colon {
+  line-height: 27px; }
+
+/*# sourceMappingURL=datetime_picker.css.map */
