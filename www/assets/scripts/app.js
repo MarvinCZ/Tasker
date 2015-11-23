@@ -54,6 +54,7 @@ var show_right = function(){
   	}, time, right_done);
 }
 $(document).ready(function(){
+	middle_done();
 	if($('.page-left').length > 0){
 		var left = new Hammer($('.page-left')[0]);
 		left.on( "swipeleft", show_middle );
