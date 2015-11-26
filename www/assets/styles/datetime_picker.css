@@ -26,5 +26,11 @@
   height: 35px; }
 .datetime_picker .with-end-char .end-char-colon {
   line-height: 27px; }
+.datetime_picker .row {
+  padding-left: 20px;
+  padding-right: 20px; }
+.datetime_picker .row > * {
+  padding-left: 1px;
+  padding-right: 1px; }
 
 /*# sourceMappingURL=datetime_picker.css.map */

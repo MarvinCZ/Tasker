@@ -8,6 +8,10 @@ body {
 .clear {
   clear: both; }
 
+@media (min-width: 768px) {
+  .container-small {
+    width: 750px; } }
+
 .inner-box {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   background-color: white;
