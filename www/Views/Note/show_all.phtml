@@ -3,35 +3,38 @@
 		Menu
 		<div class="header-btn page-show-middle pull-right"><i class="fa fa-home"></i></div>
 	</div>
-	<a href="<?= $user->getPath() ?>" class="nounderline">
-		<div class="inner-box">
-			<img src="<?= $user->getAvatarPath() ?>" class="menu-img">
-			<div class="title"><?= $user->getDisplayName() ?></div>
+	<div class="container">
+		<a href="<?= $user->getPath() ?>" class="nounderline">
+			<div class="inner-box">
+				<img src="<?= $user->getAvatarPath() ?>" class="menu-img">
+				<div class="title"><?= $user->getDisplayName() ?></div>
+			</div>
+		</a>
+		<div class="inner-box no-padding">
+			<nav>
+				<ul>
+					<a href="options"><li>OPTIONS</li></a>
+					<a href="logout"><li>LOG OUT</li></a>
+				</ul>
+			</nav>
 		</div>
-	</a>
-	<div class="inner-box no-padding">
-		<nav>
-			<ul>
-				<a href="options"><li>OPTIONS</li></a>
-				<a href="logout"><li>LOG OUT</li></a>
-			</ul>
-		</nav>
-	</div>
-	<div class="inner-box no-side-padding">
-		<h3>Notifications</h3>
-		<?php foreach ($notifications as $notification): ?>
-			<a href="<?= $notification->getLink() ?>">
-				<div class="notification">
-					<?= $notification->getIcon() ?><div class="text"><?= $notification->getText() ?></div>
-				</div>
-			</a>
-		<?php endforeach ?>
+		<div class="inner-box no-side-padding">
+			<h3>Notifications</h3>
+			<?php foreach ($notifications as $notification): ?>
+				<a href="<?= $notification->getLink() ?>">
+					<div class="notification">
+						<?= $notification->getIcon() ?><div class="text"><?= $notification->getText() ?></div>
+					</div>
+				</a>
+			<?php endforeach ?>
+		</div>
 	</div>
 </div>
 <div class="page page-middle">
 	<header class="header hidden-xs">
 		<h1>Hlavicka</h1>
 		<div class="header-right">
+			<div class="header-btn-large show-filter pull-left"><i class="fa fa-search"></i></div>
 			<span class="user-name"><?= $user->getNick() ?></span>
 			<img src="<?= $user->getAvatarPath() ?>" class="header-img">
 		</div>
@@ -41,9 +44,9 @@
 		Notes
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-search"></i></div>
 	</div>
-	<div class="container">
+	<div class="container container-lg-large">
 		<div class="row notes">
-			<div class="col-xs-6 col-sm-4 col-md-3">
+			<div class="col-xs-6 col-sm-4 col-md-3 note-container">
 				<a href="/notes/add">
 				<div class="note new-note">
 					<i class="fa fa-plus-circle"></i>
@@ -58,8 +61,17 @@
 </div>
 <div class="page page-right">
 	<div class="header row text-center">
-		<div class="header-btn page-show-middle pull-left"><i class="fa fa-home"></i></div>
+		<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
+		<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
 		Filter
 	</div>
-	<?= datetime_picker('titulek', 'jmeno', false) ?>
+	<div class="container">
+		<form>
+			<?= datetime_picker('Deadline TO', 'deadline_to', false) ?>
+			<?= select("Category","category", true, $categories, false) ?>
+			<div class="filter_submit">
+				<input type="submit" value="Search" class="big-btn"/>
+			</div>			
+		</form>
+	</div>
 </div>

@@ -77,4 +77,16 @@ $(document).ready(function(){
 	$('.page-show-right').click(function(){
 		show_right();
 	});
+	$('.page-hide-right').click(function(){
+		$(this).closest('.page').removeClass('page-right-show');
+	});
+	$('.show-filter').click(function(e){
+		$('.page-right').addClass('page-right-show');
+		e.stopPropagation();
+	});
+	$('.page-middle').click(function(){
+		if($('.page-right').hasClass('page-right-show')){
+			$('.page-right').removeClass('page-right-show');
+		}
+	});
 });

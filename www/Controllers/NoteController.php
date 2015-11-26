@@ -15,13 +15,30 @@ use \DateTime;
 
 class NoteController extends ApplicationController{
 	protected function show_all(){
-		$this->params['notes'] = NoteQuery::create()->
+		$note_query = NoteQuery::create()->
 			filterByUser($this->params['user'])->
-			leftJoinWith('Note.Category')->
-			find();
+			leftJoinWith('Note.Category');
+
+		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
+			$note_query = $note_query->filterByDeadline(array('max' => $_GET['deadline_to']));
+		}
+		if(isset($_GET['category']) && is_array($_GET['category'])){
+			$note_query = $note_query->
+			  	useCategoryQuery()->
+    				filterByName($_GET['category'])->
+  				endUse();
+		}
+		
+		$this->params['notes'] = $note_query->find();
 		$this->params['notifications'] = NotificationQuery::create()->
 			filterByUser($this->params['user'])->
 			find();
+
+		$categories = CategoryQuery::create()->
+			select('name')->
+			filterByUser($this->params['user'])->
+			find();
+		$this->params['categories'] = options_for_select($categories);
 	}
 
 	protected function show($id){
@@ -37,7 +54,7 @@ class NoteController extends ApplicationController{
 			select('name')->
 			filterByUser($user)->
 			find();
-		$this->params['categories'] = options_for_select($categories, -1);
+		$this->params['categories'] = options_for_select($categories);
 	}
 
 	protected function create(){

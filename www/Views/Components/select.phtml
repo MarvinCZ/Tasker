@@ -1,5 +1,5 @@
-<div class="tab-select <?= $multiple ? 'tab-multiselect' : 'tab-select-one' ?>" data-required="<?= $required ? 'true' : 'false' ?>">
-	<h3><?= $display_name ?></h3>
+<div class="inner-box tab-select <?= $multiple ? 'tab-multiselect' : 'tab-select-one' ?>" data-required="<?= $required ? 'true' : 'false' ?>">
+	<label for="<?= $name ?>"><?= $display_name ?></label>
 	<i class="fa fa-chevron-down control control-show"></i>
 	<i class="fa fa-chevron-up control control-hide"></i>
 	<div class="tab-opend">
@@ -11,7 +11,7 @@
 	<?php foreach ($options as $option): ?>
 			<div class="tab-btn <?= $option['selected'] ? 'tab-active' : ''?>">
 				<?php if($multiple): ?>
-					<input type="checkbox" name="<?= $name ?>['<?= $option['name'] ?>']"  <?= $option['selected'] ? 'checked' : '' ?>/>
+					<input type="checkbox" name="<?= $name ?>[]" value="<?= $option['name'] ?>"  <?= $option['selected'] ? 'checked' : '' ?>/>
 				<?php else: ?>
 					<input type="radio" name="<?= $name ?>" value="<?= $option['name'] ?>" <?= $option['selected'] ? 'checked' : '' ?>/>
 				<?php endif ?>

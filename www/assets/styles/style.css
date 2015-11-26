@@ -3,7 +3,7 @@
 
 body {
   background: #EEE;
-  overflow: hidden; }
+  overflow-x: hidden; }
 
 .clear {
   clear: both; }
@@ -12,12 +12,24 @@ body {
   .container-small {
     width: 750px; } }
 
+.big-btn {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  border: 0;
+  font-size: 2.5em;
+  font-weight: bold;
+  width: 100%; }
+
 .inner-box {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   background-color: white;
   padding: 10px;
   margin-top: 20px; }
   .inner-box h3 {
+    margin-top: 0;
+    font-size: 2.5em;
+    font-weight: bold; }
+  .inner-box label {
     margin-top: 0;
     font-size: 2.5em;
     font-weight: bold; }
@@ -70,7 +82,9 @@ body {
   width: 100%;
   min-height: 100%; }
   .page .header {
-    position: relative;
+    position: fixed;
+    z-index: 100;
+    width: 100%;
     background-color: white;
     padding: 10px;
     font-size: 3em;
@@ -94,12 +108,50 @@ body {
     .page .header .user-name {
       font-size: 0.5em;
       line-height: 80.8px; }
+  .page .container {
+    margin-top: 85px; }
 
 .page-left {
   left: -100%; }
 
 .page-right {
   left: 100%; }
+
+.page-right-show {
+  position: fixed;
+  left: 60% !important;
+  width: 40%;
+  display: block !important;
+  padding-right: 10px;
+  padding-left: 10px;
+  box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.3);
+  background: #EEE;
+  height: 100%; }
+  .page-right-show .header {
+    margin-right: -10px;
+    margin-left: -10px;
+    width: 40%; }
+  .page-right-show .container {
+    width: 100%;
+    overflow-y: auto;
+    height: calc(100% - 150px); }
+  .page-right-show .filter_submit {
+    padding: 10px 37px 10px 25px;
+    left: 60%; }
+
+.header-btn-large {
+  line-height: 80px;
+  margin-left: 10px;
+  margin-right: 10px; }
+  .header-btn-large:hover {
+    cursor: pointer; }
+
+.filter_submit {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2px 20px; }
 
 a {
   text-decoration: inherit;
@@ -111,6 +163,12 @@ a {
 .notes {
   margin-top: 10px; }
 
+.note-container {
+  max-width: 350px; }
+
+@media (min-width: 1200px) {
+  .container-lg-large {
+    width: 90%; } }
 .note {
   position: relative;
   background-color: white;
