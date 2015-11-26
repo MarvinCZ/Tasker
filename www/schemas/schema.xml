@@ -182,4 +182,10 @@
 
         <behavior name="timestampable" />
     </table>
+
+    <table name="link_action" phpName="LinkAction">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="50"/>
+        <column name="params" type="varchar" size="50"/>
+    </table>
 </database>
