@@ -1,4 +1,19 @@
 .datetime_picker{
+	.clear_date{
+		font-size: 2em;
+		&:hover{
+			cursor: pointer;
+		}
+	}
+	input[type='number'] {
+		-moz-appearance:textfield;
+		text-align: center;
+		min-width: 40px;
+	}
+
+	input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+	}
 	.controll{
 		text-align: center;
 		font-size: 2em;

@@ -1,5 +1,9 @@
 <div class="inner-box datetime_picker">
-	<h3><?= $display_name ?></h3>
+	<div class="pull-left"><h3><?= $display_name ?></h3></div>
+	<?php if(!$required): ?>
+		<div class="pull-right clear_date"><i class="fa fa-trash"></i></div>
+	<?php endif ?>
+	<div class="clear"></div>
 	<div class="row">
 		<div class="col-xs-2">
 			<div class="head">Day</div>

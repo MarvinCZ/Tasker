@@ -2,9 +2,13 @@ $(document).ready(function(){
 	$('.tab-select-one .tab-btn').click(function(e){
 		var parent = $(this).closest('.tab-select');
 		parent.find('.tab-btn').removeClass('tab-active');
-		$(this).addClass('tab-active');
+		var was_checked = $(this).find('input[type="radio"]').prop('checked');
 		parent.find('input[type="radio"]').prop('checked','');
-		$(this).find('input[type="radio"]').prop('checked',true);
+		if(!was_checked || $(this).closest('.tab-select').data().required){
+			$(this).addClass('tab-active');
+			$(this).find('input[type="radio"]').prop('checked',true);
+			console.log("xxx");
+		}
 		e.stopPropagation();
 	});
 	$('.tab-multiselect .tab-btn').click(function(e){

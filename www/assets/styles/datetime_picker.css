@@ -1,3 +1,13 @@
+.datetime_picker .clear_date {
+  font-size: 2em; }
+  .datetime_picker .clear_date:hover {
+    cursor: pointer; }
+.datetime_picker input[type='number'] {
+  -moz-appearance: textfield;
+  text-align: center;
+  min-width: 40px; }
+.datetime_picker input::-webkit-outer-spin-button, .datetime_picker input::-webkit-inner-spin-button {
+  -webkit-appearance: none; }
 .datetime_picker .controll {
   text-align: center;
   font-size: 2em; }

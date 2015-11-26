@@ -4,7 +4,10 @@
     <input type="text" class="form-control" id="title" name="note[title]">
   </div>
   <div class="form-group">
-    <?= select("Category","category", false, $categories) ?>
+    <?= select("Category","category", false, $categories, false) ?>
+  </div>
+  <div class="form-group">
+    <?= datetime_picker('DeadLine', 'note[deadline]', true) ?>
   </div>
   <div class="form-group">
     <label for="description">Description:</label>

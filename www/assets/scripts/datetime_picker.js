@@ -21,14 +21,31 @@ var CheckDayMaxDown = function(element){
 		element.find('.day').val(max);
 	}
 }
+
+var FillInToday = function(element){
+	var currentdate = new Date();
+	element.find('.day').val(currentdate.getDate());
+	element.find('.month').val(currentdate.getMonth()+1);
+	element.find('.year').val(currentdate.getFullYear());
+	element.find('.hour').val(currentdate.getHours());
+	element.find('.minute').val(currentdate.getMinutes());
+}
 $(document).ready(function(){
 	$('.controll-up').click(function(){
 		var value = parseInt($(this).next('input').val());
+		if(isNaN(value)){
+			FillInToday($(this).closest('.datetime_picker'));
+			var value = parseInt($(this).next('input').val());
+		}
 		$(this).next('input').val(value+1);
 		$(this).next('input').change();
 	});
 	$('.controll-down').click(function(){
 		var value = parseInt($(this).prev('input').val());
+		if(isNaN(value)){
+			FillInToday($(this).closest('.datetime_picker'));
+			var value = parseInt($(this).next('input').val());
+		}
 		$(this).prev('input').val(value-1);
 		$(this).prev('input').change();
 	});
@@ -79,5 +96,9 @@ $(document).ready(function(){
 		var hour = parent.find('.hour').val();
 		var minute = parent.find('.minute').val();
 		parent.find('.datetime').val(year+"-"+month+"-"+day+" "+hour+":"+minute);
+	});
+	$('.datetime_picker .clear_date').click(function(){
+		var parent = $(this).closest('.datetime_picker');
+		parent.find('input').val("");
 	});
 });
