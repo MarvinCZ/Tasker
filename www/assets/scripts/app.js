@@ -79,14 +79,17 @@ $(document).ready(function(){
 	});
 	$('.page-hide-right').click(function(){
 		$(this).closest('.page').removeClass('page-right-show');
+		$('.over').hide();
 	});
 	$('.show-filter').click(function(e){
 		$('.page-right').addClass('page-right-show');
+		$('.over').show();
 		e.stopPropagation();
 	});
-	$('.page-middle').click(function(){
+	$('.over').click(function(){
 		if($('.page-right').hasClass('page-right-show')){
 			$('.page-right').removeClass('page-right-show');
 		}
+		$('.over').hide();
 	});
 });

@@ -1,3 +1,6 @@
+@import 'select.scss';
+@import 'datetime_picker.scss';
+
 *{
     touch-action: pan-y;
 }
@@ -143,10 +146,13 @@ body{
 .page-right{
 	left: 100%;
 }
+$page-right-width: 500px;
 .page-right-show{
 	position: fixed;
-	left: 60% !important;
-	width: 40%;
+	z-index: 400;
+	left: 100% !important;
+	width: $page-right-width;
+	margin-left: -$page-right-width;
 	display: block !important;
 	padding-right: 10px;
 	padding-left: 10px;
@@ -156,7 +162,7 @@ body{
 	.header{
 		margin-right: -10px;
 		margin-left: -10px;
-		width: 40%;
+		width: $page-right-width;
 	}
 	.container{
 		width: 100%;
@@ -164,8 +170,9 @@ body{
 		height: calc(100% - 150px);
 	}
 	.filter_submit{
-		padding: 10px 37px 10px 25px;
-		left: 60%;
+		padding: 10px 24px 10px 25px;
+		left: 100%;
+		margin-left: -$page-right-width;
 	}
 }
 .header-btn-large{
@@ -286,4 +293,14 @@ a{
 	&>h3{
 		margin-left: 10px;
 	}
+}
+.over{
+	display: none;
+	z-index: 300;
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	background-color: rgba(0,0,0,0.5);
 }

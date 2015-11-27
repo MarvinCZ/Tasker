@@ -4,3 +4,4 @@ www/propel.yml
 www/propel_tasker.log
 www/app.log
 vendor
+.idea

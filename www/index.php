@@ -5,8 +5,6 @@ use Propel\Runtime\Propel;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-use Controllers\HomePageController;
-
 session_start();
 
 mb_internal_encoding("UTF-8");
@@ -33,7 +31,7 @@ spl_autoload_register(function ($class) {
 });
 
 //Create new logger
-$log = new Logger('dafaultLogger');
+$log = new Logger('defaultLogger');
 $handler = new StreamHandler('app.log', Logger::INFO);
 $handler->setFormatter(new \Monolog\Formatter\LineFormatter("[%datetime%] %level_name%: %message%\n"));
 $log->pushHandler($handler);
@@ -71,7 +69,7 @@ if (isset($route->params['action'])){
 	$controller = "Controllers\\".$action[0]."Controller";
 	$instance = new $controller;
 
-	//Unset action so its not passed as first parametr probably use blacklist becase of there can be some other params from route
+	//Unset action so its not passed as first parameter probably use blacklist because of there can be some other params from route
 	unset($params['action']);
 
 	call_user_func_array(array($instance, $action[1]), $params);
