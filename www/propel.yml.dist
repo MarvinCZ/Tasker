@@ -18,6 +18,7 @@ propel:
 #       connections:
 #           default:
 #               adapter: mysql
+#				classname: Propel\Runtime\Connection\ProfilerConnectionWrapper
 #               dsn: mysql:host=localhost;dbname=tasker_development
 #               user: root
 #               password:
