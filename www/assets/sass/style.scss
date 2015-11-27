@@ -1,6 +1,16 @@
 @import 'select';
 @import 'datetime_picker';
 
+$screen-sm-min: 768px;
+$screen-xs-max: ($screen-sm-min - 1);
+$screen-md-min: 992px;
+$screen-sm-max: ($screen-md-min - 1);
+$screen-lg-min: 1200px;
+$screen-md-max: ($screen-lg-min - 1);
+
+$default-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+$bigger-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+
 *{
     touch-action: pan-y;
 }
@@ -11,13 +21,23 @@ body{
 .clear{
 	clear: both;
 }
+.container-width{
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+	@media (min-width: $screen-sm-min) { width: 750px; }
+	@media (min-width: $screen-md-min) { width: 970px; }
+	@media (min-width: $screen-lg-min) { width: 1170px; }
+}
 .container-small{
-	@media (min-width: 768px) {
+	@media (min-width: $screen-sm-min) {
 		width: 750px;		
 	}
 }
 .big-btn{
-	box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+	box-shadow: $default-box-shadow;
 	background-color: white;
 	border: 0;
 	font-size: 2.5em;
@@ -25,7 +45,7 @@ body{
 	width: 100%;
 }
 .inner-box{
-	box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+	box-shadow: $default-box-shadow;
 	background-color: white;
 	padding: 10px;
 	margin-top: 20px;
@@ -57,7 +77,7 @@ body{
 		margin-bottom: 5px;
 		padding-left: 10px;
 		padding-right: 10px;
-		box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+		box-shadow: $default-box-shadow;
 		.text{
 			font-size: 1.5em;
 			height: 47px;
@@ -70,7 +90,7 @@ body{
 			line-height: 47px;
 		}
 		&:hover{
-			box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+			box-shadow: $bigger-box-shadow;
 		}
 	}
 	nav{
@@ -82,9 +102,9 @@ body{
 				li{
 					padding: 15px;
 					font-size: 2em;
-					box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+					box-shadow: $default-box-shadow;
 					&:hover{
-						box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+						box-shadow: $bigger-box-shadow !important;
 					}
 				}
 				&:last-of-type{
@@ -111,7 +131,7 @@ body{
 		padding: 10px;
 		font-size: 3em;
 		font-weight: bold;
-		box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+		box-shadow: $default-box-shadow;
 		margin: 0;
 		h1{
 			font-size: 1.1em;
@@ -170,10 +190,20 @@ $page-right-width: 500px;
 		height: calc(100% - 150px);
 	}
 	.filter_submit{
-		padding: 10px 24px 10px 25px;
+		padding: 10px 37px 10px 25px;
 		left: 100%;
 		margin-left: -$page-right-width;
+		width: auto;
 	}
+	form{
+		width: 437px;
+	}
+	.btn-down{
+		padding-bottom: 0;
+	}
+}
+.btn-down{
+	padding-bottom: 60px;
 }
 .header-btn-large{
 	line-height: 80px;
@@ -184,11 +214,14 @@ $page-right-width: 500px;
 	}
 }
 .filter_submit{
+	background: #eee;
+	z-index: 100;
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
-	padding: 2px 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 a{
 	text-decoration: inherit;
@@ -204,7 +237,7 @@ a{
 .note-container{
 	max-width: 350px;
 }
-@media (min-width: 1200px) {
+@media (min-width: $screen-lg-min) {
 	.container-lg-large{
 		width: 90%;
 	}

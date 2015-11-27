@@ -24,6 +24,15 @@ var show_left = function(){
 	$('.page-right').animate({
     	left: "200%"
   	}, time, left_done);
+	$('.page-left .header').animate({
+    	left: "0"
+  	}, time);
+	$('.page-middle .header').animate({
+    	left: "100%"
+  	}, time);
+	$('.page-right .header').animate({
+    	left: "200%"
+  	}, time);
 }
 var show_middle = function(){
 	$('.page-left').css("display", "block");
@@ -38,6 +47,15 @@ var show_middle = function(){
 	$('.page-right').animate({
     	left: "100%"
   	}, time, middle_done);
+	$('.page-left .header').animate({
+    	left: "-100%"
+  	}, time);
+	$('.page-middle .header').animate({
+    	left: "0"
+  	}, time);
+	$('.page-right .header').animate({
+    	left: "100%"
+  	}, time);
 }
 var show_right = function(){
 	$('.page-left').css("display", "block");
@@ -52,6 +70,15 @@ var show_right = function(){
 	$('.page-right').animate({
     	left: "0"
   	}, time, right_done);
+	$('.page-left .header').animate({
+    	left: "-200%"
+  	}, time);
+	$('.page-middle .header').animate({
+    	left: "-100%"
+  	}, time);
+	$('.page-right .header').animate({
+    	left: "0"
+  	}, time);
 }
 $(document).ready(function(){
 	middle_done();
