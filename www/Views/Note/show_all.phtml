@@ -36,7 +36,7 @@
 		<div class="header-right">
 			<div class="header-btn-large show-filter pull-left"><i class="fa fa-search"></i></div>
 			<span class="user-name"><?= $user->getNick() ?></span>
-			<img src="<?= $user->getAvatarPath() ?>" class="header-img">
+			<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
 		</div>
 	</header>
 	<div class="header row text-center visible-xs">
@@ -57,6 +57,14 @@
 				<?php includeFile("Views/Note/_note.phtml",array('note' => $note)) ?>
 			<?php endforeach ?>
 		</div>
+	</div>
+	<div class="inner-box no-padding user-menu">
+		<nav>
+			<ul>
+				<a href="options"><li>OPTIONS</li></a>
+				<a href="logout"><li>LOG OUT</li></a>
+			</ul>
+		</nav>
 	</div>
 </div>
 <div class="page page-right">

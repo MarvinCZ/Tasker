@@ -10,6 +10,7 @@ $screen-md-max: ($screen-lg-min - 1);
 
 $default-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 $bigger-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+$small-border: 1px solid rgba(0, 0, 0, 0.2);
 
 *{
     touch-action: pan-y;
@@ -17,6 +18,9 @@ $bigger-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 body{
 	background: #EEE;
 	overflow-x: hidden;
+}
+.img-circle{
+	border-radius: 50%;
 }
 .clear{
 	clear: both;
@@ -127,7 +131,8 @@ body{
 		position: fixed;
 		z-index: 100;
 		width: 100%;
-		background-color: white;
+		background-color: #3097D1;
+		color: white;
 		padding: 10px;
 		font-size: 3em;
 		font-weight: bold;
@@ -143,6 +148,9 @@ body{
 			height: 65px;
 			img{
 				height: 100%;
+			}
+			&:hover{
+				cursor: pointer;
 			}
 		}
 		.header-right{
@@ -180,8 +188,9 @@ $page-right-width: 500px;
 	background: #EEE;
 	height: 100%;
 	.header{
+		left: 100%;
 		margin-right: -10px;
-		margin-left: -10px;
+		margin-left: -$page-right-width;
 		width: $page-right-width;
 	}
 	.container{
@@ -213,8 +222,13 @@ $page-right-width: 500px;
 		cursor: pointer;
 	}
 }
+.header-btn{
+	&:hover{
+		cursor: pointer;
+	}	
+}
 .filter_submit{
-	background: #eee;
+	background: #3097D1 ;
 	z-index: 100;
 	position: fixed;
 	bottom: 0;
@@ -290,6 +304,9 @@ a{
 	.stripe-green{
 		border-color: transparent #12973A transparent transparent;
 	}
+	.stripe-yellow{
+		border-color: transparent #FFF406 transparent transparent;
+	}
 	.status{
 		position: absolute;
 		bottom: 0;
@@ -311,7 +328,8 @@ a{
 	}
 }
 .new-note{
-	background-color: #7D89CB;
+	background-color: #0B85C6;
+	color: white;
 	line-height: 140px;
 	text-align: center;
 	font-size: 4em;
@@ -336,4 +354,21 @@ a{
 	bottom: 0;
 	top: 0;
 	background-color: rgba(0,0,0,0.5);
+}
+.user-menu{
+	display: none;
+	position: fixed;
+	width: 200px;
+	right: 40px;
+	top: 50px;
+	z-index: 200;
+	box-shadow: $bigger-box-shadow;
+	border: $small-border;
+	nav ul{
+		margin-bottom: 0;
+		a li{
+			text-align: center;
+			font-size: 1.5em;
+		}
+	}
 }
