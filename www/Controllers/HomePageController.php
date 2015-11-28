@@ -14,6 +14,11 @@ class HomePageController extends ApplicationController{
 
 	public function __construct(){
 		parent::__construct();
+		$this->addBeforeFilter(function(){
+			if(isset($this->params['user'])){
+				redirectTo("/notes");
+			}
+		}, "redirect_if_logged");
 	}
 	protected function index(){
 		//$a = "Text";

@@ -1,16 +1,67 @@
 @import 'select';
 @import 'datetime_picker';
 
+$screen-xs-min: 400px;
+$screen-xxs-max: ($screen-xs-min - 1);
 $screen-sm-min: 768px;
 $screen-xs-max: ($screen-sm-min - 1);
 $screen-md-min: 992px;
 $screen-sm-max: ($screen-md-min - 1);
 $screen-lg-min: 1200px;
 $screen-md-max: ($screen-lg-min - 1);
+$screen-xl-min: 1600px;
+$screen-lg-max: ($screen-xl-min - 1);
+
+$columns: 12;
 
 $default-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 $bigger-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 $small-border: 1px solid rgba(0, 0, 0, 0.2);
+
+%column{
+	position: relative;
+	min-height: 1px;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+@media (min-width: $screen-sm-min){
+	%column{
+		float: left;
+	}
+}
+@media (min-width: $screen-xl-min){
+	@for $i from 1 through $columns{
+		.col-xl-#{$i}{
+			width: 100%*$i/$columns;
+		}
+	}
+}
+
+@for $i from 1 through 12{
+	.col-xl-#{$i}{
+		@extend %column;
+	}
+}
+@media (max-width: $screen-xxs-max){
+	@for $i from 1 through $columns{
+		.col-xxs-#{$i}{
+			width: 100%*$i/$columns;
+		}
+	}
+}
+%col{
+	position: relative;
+	min-height: 1px;
+	padding-right: 15px;
+	padding-left: 15px;
+	float: left;
+}
+
+@for $i from 1 through 12{
+	.col-xxs-#{$i}{
+		@extend %col;
+	}
+}
 
 *{
     touch-action: pan-y;
@@ -249,7 +300,11 @@ a{
 	margin-top: 10px;
 }
 .note-container{
-	max-width: 350px;
+	@media (max-width: $screen-xs-max) {
+		&{
+			padding: 0 5px;
+		}
+	}
 }
 @media (min-width: $screen-lg-min) {
 	.container-lg-large{
@@ -313,6 +368,8 @@ a{
 		left: 0;
 		right: 0;
 		padding: 10px;
+		font-size: 0.9em;
+		word-spacing: -1px;
 	}
 	.status-ok{
 		background-color: #77D593;

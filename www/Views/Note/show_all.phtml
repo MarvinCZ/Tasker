@@ -32,7 +32,7 @@
 </div>
 <div class="page page-middle">
 	<header class="header hidden-xs">
-		<h1>Hlavicka</h1>
+		<a href="/notes"><h1>Notes</h1></a>
 		<div class="header-right">
 			<div class="header-btn-large show-filter pull-left"><i class="fa fa-search"></i></div>
 			<span class="user-name"><?= $user->getNick() ?></span>
@@ -46,7 +46,7 @@
 	</div>
 	<div class="container container-lg-large">
 		<div class="row notes">
-			<div class="col-xs-6 col-sm-4 col-md-3 note-container">
+			<div class="col-xxs-12 col-xs-6 col-sm-4 col-md-3 col-xl-2 note-container">
 				<a href="/notes/add">
 				<div class="note new-note">
 					<i class="fa fa-plus-circle"></i>
@@ -61,6 +61,7 @@
 	<div class="inner-box no-padding user-menu">
 		<nav>
 			<ul>
+			<a href="<?= $user->getPath() ?>"><li>PROFILE</li></a>
 				<a href="options"><li>OPTIONS</li></a>
 				<a href="logout"><li>LOG OUT</li></a>
 			</ul>

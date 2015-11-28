@@ -249,5 +249,19 @@ CREATE TABLE `shared`
     INDEX `shared_fi_8b8af1` (`to_type`, `to_id`)
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------------------------
+-- link_action
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `link_action`;
+
+CREATE TABLE `link_action`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50),
+    `params` VARCHAR(50),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
