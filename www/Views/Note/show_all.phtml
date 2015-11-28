@@ -76,7 +76,7 @@
 	</div>
 	<div class="container btn-down">
 		<form>
-			<?= datetime_picker('Deadline TO', 'deadline_to', false) ?>
+			<?= datetime_picker('Deadline TO', 'deadline_to', false, array('value' => $deadline_to)) ?>
 			<?= select("Category","category", true, $categories, false) ?>
 			<div class="filter_submit container-width">
 				<input type="submit" value="Search" class="big-btn"/>

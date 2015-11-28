@@ -14,12 +14,15 @@ function select($title, $name, $multiple, $options, $required){
 
 //Create array for select component
 function options_for_select($array, $selected = null){
+	if(!is_array($selected)){
+		$selected = array($selected);
+	}
 	$options = array();
 	for($i = 0; $i < count($array); $i++){
 		array_push($options, array(
 			'name' => strtolower($array[$i]),
 			'display_name' => ucfirst($array[$i]),
-			'selected' => $array[$i] == $selected || ($selected == -1 && $i == 0) ? 'checked' : ''
+			'selected' => in_array(strtolower($array[$i]), $selected) ? 'checked' : ''
 			));
 	}
 	return $options;
@@ -27,7 +30,7 @@ function options_for_select($array, $selected = null){
 
 //Returns string with html for select component
 function datetime_picker($title, $name, $required, $options = array()){
-	$value = isset($options['value']) ? $options['value'] : $required ? new DateTime() : null;
+	$value = isset($options['value']) ? new DateTime($options['value']) : ($required ? new DateTime() : null);
 	$year = $value == null ? null : $value->format('Y');
 	$month = $value == null ? null : $value->format('m');
 	$day = $value == null ? null : $value->format('d');

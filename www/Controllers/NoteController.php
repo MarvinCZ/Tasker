@@ -15,12 +15,15 @@ use \DateTime;
 
 class NoteController extends ApplicationController{
 	protected function show_all(){
+		$this->params['deadline_to'] = null;
+
 		$note_query = NoteQuery::create()->
 			filterByUser($this->params['user'])->
 			leftJoinWith('Note.Category');
 
 		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
 			$note_query = $note_query->filterByDeadline(array('max' => $_GET['deadline_to']));
+			$this->params['deadline_to'] = $_GET['deadline_to'];
 		}
 		if(isset($_GET['category']) && is_array($_GET['category'])){
 			$note_query = $note_query->
@@ -38,7 +41,8 @@ class NoteController extends ApplicationController{
 			select('name')->
 			filterByUser($this->params['user'])->
 			find();
-		$this->params['categories'] = options_for_select($categories);
+		$selected  = isset($_GET['category']) ? $_GET['category'] : null;
+		$this->params['categories'] = options_for_select($categories, $selected);
 	}
 
 	protected function show($id){
