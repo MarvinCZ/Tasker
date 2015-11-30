@@ -2,6 +2,7 @@
 
 namespace Models;
 
+use Propel\Runtime\Propel;
 use Models\Base\NoteQuery as BaseNoteQuery;
 
 /**
@@ -27,9 +28,9 @@ class NoteQuery extends BaseNoteQuery
 	public function orderByRelevance(){
 		if(!$this->full_text)
 			return $this;
-		$against = sprintf(' against ("%s")', $this->fulltext_text);
-		return $this->withColumn('match(title)' . $against, 's1')->
-			withColumn('match(description)' . $against, 's2')->
+		$against = Propel::getServiceContainer()->getReadConnection($this->getDbName())->quote($this->fulltext_text);
+		return $this->withColumn('match (title) against (' . $against . ')', 's1')->
+			withColumn('match(description) against (' . $against . ')', 's2')->
 			addDescendingOrderByColumn("(s1*2)+s2");
 	}
 
