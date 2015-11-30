@@ -59,6 +59,9 @@ class NoteController extends ApplicationController{
 				case 'importance':
 					$note_query = $note_query->addDescendingOrderByColumn("importance");
 					break;
+				case 'category':
+					$note_query = $note_query->addAscendingOrderByColumn("category.name");
+					break;
 			}
 		}
 		$note_query = $note_query->addAscendingOrderByColumn("note.created_at");
@@ -77,7 +80,7 @@ class NoteController extends ApplicationController{
 		$selected  = isset($_GET['state']) ? $_GET['state'] : null;
 		$this->params['states'] = options_for_select(array('opened', 'done', 'wip', 'closed'), $selected);
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
-		$this->params['sort_by'] = options_for_select(array('created_at', 'deadline', 'relevance', 'importance'), $selected);
+		$this->params['sort_by'] = options_for_select(array('created_at', 'deadline', 'relevance', 'importance', 'category'), $selected);
 	}
 
 	protected function show($id){
