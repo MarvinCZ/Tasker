@@ -33,6 +33,10 @@ class NoteController extends ApplicationController{
     				filterByName($_GET['category'])->
   				endUse();
 		}
+		if(isset($_GET['state']) && is_array($_GET['state'])){
+			$note_query = $note_query->
+				filterByState($_GET['state']);
+		}
 		if(isset($_GET['importance_from']) && $_GET['importance_from'] > 0){
 			$note_query = $note_query->
 				filterByImportance(array('min' => $_GET['importance_from']));
@@ -43,6 +47,21 @@ class NoteController extends ApplicationController{
 				filterByText($_GET['fulltext']);
 			$this->params['fulltext'] = $_GET['fulltext'];
 		}
+
+		if(isset($_GET['sort_by'])){
+			switch ($_GET['sort_by']) {
+				case 'deadline':
+					$note_query = $note_query->addAscendingOrderByColumn("deadline");
+					break;
+				case 'relevance':
+					$note_query = $note_query->orderByRelevance();
+					break;
+				case 'importance':
+					$note_query = $note_query->addDescendingOrderByColumn("importance");
+					break;
+			}
+		}
+		$note_query = $note_query->addAscendingOrderByColumn("note.created_at");
 		
 		$this->params['notes'] = $note_query->find();
 		$this->params['notifications'] = NotificationQuery::create()->
@@ -55,6 +74,10 @@ class NoteController extends ApplicationController{
 			find();
 		$selected  = isset($_GET['category']) ? $_GET['category'] : null;
 		$this->params['categories'] = options_for_select($categories, $selected);
+		$selected  = isset($_GET['state']) ? $_GET['state'] : null;
+		$this->params['states'] = options_for_select(array('opened', 'done', 'wip', 'closed'), $selected);
+		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
+		$this->params['sort_by'] = options_for_select(array('created_at', 'deadline', 'relevance', 'importance'), $selected);
 	}
 
 	protected function show($id){

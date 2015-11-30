@@ -352,16 +352,16 @@ a{
 		}
 	}
 	.stripe-red{
-		border-color: transparent #CC3018 transparent transparent;
+		border-color: transparent #FF7373 transparent transparent;
 	}
 	.stripe-blue{
-		border-color: transparent #20318B transparent transparent;
+		border-color: transparent #4957C0 transparent transparent;
 	}
 	.stripe-green{
-		border-color: transparent #12973A transparent transparent;
+		border-color: transparent #77D593 transparent transparent;
 	}
 	.stripe-yellow{
-		border-color: transparent #FFF406 transparent transparent;
+		border-color: transparent #FFE773 transparent transparent;
 	}
 	.status{
 		position: absolute;
@@ -382,6 +382,7 @@ a{
 		background-color: #FFEF8F;
 	}
 	.status-late{
+		background-color: #FFB3B3;
 		background-color: #FF9E8F;
 	}
 }

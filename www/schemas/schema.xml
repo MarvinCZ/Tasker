@@ -49,6 +49,13 @@
             <index-column name="title"/>
             <index-column name="description"/>
         </index>
+
+        <index>
+            <index-column name="title"/>
+        </index>
+        <index>
+            <index-column name="description"/>
+        </index>
     </table>
 
     <table name="sub_note" phpName="SubNote">

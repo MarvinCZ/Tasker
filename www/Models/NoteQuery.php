@@ -16,8 +16,21 @@ use Models\Base\NoteQuery as BaseNoteQuery;
  */
 class NoteQuery extends BaseNoteQuery
 {
+	protected $fulltext_text;
+	protected $full_text = false;
 	public function filterByText($text){
+		$this->full_text = true;
+		$this->fulltext_text = $text;
 		return $this->where('match(note.title, note.description) against (?)', $text);
+	}
+
+	public function orderByRelevance(){
+		if(!$this->full_text)
+			return $this;
+		$against = sprintf(' against ("%s")', $this->fulltext_text);
+		return $this->withColumn('match(title)' . $against, 's1')->
+			withColumn('match(description)' . $against, 's2')->
+			addDescendingOrderByColumn("(s1*2)+s2");
 	}
 
 }

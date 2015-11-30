@@ -98,7 +98,9 @@
 			<?= select("Category","category", true, $categories, false) ?>
 			<div class="filter_submit container-width">
 				<input type="submit" value="Search" class="big-btn"/>
-			</div>			
+			</div>
+			<?= select("State","state", true, $states, false) ?>
+			<?= select("Sort By","sort_by", false, $sort_by, true) ?>
 		</form>
 	</div>
 </div>
