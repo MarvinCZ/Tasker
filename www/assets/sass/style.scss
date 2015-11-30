@@ -104,6 +104,7 @@ body{
 	background-color: white;
 	padding: 10px;
 	margin-top: 20px;
+	margin-bottom: 10px;
 	h3{
 		margin-top: 0;
 		font-size: 2.5em;
@@ -247,7 +248,7 @@ $page-right-width: 500px;
 	.container{
 		width: 100%;
 		overflow-y: auto;
-		height: calc(100% - 150px);
+		height: calc(100% - 160px);
 	}
 	.filter_submit{
 		padding: 10px 37px 10px 25px;
@@ -263,7 +264,7 @@ $page-right-width: 500px;
 	}
 }
 .btn-down{
-	padding-bottom: 60px;
+	padding-bottom: 75px;
 }
 .header-btn-large{
 	line-height: 80px;
@@ -427,5 +428,14 @@ a{
 			text-align: center;
 			font-size: 1.5em;
 		}
+	}
+}
+.noUi-target{
+	margin-left: 20px;
+	margin-top: 8px;
+}
+.clear-input{
+	&:hover{
+		cursor: pointer;
 	}
 }

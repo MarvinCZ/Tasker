@@ -132,4 +132,24 @@ $(document).ready(function(){
 		$('.user-menu').toggle();
 		e.stopPropagation();
 	});
+	$('.clear-input').click(function(){
+		$(this).siblings('input').val("")
+	});
+	if($('#importance-from').length > 0){
+		var slider = document.getElementById('importance-from');
+		var value = parseInt($('input[name="importance_from"]').val());
+		noUiSlider.create(slider, {
+			start: value,
+			range: {
+				'min': 0,
+				'max': 10
+			},
+			step: 1
+		});
+		var inputFormat = document.getElementById('importance-from-field');
+		slider.noUiSlider.on('update', function( values, handle ) {
+			inputFormat.value = parseInt(values[handle]);
+		});
+	}
+
 });

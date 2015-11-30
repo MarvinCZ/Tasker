@@ -16,6 +16,8 @@ use \DateTime;
 class NoteController extends ApplicationController{
 	protected function show_all(){
 		$this->params['deadline_to'] = null;
+		$this->params['fulltext'] = "";
+		$this->params['importance'] = "0";
 
 		$note_query = NoteQuery::create()->
 			filterByUser($this->params['user'])->
@@ -30,6 +32,16 @@ class NoteController extends ApplicationController{
 			  	useCategoryQuery()->
     				filterByName($_GET['category'])->
   				endUse();
+		}
+		if(isset($_GET['importance_from']) && $_GET['importance_from'] > 0){
+			$note_query = $note_query->
+				filterByImportance(array('min' => $_GET['importance_from']));
+			$this->params['importance'] = $_GET['importance_from'];
+		}
+		if(isset($_GET['fulltext']) && !empty($_GET['fulltext'])){
+			$note_query = $note_query->
+				filterByText($_GET['fulltext']);
+			$this->params['fulltext'] = $_GET['fulltext'];
 		}
 		
 		$this->params['notes'] = $note_query->find();

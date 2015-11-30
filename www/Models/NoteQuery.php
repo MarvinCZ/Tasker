@@ -16,5 +16,8 @@ use Models\Base\NoteQuery as BaseNoteQuery;
  */
 class NoteQuery extends BaseNoteQuery
 {
+	public function filterByText($text){
+		return $this->where('match(note.title, note.description) against (?)', $text);
+	}
 
 }

@@ -37,7 +37,7 @@ CREATE TABLE `note`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
-    `importance` INTEGER DEFAULT -1,
+    `importance` INTEGER DEFAULT 0,
     `title` VARCHAR(25),
     `deadline` DATETIME,
     `category_id` INTEGER,
@@ -49,6 +49,7 @@ CREATE TABLE `note`
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
+    FULLTEXT `note_i_87945f` (`title`, `description`),
     INDEX `note_fi_29554a` (`user_id`),
     INDEX `note_fi_904832` (`category_id`),
     CONSTRAINT `note_fk_29554a`

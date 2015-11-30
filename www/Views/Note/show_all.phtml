@@ -76,7 +76,25 @@
 	</div>
 	<div class="container btn-down">
 		<form>
+			<div class="inner-box">
+				<label for="fulltext">Fulltext</label>
+				<div class="input-group">
+					<input type="text" class="form-control" name="fulltext" value="<?= $fulltext ?>">
+					<span class="input-group-addon clear-input"><i class="fa fa-trash"></i></span>
+				</div>
+			</div>
 			<?= datetime_picker('Deadline TO', 'deadline_to', false, array('value' => $deadline_to)) ?>
+			<div class="inner-box">
+				<label for="importance_from">Importance from</label>
+				<div class="row">
+					<div class="col-xs-8">
+						<div id="importance-from"></div>
+					</div>
+					<div class="col-xs-4">
+						<input type="text" class="form-control" id="importance-from-field" name="importance_from" readonly="readonly" value="<?= $importance ?>">
+					</div>
+				</div>
+			</div>
 			<?= select("Category","category", true, $categories, false) ?>
 			<div class="filter_submit container-width">
 				<input type="submit" value="Search" class="big-btn"/>

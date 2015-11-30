@@ -21,9 +21,12 @@
     </table>
 
     <table name="note" phpName="Note">
+        <vendor type="mysql">
+            <parameter name="Index_type" value="FULLTEXT"/>
+        </vendor>
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="user_id" type="integer" required="true"/>
-        <column name="importance" type="integer" defaultValue="-1"/>
+        <column name="importance" type="integer" defaultValue="0"/>
         <column name="title" type="varchar" size="25"/>
         <column name="deadline" type="timestamp"/>
         <column name="category_id" type="integer"/>
@@ -40,7 +43,12 @@
             <reference local="category_id" foreign="id"/>
         </foreign-key>
 
-        <behavior name="timestampable" />
+        <behavior name="timestampable"/>
+
+        <index>
+            <index-column name="title"/>
+            <index-column name="description"/>
+        </index>
     </table>
 
     <table name="sub_note" phpName="SubNote">
