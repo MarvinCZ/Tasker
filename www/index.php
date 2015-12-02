@@ -50,6 +50,7 @@ else{
 	$params = var_export($_POST, true);
 	$log->addInfo('PARAMS: ' . $params);
 }
+$log->addInfo('HTTP_ACCEPT: ' . $_SERVER['HTTP_ACCEPT']);
 
 //And the magic comes
 $router_factory = new RouterFactory;

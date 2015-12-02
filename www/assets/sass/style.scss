@@ -441,3 +441,10 @@ a{
 		cursor: pointer;
 	}
 }
+.load-more{
+	clear: both;
+	display: none;
+	&:hover{
+		cursor: pointer;
+	}
+}

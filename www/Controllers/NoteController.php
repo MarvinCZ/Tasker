@@ -65,8 +65,12 @@ class NoteController extends ApplicationController{
 			}
 		}
 		$note_query = $note_query->addAscendingOrderByColumn("note.created_at");
-		
-		$this->params['notes'] = $note_query->find();
+		$page = 1;
+		if(isset($_GET['page']) && $_GET['page'] > 0){
+			$page = $_GET['page'];
+		}
+		$per_page = 32;
+		$this->params['notes'] = $note_query->paginate($page = $page, $maxPerPage = $per_page);
 		$this->params['notifications'] = NotificationQuery::create()->
 			filterByUser($this->params['user'])->
 			find();
@@ -81,6 +85,9 @@ class NoteController extends ApplicationController{
 		$this->params['states'] = options_for_select(array('opened', 'done', 'wip', 'closed'), $selected);
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
 		$this->params['sort_by'] = options_for_select(array('created_at', 'deadline', 'relevance', 'importance', 'category'), $selected);
+		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
+			$this->renderType('js.phtml');
+		}
 	}
 
 	protected function show($id){

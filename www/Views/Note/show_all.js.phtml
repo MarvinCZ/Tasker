@@ -1,0 +1,10 @@
+<?php foreach ($notes as $note): ?>
+$('.next_page').before(
+	<?= json_encode(renderToString("Views/Note/_note.phtml",array("note" => $note))) ?>
+);
+<?php endforeach ?>
+<?php if(!$notes->isLastPage()): ?>
+	$('.next_page').data('nextpage', <?= $notes->getNextPage() ?>);
+<?php else: ?>
+	$('.next_page').remove();
+<?php endif ?>

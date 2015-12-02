@@ -151,5 +151,28 @@ $(document).ready(function(){
 			inputFormat.value = parseInt(values[handle]);
 		});
 	}
+	var page = 1;
+
+	if($('.next_page').length > 0){
+		$('.next_page').click(function(){
+			page = $(this).data().nextpage;
+			$.ajax({
+				url: window.location.href,
+				data: {page: $(this).data().nextpage},
+				dataType: 'script'
+			})
+		});
+	}
+
+	$(window).scroll(function() {
+		if(($(document).height() - $(window).height() - $(window).scrollTop()) > 200 && $('.next_page').length > 0 && $('.next_page').data().nextpage != page) {
+			page = $('.next_page').data().nextpage;
+			$.ajax({
+				url: window.location.href,
+				data: {page: $('.next_page').data().nextpage},
+				dataType: 'script'
+			})
+		}
+	});
 
 });
