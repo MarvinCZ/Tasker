@@ -3,12 +3,13 @@
 use \DateTime;
 
 //Returns string with html for select component
-function select($title, $name, $multiple, $options, $required){
+function select($title, $name, $multiple, $options, $required, $on_change = null){
 	$params = array('name' => strtolower($name),
 					'display_name' => $title,
 					'multiple' => $multiple,
 					'options' => $options,
-					'required' => $required);
+					'required' => $required,
+					'on_change' => $on_change);
 	return renderToString('Views/Components/select.phtml',$params);
 }
 
@@ -30,7 +31,13 @@ function options_for_select($array, $selected = null){
 
 //Returns string with html for select component
 function datetime_picker($title, $name, $required, $options = array()){
-	$value = isset($options['value']) ? new DateTime($options['value']) : ($required ? new DateTime() : null);
+	$value = isset($options['value']) ?
+		(is_object($options['value']) ?
+			$options['value'] :
+			new DateTime($options['value'])):
+		($required ?
+			new DateTime():
+			null);
 	$year = $value == null ? null : $value->format('Y');
 	$month = $value == null ? null : $value->format('m');
 	$day = $value == null ? null : $value->format('d');

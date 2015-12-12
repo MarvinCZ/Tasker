@@ -1,0 +1,19 @@
+<form method="POST">
+  <input type="hidden" name="note[id]" value="<?= $note->getId() ?>">
+  <div class="form-group inner-box">
+    <label for="title">Title:</label>
+    <input type="text" class="form-control" id="title" name="note[title]" value="<?= $note->getTitle() ?>">
+  </div>
+  <div class="form-group">
+    <?= select("Category","category", false, $categories, false) ?>
+  </div>
+  <div class="form-group">
+    <?= datetime_picker('DeadLine', 'note[deadline]', false, array('value' => $note->getDeadline())) ?>
+  </div>
+  <div class="form-group inner-box">
+    <label for="description">Description:</label>
+    <input type="text" class="form-control" id="description" name="note[description]"  value="<?= $note->getDescription() ?>">
+  </div>
+  <?= select("State","note[state]", false, stateOptions($note->getState()), true) ?>
+  <input type="submit" value="Submit" class="btn btn-default">
+</form>

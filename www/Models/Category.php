@@ -16,5 +16,7 @@ use Models\Base\Category as BaseCategory;
  */
 class Category extends BaseCategory
 {
-
+	public function getShowPath(){
+		return "/notes?&category[]=".$this->getName();
+	}
 }

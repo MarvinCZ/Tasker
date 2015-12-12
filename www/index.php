@@ -2,8 +2,7 @@
 
 use Aura\Router\RouterFactory;
 use Propel\Runtime\Propel;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Helpers\LogHelper;
 
 session_start();
 
@@ -31,26 +30,24 @@ spl_autoload_register(function ($class) {
 });
 
 //Create new logger
-$log = new Logger('defaultLogger');
-$handler = new StreamHandler('app.log', Logger::INFO);
-$handler->setFormatter(new \Monolog\Formatter\LineFormatter("[%datetime%] %level_name%: %message%\n"));
-$log->pushHandler($handler);
+LogHelper::init();
+
 
 //Add logger to Propel
-Propel::getServiceContainer()->setLogger('defaultLogger', $log);
+Propel::getServiceContainer()->setLogger('defaultLogger', LogHelper::getLogger());
 
 //Log request
 $server_info = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI'];
-$log->addInfo($server_info);
+LogHelper::logMessage($server_info);
 if($_SERVER['REQUEST_METHOD'] == "GET"){
 	$params = var_export($_GET, true);
-	$log->addInfo('PARAMS: ' . $params);
+	LogHelper::logMessage('PARAMS: ' . $params);
 }
 else{
 	$params = var_export($_POST, true);
-	$log->addInfo('PARAMS: ' . $params);
+	LogHelper::logMessage('PARAMS: ' . $params);
 }
-$log->addInfo('HTTP_ACCEPT: ' . $_SERVER['HTTP_ACCEPT']);
+LogHelper::logMessage('HTTP_ACCEPT: ' . $_SERVER['HTTP_ACCEPT']);
 
 //And the magic comes
 $router_factory = new RouterFactory;

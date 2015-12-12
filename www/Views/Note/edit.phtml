@@ -1,0 +1,20 @@
+<div class="page page-middle">
+	<header class="header hidden-xs">
+		<a href="/notes"><h1>Note Edit - <?= $note->getTitle() ?></h1></a>
+	</header>
+	<div class="header row text-center visible-xs">
+		Note Edit
+	</div>
+	<div class="container">
+		<?php includeFile("Views/Note/_form.phtml", array('note' => $note, 'categories' => $categories)) ?>
+	</div>
+	<div class="inner-box no-padding user-menu">
+		<nav>
+			<ul>
+			<a href="<?= $user->getPath() ?>"><li>PROFILE</li></a>
+				<a href="options"><li>OPTIONS</li></a>
+				<a href="logout"><li>LOG OUT</li></a>
+			</ul>
+		</nav>
+	</div>
+</div>

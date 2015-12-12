@@ -4,10 +4,17 @@ $(document).ready(function(){
 		parent.find('.tab-btn').removeClass('tab-active');
 		var was_checked = $(this).find('input[type="radio"]').prop('checked');
 		parent.find('input[type="radio"]').prop('checked','');
-		if(!was_checked || $(this).closest('.tab-select').data().required){
+		if(!was_checked || parent.data().required){
 			$(this).addClass('tab-active');
 			$(this).find('input[type="radio"]').prop('checked',true);
-			console.log("xxx");
+		}
+		if(parent.data().onchange){
+			var selected = parent.find('input:checked')[0].value;
+			$.ajax({
+				url: parent.data().onchange,
+				data: {selected: selected},
+				dataType: 'text/html'
+			})
 		}
 		e.stopPropagation();
 	});

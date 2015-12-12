@@ -1,1 +1,83 @@
-<?php var_dump($note) ?>
+<div class="page page-middle">
+	<header class="header hidden-xs">
+		<a href="/notes"><h1>Note - <?= $note->getTitle() ?></h1></a>
+		<div class="header-right">
+			<div class="header-btn-large pull-left"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
+			<div class="header-btn-large show-share pull-left"><i class="fa fa-share-alt"></i></div>
+			<span class="user-name"><?= $user->getNick() ?></span>
+			<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
+		</div>
+	</header>
+	<div class="header row text-center visible-xs">
+		<div class="header-btn pull-left go-back"><i class="fa fa-chevron-left"></i></div>
+		Note
+		<div class="header-btn page-show-right pull-right"><i class="fa fa-share-alt"></i></div>
+		<div class="header-btn pull-right"><i class="fa fa-pencil"></i></div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="inner-box visible-xs">
+					<h3><?= $note->getTitle() ?></h3>
+				</div>
+				<?php if(!empty($note->getDescription())): ?>
+					<div class="inner-box">
+						<h3>Description</h3>
+						<?= $note->getDescription() ?>
+					</div>
+				<?php endif ?>
+				<?php if($note->getCategoryId()): ?>
+					<a href="<?= $note->getCategory()->getShowPath() ?>">
+						<div class="inner-box">
+							<h3>Category</h3>
+							<?= $note->getCategory()->getName() ?>
+							<div class="cat-stripe cat-stripe-<?= $note->getCategory()->getColor() ?>" title="<?= $note->getCategory()->getName() ?>"></div>
+						</div>
+					</a>
+				<?php endif ?>
+				<div class="inner-box">
+					<h3>DeadLine</h3>
+					<?= $note->getDeadline()->format('d. m. Y  h:i') ?>
+				</div>
+				<?php var_dump($note) ?>
+			</div>
+			<div class="col-md-4">
+				<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
+				<div class="inner-box">
+					<h3>Sdileno s</h3>
+					<div class="row side-padding">
+						<div class="pull-left">Marvin</div>
+						<div class="pull-right">read, write</div>
+					</div>
+					<div class="row side-padding">
+						<div class="pull-left">Link(5)</div>
+						<div class="pull-right">read</div>
+					</div>
+					<div class="row side-padding">
+						<div class="pull-left">Link(2)</div>
+						<div class="pull-right">read, write</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="inner-box no-padding user-menu">
+		<nav>
+			<ul>
+			<a href="<?= $user->getPath() ?>"><li>PROFILE</li></a>
+				<a href="options"><li>OPTIONS</li></a>
+				<a href="logout"><li>LOG OUT</li></a>
+			</ul>
+		</nav>
+	</div>
+</div>
+<div class="page page-right">
+	<div class="header row text-center">
+		<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
+		<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
+		Share
+	</div>
+	<div class="container">
+	</div>
+</div>
+<div class="over"></div>

@@ -100,6 +100,7 @@ body{
 	width: 100%;
 }
 .inner-box{
+	position: relative;
 	box-shadow: $default-box-shadow;
 	background-color: white;
 	padding: 10px;
@@ -276,6 +277,7 @@ $page-right-width: 500px;
 	}
 }
 .header-btn{
+	margin-left: 10px;
 	&:hover{
 		cursor: pointer;
 	}	
@@ -296,6 +298,9 @@ a{
 	&:hover{
 		text-decoration: inherit;
 		color: inherit;
+	}
+	&:focus{
+		text-decoration: inherit;
 	}
 }
 .notes{
@@ -377,7 +382,7 @@ a{
 		background-color: #77D593;
 	}
 	.status-closed{
-		background-color: grey;
+		background-color: #DCDBDB;
 	}
 	.status-soon{
 		background-color: #FFEF8F;
@@ -404,6 +409,10 @@ a{
 	&>h3{
 		margin-left: 10px;
 	}
+}
+.side-padding{
+	padding-left: 15px;
+	padding-right: 15px;
 }
 .over{
 	display: none;
@@ -447,4 +456,23 @@ a{
 	&:hover{
 		cursor: pointer;
 	}
+}
+.cat-stripe{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: 40px;
+}
+.cat-stripe-red{
+	background-color: #FF7373;
+}
+.cat-stripe-blue{
+	background-color: #4957C0;
+}
+.cat-stripe-green{
+	background-color: #77D593;
+}
+.cat-stripe-yellow{
+	background-color: #FFE773;
 }

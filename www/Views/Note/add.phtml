@@ -1,19 +1,20 @@
-<div class="container container-small">
-<form method="POST" action="notes/create">
-  <div class="form-group inner-box">
-    <label for="title">Title:</label>
-    <input type="text" class="form-control" id="title" name="note[title]">
+<div class="page page-middle">
+  <header class="header hidden-xs">
+    <a href="/notes"><h1>Add Note</h1></a>
+  </header>
+  <div class="header row text-center visible-xs">
+    Add Note
   </div>
-  <div class="form-group">
-    <?= select("Category","category", false, $categories, false) ?>
+  <div class="container">
+    <?php includeFile("Views/Note/_form.phtml", array('note' => $note, 'categories' => $categories)) ?>
   </div>
-  <div class="form-group">
-    <?= datetime_picker('DeadLine', 'note[deadline]', true) ?>
+  <div class="inner-box no-padding user-menu">
+    <nav>
+      <ul>
+      <a href="<?= $user->getPath() ?>"><li>PROFILE</li></a>
+        <a href="options"><li>OPTIONS</li></a>
+        <a href="logout"><li>LOG OUT</li></a>
+      </ul>
+    </nav>
   </div>
-  <div class="form-group inner-box">
-    <label for="description">Description:</label>
-    <input type="text" class="form-control" id="description" name="note[description]">
-  </div>
-  <input type="submit" value="Submit" class="btn btn-default">
-</form>
 </div>

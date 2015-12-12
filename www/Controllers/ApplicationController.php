@@ -72,6 +72,11 @@ abstract class ApplicationController{
 		$this->rendered = true;
 	}
 
+	protected function renderString($string){
+		echo($string);
+		$this->rendered = true;
+	}
+
 	//Render file with type (View/Controller/action.+$type)
 	protected function renderType($type){
 		$back = debug_backtrace()[1];

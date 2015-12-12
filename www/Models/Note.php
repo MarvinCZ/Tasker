@@ -54,4 +54,12 @@ class Note extends BaseNote
 				break;
 		}
 	}
+
+	public function getShowPath(){
+		return '/notes/' . $this->getId();
+	}
+
+	public function getEditPath(){
+		return '/notes/edit/' . $this->getId();
+	}
 }

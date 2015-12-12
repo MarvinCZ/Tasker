@@ -74,3 +74,7 @@ function arrayKeysSnakeToCamel($array){
 	}
 	return $array;
 }
+
+function stateOptions($selected){
+	return options_for_select(array('opened', 'done', 'wip', 'closed'), $selected);
+}

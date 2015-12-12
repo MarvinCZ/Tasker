@@ -95,6 +95,7 @@ class NoteController extends ApplicationController{
 			filterByUser($this->params['user'])->
 			leftJoinWith('Note.Category')->
 			findPK($id);
+		$this->params['states'] = stateOptions($this->params['note']->getState());
 	}
 
 	protected function add(){
@@ -104,10 +105,43 @@ class NoteController extends ApplicationController{
 			filterByUser($user)->
 			find();
 		$this->params['categories'] = options_for_select($categories);
+		$this->params['note'] = new Note();
+	}
+
+	protected function edit($id){
+		$this->params['note'] = NoteQuery::create()->
+			filterByUser($this->params['user'])->
+			leftJoinWith('Note.Category')->
+			findPK($id);
+		$categories = CategoryQuery::create()->
+			select('name')->
+			filterByUser($this->params['user'])->
+			find();
+		$selected  = $this->params['note']->getCategory()->getName();
+		$this->params['categories'] = options_for_select($categories, strtolower($selected));
+	}
+
+	protected function save($id){
+		$params = $this->getAllowedKeysForEdit();
+		$note = NoteQuery::create()->
+			filterByUser($this->params['user'])->
+			leftJoinWith('Note.Category')->
+			findPK($id);
+		$note->fromArray($params);
+		$category = $_POST['category'];
+		$category = CategoryQuery::create()->
+			filterByUser($this->params['user'])->
+			filterByName($category)->
+			findOne();
+		if($category != null)
+			$note->setCategory($category);
+		$note->save();
+		$this->addFlash("success", "Note added");
+		redirectTo($note->getShowPath());
 	}
 
 	protected function create(){
-		$params = arrayKeysSnakeToCamel($_POST['note']);
+		$params = $this->getAllowedKeysForCreate();
 		$note = new Note();
 		$note->fromArray($params);
 		$category = $_POST['category'];
@@ -120,6 +154,26 @@ class NoteController extends ApplicationController{
 		$note->setUser($this->params['user']);
 		$note->save();
 		$this->addFlash("success", "Note added");
-		redirectTo("/notes");
+		redirectTo($note->getShowPath());
+	}
+
+	protected function change_state($id){
+		$note = NoteQuery::create()->
+			filterByUser($this->params['user'])->
+			findPK($id);
+		$note->setState($_GET['selected']);
+		$note->save();
+		$log->addInfo('CHANGE: "status changed to ' . $note->getState());
+		$this->renderString("status changed to " . $note->getState());
+	}
+
+	protected function getAllowedKeysForCreate(){
+		$params = arrayKeysSnakeToCamel($_POST['note']);
+		return array_intersect_key($params, array_flip(array('Title', 'Deadline', 'Description', 'State')));
+	}
+
+	protected function getAllowedKeysForEdit(){
+		$params = arrayKeysSnakeToCamel($_POST['note']);
+		return array_intersect_key($params, array_flip(array('Title', 'Deadline', 'Description', 'State')));
 	}
 }

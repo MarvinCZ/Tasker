@@ -112,7 +112,7 @@ $(document).ready(function(){
 		$(this).closest('.page').removeClass('page-right-show');
 		$('.over').hide();
 	});
-	$('.show-filter').click(function(e){
+	$('.show-filter, .show-share').click(function(e){
 		$('.page-right').addClass('page-right-show');		
 		$('.page-right .filter_submit').show();
 		$('.over').show();
@@ -173,6 +173,10 @@ $(document).ready(function(){
 				dataType: 'script'
 			})
 		}
+	});
+
+	$('.go-back').click(function(){
+		window.history.back();
 	});
 
 });
