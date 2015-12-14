@@ -1,0 +1,14 @@
+<div class="comment">
+	<div class="comment-header">
+		<a href="<?= $comment->getUser()->getPath() ?>">
+			<img src="<?= $comment->getUser()->getAvatarPath() ?>" alt="$comment->getUser()->getName()" class="comment-user-img">
+			<?= $comment->getUser()->getNick() ?>
+		</a>
+		<div class="pull-right comment-time">
+			<?= $comment->getCreatedAt()->format('d. m. Y H:i') ?>
+		</div>
+	</div>
+	<div class="comment-text">
+		<?= $comment->getText() ?>
+	</div>
+</div>

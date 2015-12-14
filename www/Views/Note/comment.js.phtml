@@ -1,0 +1,7 @@
+$('.comments').empty();
+<?php foreach ($comments as $c): ?>
+	$('.comments').append(
+		<?= json_encode(renderToString("Views/Note/_comment.phtml", array('comment' => $c))) ?>
+	);
+<?php endforeach ?>	
+$('input[name="comment-message"]').val('');

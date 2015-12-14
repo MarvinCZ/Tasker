@@ -9,6 +9,8 @@ use Models\Note;
 use Models\NoteQuery;
 use Models\Category;
 use Models\CategoryQuery;
+use Models\Comment;
+use Models\CommentQuery;
 
 class HomePageController extends ApplicationController{
 
@@ -16,7 +18,7 @@ class HomePageController extends ApplicationController{
 		parent::__construct();
 		$this->addBeforeFilter(function(){
 			if(isset($this->params['user'])){
-				redirectTo("/notes");
+				//redirectTo("/notes");
 			}
 		}, "redirect_if_logged");
 	}
@@ -25,16 +27,6 @@ class HomePageController extends ApplicationController{
 		//$this->params = array_merge($this->params, get_defined_vars()); $a will be available in view
 		//$b = 35;
 		//$this->params['c'] = $b; $b will be available in view as $c
-	}
-
-	protected function filter(){
-		$user = $this->params['user'];
-		$categories = CategoryQuery::create()->
-			select('name')->
-			filterByUser($user)->
-			find();
-		$options = options_for_select($categories);
-		$this->params['options'] = $options;
 	}
 
 }

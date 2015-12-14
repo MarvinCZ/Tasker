@@ -35,11 +35,28 @@
 						</div>
 					</a>
 				<?php endif ?>
+				<?php if($note->getDeadline()): ?>
 				<div class="inner-box">
 					<h3>DeadLine</h3>
-					<?= $note->getDeadline()->format('d. m. Y  h:i') ?>
+					<?= $note->getDeadline()->format('d. m. Y  H:i') ?>
+					<div class="pull-right countdown" data-to="<?= $note->getDeadline()->format('d.m.Y.H.i') ?>"></div>
 				</div>
-				<?php var_dump($note) ?>
+				<?php endif ?>
+				<div class="inner-box">
+					<h3>Comments</h3>
+					<div class="comments">
+						<?php foreach ($note->getComments() as $c): ?>
+							<?php includeFile("Views/Note/_comment.phtml", array('comment' => $c)) ?>
+						<?php endforeach ?>
+						<?php if($note->getComments()->count() == 0): ?>
+							<p>Jste to nikdo nekomentoval. Budte prvni.</p>
+						<?php endif ?>
+					</div>
+					<div class="input-group">
+						<input type="text" name="comment-message" class="form-control">
+						<div class="input-group-addon sent-message" data-note="<?= $note->getId() ?>">Sent</div>
+					</div>
+				</div>
 			</div>
 			<div class="col-md-4">
 				<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>

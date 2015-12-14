@@ -176,6 +176,9 @@ body{
 		}
 	}
 }
+.late{
+	border-bottom: 2px solid #FF7373;
+}
 .page{
 	position: absolute;
 	width: 100%;
@@ -475,4 +478,32 @@ a{
 }
 .cat-stripe-yellow{
 	background-color: #FFE773;
+}
+.comments{
+	overflow: auto;
+	.comment{
+		clear: both;
+		border: 1px solid #EEE;
+		margin-bottom: 10px;
+		.comment-header{
+			padding: 5px;
+			.comment-user-img{
+				width: 30px;
+				height: 30px;
+			}
+			background: #EEE;
+			.comment-time{
+				line-height: 30px;
+				margin-right: 5px;
+			}
+		}
+		.comment-text{
+			padding: 10px;
+		}
+	}
+}
+.sent-message{
+	&:hover{
+		cursor: pointer;
+	}
 }

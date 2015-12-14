@@ -41,7 +41,7 @@ function datetime_picker($title, $name, $required, $options = array()){
 	$year = $value == null ? null : $value->format('Y');
 	$month = $value == null ? null : $value->format('m');
 	$day = $value == null ? null : $value->format('d');
-	$hour = $value == null ? null : $value->format('h');
+	$hour = $value == null ? null : $value->format('H');
 	$minute = $value == null ? null : $value->format('i');
 	$val = $value == null ? null : $value->format('Y-m-d h:i');
 	$params = array('name' => strtolower($name),

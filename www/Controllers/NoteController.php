@@ -11,6 +11,8 @@ use Models\Category;
 use Models\CategoryQuery;
 use Models\Notification;
 use Models\NotificationQuery;
+use Models\Comment;
+use Models\CommentQuery;
 use \DateTime;
 
 class NoteController extends ApplicationController{
@@ -94,6 +96,9 @@ class NoteController extends ApplicationController{
 		$this->params['note'] = NoteQuery::create()->
 			filterByUser($this->params['user'])->
 			leftJoinWith('Note.Category')->
+			leftJoinWith('Note.Comment')->
+			leftJoinWith('Comment.User')->
+			addAscendingOrderByColumn("comment.created_at")->
 			findPK($id);
 		$this->params['states'] = stateOptions($this->params['note']->getState());
 	}
@@ -165,6 +170,19 @@ class NoteController extends ApplicationController{
 		$note->save();
 		$log->addInfo('CHANGE: "status changed to ' . $note->getState());
 		$this->renderString("status changed to " . $note->getState());
+	}
+
+	protected function comment($id){
+		//TODO: check rights
+		$note = NoteQuery::create()->
+			findPK($id);
+		$comment = new Comment();
+		$comment->setUser($this->params['user']);
+		$comment->setNote($note);
+		$comment->setText($_POST['msg']);
+		$comment->save();
+		$this->params['comments'] = $note->getComments();
+		$this->renderType('js.phtml');
 	}
 
 	protected function getAllowedKeysForCreate(){

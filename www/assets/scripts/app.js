@@ -84,7 +84,37 @@ var show_right = function(){
     	left: "0"
   	}, time);
 }
+var timer = null;
+
+var countdown_count = function(){
+	$('.countdown').each(function(){
+		var array = $(this).data('to').split('.');
+		var now = new Date();
+		var date = new Date(array[2], array[1] - 1, array[0], array[3], array[4]);
+		var diff = date - now;
+		var message = 'Zbyva ';
+		if(diff < 0){
+			message = 'Zpozdeni '
+			diff = -diff;
+			$(this).parent().addClass('late');
+		}
+		var cd = 24 * 60 * 60 * 1000;
+		var ch = 60 * 60 * 1000;
+		var d = Math.floor(diff / cd);
+		var h = Math.floor( (diff - d * cd) / ch);
+		var m = Math.round( (diff - d * cd - h * ch) / 60000);
+		$(this).html(message + d + ' dni ' + h + ' hodin ' + m + ' minut');
+	});
+}
+
+var countdown = function(){
+	timer = setInterval(function(){
+		countdown_count();
+	},1000 * 60);
+}
 $(document).ready(function(){
+	countdown_count();
+	countdown();
 	middle_done();
 	if($('.page-left').length > 0){
 		var left = new Hammer($('.page-left')[0]);
@@ -171,12 +201,29 @@ $(document).ready(function(){
 				url: window.location.href,
 				data: {page: $('.next_page').data().nextpage},
 				dataType: 'script'
-			})
+			});
 		}
 	});
 
 	$('.go-back').click(function(){
 		window.history.back();
+	});
+
+	$('.sent-message').click(function(){
+		var id = $('.sent-message').data('note');
+		var path = "notes/" + id + "/comment";
+		var message = $('.sent-message').prev('input').val().trim();
+		if(message){
+			$.ajax({
+				url: path,
+				data: {msg: message},
+				dataType: 'script',
+				method: 'post'
+			});
+		}
+		else{
+			//TODO: handle empty message
+		}
 	});
 
 });

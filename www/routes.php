@@ -14,3 +14,4 @@ $router->addGet('Note.edit', '/notes/edit/{id}');
 $router->addPost('Note.save', '/notes/edit/{id}');
 $router->addPost('Note.create', '/notes/add');
 $router->addGet('Note.change_state', '/note/{id}/state/');
+$router->addPost('Note.comment', '/notes/{id}/comment');
