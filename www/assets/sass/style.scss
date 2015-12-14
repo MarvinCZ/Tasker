@@ -304,6 +304,7 @@ a{
 	}
 	&:focus{
 		text-decoration: inherit;
+		color: inherit;
 	}
 }
 .notes{
@@ -435,12 +436,19 @@ a{
 	top: 50px;
 	z-index: 200;
 	box-shadow: $bigger-box-shadow;
-	border: $small-border;
 	nav ul{
 		margin-bottom: 0;
 		a li{
 			text-align: center;
 			font-size: 1.5em;
+			padding: 10px 15px;
+			border: $small-border;
+			box-shadow: none;
+			line-height: 30px;
+			&:hover{
+				font-size: 1.6em;
+				font-weight: bold;
+			}
 		}
 	}
 }

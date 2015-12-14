@@ -122,7 +122,7 @@ class NoteController extends ApplicationController{
 			select('name')->
 			filterByUser($this->params['user'])->
 			find();
-		$selected  = $this->params['note']->getCategory()->getName();
+		$selected  = $this->params['note']->getCategoryId() ? $this->params['note']->getCategory()->getName() : null;
 		$this->params['categories'] = options_for_select($categories, strtolower($selected));
 	}
 

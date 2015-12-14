@@ -88,29 +88,35 @@ var timer = null;
 
 var countdown_count = function(){
 	$('.countdown').each(function(){
-		var array = $(this).data('to').split('.');
-		var now = new Date();
-		var date = new Date(array[2], array[1] - 1, array[0], array[3], array[4]);
-		var diff = date - now;
-		var message = 'Zbyva ';
-		if(diff < 0){
-			message = 'Zpozdeni '
-			diff = -diff;
-			$(this).parent().addClass('late');
+		if ($('.tab-select input:checked').val() == "done"){
+			$(this).html('');
+			$(this).parent().removeClass('late');
 		}
-		var cd = 24 * 60 * 60 * 1000;
-		var ch = 60 * 60 * 1000;
-		var d = Math.floor(diff / cd);
-		var h = Math.floor( (diff - d * cd) / ch);
-		var m = Math.round( (diff - d * cd - h * ch) / 60000);
-		$(this).html(message + d + ' dni ' + h + ' hodin ' + m + ' minut');
+		else{
+			var array = $(this).data('to').split('.');
+			var now = new Date();
+			var date = new Date(array[2], array[1] - 1, array[0], array[3], array[4]);
+			var diff = date - now;
+			var message = 'Zbyva ';
+			if(diff < 0){
+				message = 'Zpozdeni '
+				diff = -diff;
+				$(this).parent().addClass('late');
+			}
+			var cd = 24 * 60 * 60 * 1000;
+			var ch = 60 * 60 * 1000;
+			var d = Math.floor(diff / cd);
+			var h = Math.floor( (diff - d * cd) / ch);
+			var m = Math.round( (diff - d * cd - h * ch) / 60000);
+			$(this).html(message + d + ' dni ' + h + ' hodin ' + m + ' minut');
+		}
 	});
 }
 
 var countdown = function(){
 	timer = setInterval(function(){
 		countdown_count();
-	},1000 * 60);
+	},1000);
 }
 $(document).ready(function(){
 	countdown_count();
