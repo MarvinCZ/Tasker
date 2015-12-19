@@ -16,12 +16,13 @@ class HomePageController extends ApplicationController{
 
 	public function __construct(){
 		parent::__construct();
-		$this->addBeforeFilter(function(){
-			if(isset($this->params['user'])){
-				//redirectTo("/notes");
-			}
-		}, "redirect_if_logged");
+		$this->addBeforeFilter("redirect_if_logged");
 	}
+
+	protected function redirect_if_logged(){
+		//redirectTo("/notes");
+	}
+
 	protected function index(){
 		//$a = "Text";
 		//$this->params = array_merge($this->params, get_defined_vars()); $a will be available in view

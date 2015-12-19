@@ -14,30 +14,33 @@ use Models\CategoryQuery;
 abstract class ApplicationController{
 	protected $params = array();
 
-	protected $beforeFilters = array();
-	protected $afterFilters = array();
+	protected $beforeFilters = array('filters' => array());
+	protected $afterFilters = array('filters' => array());
 
 	private $rendered = false;
 
 	public function __construct(){
 		$this->params['title'] = "Tasker";
-		$this->addBeforeFilter(function(){
-			$this->params["flashes"] = isset($_SESSION['flashes']) ? $_SESSION['flashes'] : array();
-			$_SESSION['flashes'] = array();
-		}, "init_flashes");
+		$this->addBeforeFilter("init_flashes");
+		$this->addBeforeFilter("load_user");
+	}
 
-		$this->addBeforeFilter(function(){
-			if(isset($_SESSION['user'])){
-				$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
-				$this->params['user_logged'] = true;
-			}
-			else{
-				$this->params['user_logged'] = false;
-				$_SESSION['user'] = 1;
-				$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
-				$this->params['user_logged'] = true;
-			}
-		},"load_user");
+	private function init_flashes(){
+		$this->params["flashes"] = isset($_SESSION['flashes']) ? $_SESSION['flashes'] : array();
+		$_SESSION['flashes'] = array();
+	}
+
+	private function load_user(){
+		if(isset($_SESSION['user'])){
+			$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
+			$this->params['user_logged'] = true;
+		}
+		else{
+			$this->params['user_logged'] = false;
+			$_SESSION['user'] = 1;
+			$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
+			$this->params['user_logged'] = true;
+		}
 	}
 
 	//In case you want to render something else than View/Controller/action.phtml into a template
@@ -99,10 +102,12 @@ abstract class ApplicationController{
 
 	//Runs every before filter
 	protected function beforeFilter($action){
-		foreach ($this->beforeFilters as $name => $method) {
-			if(!(!empty($method['exeptions']) && in_array($action, $method['exeptions'])) &&
-				!(!empty($method['includes']) && !in_array($action, $method['includes']))){
-				$method['function']($action);
+		foreach ($this->beforeFilters['filters'] as $name) {
+			$except = $this->beforeFilters[$name]['exeptions'];
+			$includes = $this->beforeFilters[$name]['includes'];
+			if(!(!empty($except) && in_array($action, $except)) &&
+				!(!empty($includes) && !in_array($action, $includes))){
+				$this->$name($action);
 			}
 		}
 	}
@@ -110,10 +115,12 @@ abstract class ApplicationController{
 	//Runs every after filter
 	//Renders default view if nothing wasnt rendered yet
 	protected function afterFilter($action){
-		foreach ($this->afterFilters as $name => $method) {
-			if(!(isset($method['exeptions']) && in_array($action, $method['exeptions'])) &&
-				!(isset($method['includes']) && !in_array($action, $method['includes']))){
-				$method['function']($action);
+		foreach ($this->afterFilters['filters'] as $name) {
+			$except = $this->afterFilters[$name]['exeptions'];
+			$includes = $this->afterFilters[$name]['includes'];
+			if(!(!empty($except) && in_array($action, $except)) &&
+				!(!empty($includes) && !in_array($action, $includes))){
+				$this->$name($action);
 			}
 		}
 
@@ -127,28 +134,14 @@ abstract class ApplicationController{
 		}
 	}
 
-	public function addBeforeFilter(callable $function, $name = null){
-		if($name){
-			if(array_key_exists($name, $this->beforeFilters)){
-				throw new Exception("Before filter already exists");
-			}
-			$this->beforeFilters[$name] = array('function' => $function);
-		}
-		else{
-			array_push($this->beforeFilters, array('function' => $function));
-		}
+	public function addBeforeFilter($name){
+		$this->beforeFilters["filters"][] = $name;
+		$this->beforeFilters[$name] = array('exeptions' => array(), 'includes' => array());
 	}
 
-	public function addAfterFilter(callable $function, $name = null){
-		if($name){
-			if(array_key_exists($name, $this->afterFilters)){
-				throw new Exception("After filter already exists");
-			}
-			$this->beforeFilters[$name] = array('function' => $function);
-		}
-		else{
-			array_push($this->afterFilters, array('function' => $function));
-		}
+	public function addAfterFilter($name){
+		$this->afterFilters["filters"][] = $name;
+		$this->afterFilters[$name] = array('exeptions' => array(), 'includes' => array());
 	}
 
 	public function addBeforeFilterExeption($name, $exeption){
