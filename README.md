@@ -3,7 +3,7 @@ Tasker
 
 This is my school project. Made to stop procrastinating.
 
-Freatures
+Features
 ---------
 
 * Create notes
