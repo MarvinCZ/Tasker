@@ -13,11 +13,13 @@ use Models\CategoryQuery;
 //Handles rendering, befor and after filter
 abstract class ApplicationController{
 	protected $params = array();
+	protected $template = "template.phtml";
 
 	protected $beforeFilters = array('filters' => array());
 	protected $afterFilters = array('filters' => array());
 
 	private $rendered = false;
+
 
 	public function __construct(){
 		$this->params['title'] = "Tasker";
@@ -48,7 +50,7 @@ abstract class ApplicationController{
 		if($this->rendered)
 			throw new Exception("Render was already called", 1);
 
-		includeFile("Views/template.phtml", array('params' => $this->params, 'inside' => "Views/".$file));
+		includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$file));
 
 		$this->rendered = true;
 	}
@@ -64,7 +66,7 @@ abstract class ApplicationController{
 		$controller = $back['class'];
 		$controller = substr($controller, 12, strlen($controller) - 22);
 
-		includeFile("Views/template.phtml", array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
+		includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
 
 		$this->rendered = true;
 	}
@@ -130,7 +132,7 @@ abstract class ApplicationController{
 			$controller = $back['class'];
 			$controller = substr($controller, 12, strlen($controller) - 22);
 
-			includeFile("Views/template.phtml", array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
+			includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
 		}
 	}
 
