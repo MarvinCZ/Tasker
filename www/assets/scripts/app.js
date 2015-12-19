@@ -160,6 +160,7 @@ $(document).ready(function(){
 			$('.page-right .filter_submit').hide();
 		}
 		$('.over').hide();
+		$('.login').hide();
 	});
 	$('body').click(function(){
 		$('.user-menu').hide();
@@ -230,6 +231,20 @@ $(document).ready(function(){
 		else{
 			//TODO: handle empty message
 		}
+	});
+
+	$('.button').click(function(){
+		var parent = $(this).parent();
+		parent.find('.button').attr("data-selected", "false");
+		$(this).attr("data-selected", "true");
+		console.log(parent);
+		parent.parent().find('.parts>*').hide();
+		parent.parent().find('.parts>.' + $(this).data('part')).show();
+	});
+
+	$('.show-login').click(function(){
+		$('.over').show();
+		$('.login').show();
 	});
 
 });
