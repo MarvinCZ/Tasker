@@ -34,4 +34,9 @@ class NoteQuery extends BaseNoteQuery
 			addDescendingOrderByColumn("(s1*2)+s2");
 	}
 
+	public function filterNotesForUser($user){
+		$user_id = Propel::getServiceContainer()->getReadConnection($this->getDbName())->quote($user->getId());
+		return $this->where('note.id IN (SELECT id FROM user_note WHERE userid = '.$user_id.')');
+	}
+
 }

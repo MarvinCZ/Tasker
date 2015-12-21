@@ -22,7 +22,7 @@ class NoteController extends ApplicationController{
 		$this->params['importance'] = "0";
 
 		$note_query = NoteQuery::create()->
-			filterByUser($this->params['user'])->
+			filterNotesForUser($this->params['user'])->
 			leftJoinWith('Note.Category');
 
 		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
