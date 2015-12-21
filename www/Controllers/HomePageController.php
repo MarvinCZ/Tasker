@@ -17,10 +17,12 @@ class HomePageController extends ApplicationController{
 	public function __construct(){
 		parent::__construct();
 		$this->addBeforeFilter("redirect_if_logged");
+		$this->addBeforeFilterExeption("is_logged", "index");
 	}
 
 	protected function redirect_if_logged(){
-		//redirectTo("/notes");
+		if($this->params['user_logged'])
+			redirectTo("/notes");
 	}
 
 	protected function index(){

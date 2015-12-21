@@ -16,5 +16,7 @@ use Models\Base\UserQuery as BaseUserQuery;
  */
 class UserQuery extends BaseUserQuery
 {
-
+	public function filterByPassword($password = null, $comparsion = null){
+		return parent::filterByPassword(sha1($password), $comparsion);
+	}
 }

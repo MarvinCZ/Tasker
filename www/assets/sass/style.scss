@@ -473,8 +473,7 @@ a{
 	top: 50%;
 	width: 600px;
 	margin-left: -300px;
-	height: 320px;
-	margin-top: -160px;
+	margin-top: -180px;
 	.inner-box{
 		margin: 0;
 		height: 100%;
@@ -569,4 +568,14 @@ a{
 	&:hover{
 		cursor: pointer;
 	}
+}
+.fb-login{
+	background: url('../images/Lfb_icon.png');
+	height: 61px;
+	background-size: 100%;
+}
+.google-login{
+	background: url('../images/Lgoogle_icon.png');
+	height: 61px;
+	background-size: 100%;
 }

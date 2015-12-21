@@ -25,6 +25,7 @@ abstract class ApplicationController{
 		$this->params['title'] = "Tasker";
 		$this->addBeforeFilter("init_flashes");
 		$this->addBeforeFilter("load_user");
+		$this->addBeforeFilter("is_logged");
 	}
 
 	private function init_flashes(){
@@ -34,14 +35,17 @@ abstract class ApplicationController{
 
 	private function load_user(){
 		if(isset($_SESSION['user'])){
-			$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
+			$this->params['user'] = UserQuery::create()->findPK($_SESSION['user']);
 			$this->params['user_logged'] = true;
 		}
 		else{
 			$this->params['user_logged'] = false;
-			$_SESSION['user'] = 1;
-			$this->params['user'] = UserQuery::create()->findPK(isset($_SESSION['user']));
-			$this->params['user_logged'] = true;
+		}
+	}
+
+	protected function is_logged(){
+		if(!$this->params['user_logged']){
+			redirectTo('/');
 		}
 	}
 

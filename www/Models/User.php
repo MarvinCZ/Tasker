@@ -32,4 +32,11 @@ class User extends BaseUser
 		return "users/".$this->getId();
 	}
 
+	public function setPassword($v){
+		parent::setPassword(sha1($v));
+	}
+
+	public function checkPassword($password){
+		return $this->getPassword() == sha1($password);
+	}
 }

@@ -63,6 +63,7 @@ $route = $router->match(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_SERV
 //Dispatch route
 if (isset($route->params['action'])){
 	$params = $route->params;
+	LogHelper::logMessage('ACTION: ' . $params['action']);
 	$action = explode('.', $params['action']);
 	$controller = "Controllers\\".$action[0]."Controller";
 	$instance = new $controller;

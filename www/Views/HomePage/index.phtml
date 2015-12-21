@@ -28,8 +28,7 @@
 <div class="over"></div>
 <div class="login">
 	<div class="inner-box">
-		<div class="row">
-			<div class="col-md-9">
+			<div>
 				<div class="buttons clearfix">
 					<div class="button-6 button" data-selected="true" data-part="part-login">
 						LOGIN
@@ -44,13 +43,13 @@
 							<div class="form-group">
 								<label for="inputNick" class="col-sm-4 control-label">Nick</label>
 								<div class="col-sm-8">
-									<input type="text" class="form-control" id="inputNick" placeholder="Nick">
+									<input type="text" class="form-control" id="inputNick" placeholder="Nick" name="user[nick]">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="inputPassword" class="col-sm-4 control-label">Password</label>
 								<div class="col-sm-8">
-									<input type="password" class="form-control" id="inputPassword" placeholder="Password">
+									<input type="password" class="form-control" id="inputPassword" placeholder="Password" name="user[password]">
 								</div>
 							</div>
 							<div class="form-group">
@@ -74,25 +73,25 @@
 							<div class="form-group">
 								<label for="inputRegEmail" class="col-sm-4 control-label">Email</label>
 								<div class="col-sm-8">
-									<input type="email" class="form-control" id="inputRegEmail" placeholder="Email">
+									<input type="email" class="form-control" id="inputRegEmail" placeholder="Email" name="user[email]">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="inputRegNick" class="col-sm-4 control-label">Přezdívka</label>
 								<div class="col-sm-8">
-									<input type="text" class="form-control" id="inputRegNick" placeholder="Přezdívka">
+									<input type="text" class="form-control" id="inputRegNick" placeholder="Přezdívka" name="user[nick]">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="inputRegPassword" class="col-sm-4 control-label">Heslo</label>
 								<div class="col-sm-8">
-									<input type="password" class="form-control" id="inputRegPassword" placeholder="Heslo">
+									<input type="password" class="form-control" id="inputRegPassword" placeholder="Heslo" name="user[password]">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="inputRegPassword2" class="col-sm-4 control-label">Zopakujte heslo</label>
 								<div class="col-sm-8">
-									<input type="password" class="form-control" id="inputRegPassword2" placeholder="Zopakujte heslo">
+									<input type="password" class="form-control" id="inputRegPassword2" placeholder="Zopakujte heslo" name="user[password2]">
 								</div>
 							</div>
 							<div class="form-group">
@@ -104,9 +103,16 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-3">
+			<div>
 				<p>Příhláse je možné také pomocí sociálních sítí</p>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="fb-login"></div>
+					</div>
+					<div class="col-md-6">
+						<div class="google-login"></div>
+					</div>
+				</div>
 			</div>
-		</div>
 	</div>
 </div>
