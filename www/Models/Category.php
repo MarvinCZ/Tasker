@@ -17,11 +17,20 @@ use Models\Shared;
  */
 class Category extends BaseCategory
 {
+	/**
+	 * Return path to category's show page
+	 * @return string path to show
+	 */
 	public function getShowPath(){
 		return "/notes?&category[]=".$this->getName();
 	}
 
-	public function share($to){
+	/**
+	 * Make connection between category and group or user
+	 * @param  mixed(Models\Group, Models\User) to who should it be shared
+	 * @param  integer level of access (0 - read, 1 - 0 + write, 2 - 1 + manage, 3 - owner)
+	 */
+	public function share($to, $rights = 0){
 		$s = new Shared();
 		if(is_a($to, "Models\Group"))
 			$s->setGroup($to);

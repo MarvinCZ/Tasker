@@ -16,6 +16,9 @@ use Models\Base\User as BaseUser;
  */
 class User extends BaseUser
 {
+	/**
+	 * @return string path to user's avatar
+	 */
 	public function getAvatarPath(){
 		$path = parent::getAvatarPath();
 		if($path == null){
@@ -24,18 +27,32 @@ class User extends BaseUser
 		return "Uploads/Avatars/".$path;
 	}
 
+	/**
+	 * @return string user's display name
+	 */
 	public function getDisplayName(){
 		return $this->getNick();
 	}
 
+	/**
+	 * @return string path to user's profile
+	 */
 	public function getPath(){
 		return "users/".$this->getId();
 	}
 
+	/**
+	 * Saves hashed password
+	 * @param string new password
+	 */
 	public function setPassword($v){
 		parent::setPassword(sha1($v));
 	}
 
+	/**
+	 * @param  string password
+	 * @return boolean is password correct
+	 */
 	public function checkPassword($password){
 		return $this->getPassword() == sha1($password);
 	}

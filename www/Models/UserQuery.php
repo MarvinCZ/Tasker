@@ -16,6 +16,12 @@ use Models\Base\UserQuery as BaseUserQuery;
  */
 class UserQuery extends BaseUserQuery
 {
+	/**
+	 * Filter the query on the password column
+	 * @param  string password value to use as filter.
+	 * @param  string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 * @return $this|UserQuery The current query, for fluid interface
+	 */
 	public function filterByPassword($password = null, $comparsion = null){
 		return parent::filterByPassword(sha1($password), $comparsion);
 	}

@@ -17,6 +17,10 @@ use Models\UserGroup;
  */
 class Group extends BaseGroup
 {
+	/**
+	 * @param Models\User user
+	 * @param  integer level of access (0 - read, 1 - 0 + write, 2 - 1 + manage, 3 - owner)
+	 */
 	public function addUserWithRights($user, $rights){
 		$usergroup = new UserGroup();
 		$usergroup->setUser($user);

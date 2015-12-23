@@ -16,6 +16,10 @@ use Models\Base\Notification as BaseNotification;
  */
 class Notification extends BaseNotification
 {
+	/**
+	 * Returns origin of notification
+	 * @return mixed(Models\Note, Models\User) origin
+	 */
 	public function getOrigin(){
 		$type = $this->getOriginType();
 		if($type == "user")
@@ -25,6 +29,10 @@ class Notification extends BaseNotification
 		return null;
 	}
 
+	/**
+	 * Returns html for icon
+	 * @return string icon
+	 */
 	public function getIcon(){
 		switch ($this->getType()) {
 			case 'info':
@@ -38,6 +46,9 @@ class Notification extends BaseNotification
 		}
 	}
 
+	/**
+	 * @return string path to notigication action
+	 */
 	public function getLink(){
 		return "/";
 	}

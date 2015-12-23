@@ -17,6 +17,12 @@ use Models\Base\NotificationQuery as BaseNotificationQuery;
  */
 class NotificationQuery extends BaseNotificationQuery
 {
+	/**
+	 * Returns a new NotificationQuery object joined with origin.
+     * @param  string $modelAlias The alias of a model in the query
+     * @param  Criteria $criteria Optional Criteria to build the query from
+     * @return ChildNotificationQuery
+     */
 	public static function create($modelAlias = null, Criteria $criteria = null){
 		return parent::create($modelAlias, $criteria)->leftJoin('Notification.Note')->leftJoin('Notification.User')->with('Note')->with('User');
 	}
