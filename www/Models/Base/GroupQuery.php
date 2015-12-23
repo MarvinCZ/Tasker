@@ -16,7 +16,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
 
 /**
- * Base class that represents a query for the 'group' table.
+ * Base class that represents a query for the 'group_of_users' table.
  *
  *
  *
@@ -173,7 +173,7 @@ abstract class GroupQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, created_at, updated_at FROM group WHERE id = :p0';
+        $sql = 'SELECT id, name, created_at, updated_at FROM group_of_users WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -595,7 +595,7 @@ abstract class GroupQuery extends ModelCriteria
     }
 
     /**
-     * Deletes all rows from the group table.
+     * Deletes all rows from the group_of_users table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).

@@ -2,8 +2,8 @@
 
 namespace Models\Map;
 
-use Models\Group;
-use Models\GroupQuery;
+use Models\UserNote;
+use Models\UserNoteQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'group_of_users' table.
+ * This class defines the structure of the 'user_note' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class GroupTableMap extends TableMap
+class UserNoteTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class GroupTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'Models.Map.GroupTableMap';
+    const CLASS_NAME = 'Models.Map.UserNoteTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class GroupTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'group_of_users';
+    const TABLE_NAME = 'user_note';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Models\\Group';
+    const OM_CLASS = '\\Models\\UserNote';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Models.Group';
+    const CLASS_DEFAULT = 'Models.UserNote';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 4;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -69,27 +69,22 @@ class GroupTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 4;
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
-     * the column name for the id field
+     * the column name for the user_id field
      */
-    const COL_ID = 'group_of_users.id';
+    const COL_USER_ID = 'user_note.user_id';
 
     /**
-     * the column name for the name field
+     * the column name for the note_id field
      */
-    const COL_NAME = 'group_of_users.name';
+    const COL_NOTE_ID = 'user_note.note_id';
 
     /**
-     * the column name for the created_at field
+     * the column name for the rights field
      */
-    const COL_CREATED_AT = 'group_of_users.created_at';
-
-    /**
-     * the column name for the updated_at field
-     */
-    const COL_UPDATED_AT = 'group_of_users.updated_at';
+    const COL_RIGHTS = 'user_note.rights';
 
     /**
      * The default string format for model objects of the related table
@@ -103,11 +98,11 @@ class GroupTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(GroupTableMap::COL_ID, GroupTableMap::COL_NAME, GroupTableMap::COL_CREATED_AT, GroupTableMap::COL_UPDATED_AT, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('UserId', 'NoteId', 'Rights', ),
+        self::TYPE_CAMELNAME     => array('userId', 'noteId', 'rights', ),
+        self::TYPE_COLNAME       => array(UserNoteTableMap::COL_USER_ID, UserNoteTableMap::COL_NOTE_ID, UserNoteTableMap::COL_RIGHTS, ),
+        self::TYPE_FIELDNAME     => array('user_id', 'note_id', 'rights', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -117,11 +112,11 @@ class GroupTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'CreatedAt' => 2, 'UpdatedAt' => 3, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'createdAt' => 2, 'updatedAt' => 3, ),
-        self::TYPE_COLNAME       => array(GroupTableMap::COL_ID => 0, GroupTableMap::COL_NAME => 1, GroupTableMap::COL_CREATED_AT => 2, GroupTableMap::COL_UPDATED_AT => 3, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'created_at' => 2, 'updated_at' => 3, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, )
+        self::TYPE_PHPNAME       => array('UserId' => 0, 'NoteId' => 1, 'Rights' => 2, ),
+        self::TYPE_CAMELNAME     => array('userId' => 0, 'noteId' => 1, 'rights' => 2, ),
+        self::TYPE_COLNAME       => array(UserNoteTableMap::COL_USER_ID => 0, UserNoteTableMap::COL_NOTE_ID => 1, UserNoteTableMap::COL_RIGHTS => 2, ),
+        self::TYPE_FIELDNAME     => array('user_id' => 0, 'note_id' => 1, 'rights' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -134,17 +129,16 @@ class GroupTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('group_of_users');
-        $this->setPhpName('Group');
+        $this->setName('user_note');
+        $this->setPhpName('UserNote');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Models\\Group');
+        $this->setClassName('\\Models\\UserNote');
         $this->setPackage('Models');
-        $this->setUseIdGenerator(true);
+        $this->setUseIdGenerator(false);
         // columns
-        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', false, 50, null);
-        $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
-        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
+        $this->addForeignPrimaryKey('user_id', 'UserId', 'INTEGER' , 'user', 'id', true, null, null);
+        $this->addForeignPrimaryKey('note_id', 'NoteId', 'INTEGER' , 'note', 'id', true, null, null);
+        $this->addColumn('rights', 'Rights', 'INTEGER', false, null, null);
     } // initialize()
 
     /**
@@ -152,40 +146,74 @@ class GroupTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('UserGroup', '\\Models\\UserGroup', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('User', '\\Models\\User', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':group_id',
+    0 => ':user_id',
     1 => ':id',
   ),
-), null, null, 'UserGroups', false);
-        $this->addRelation('Shared', '\\Models\\Shared', RelationMap::ONE_TO_MANY, array (
+), null, null, null, false);
+        $this->addRelation('Note', '\\Models\\Note', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':to_type',
-    1 => 'group',
-  ),
-  1 =>
-  array (
-    0 => ':to_id',
+    0 => ':note_id',
     1 => ':id',
   ),
-), null, null, 'Shareds', true);
-        $this->addRelation('User', '\\Models\\User', RelationMap::MANY_TO_MANY, array(), null, null, 'Users');
+), null, null, null, false);
     } // buildRelations()
 
     /**
+     * Adds an object to the instance pool.
      *
-     * Gets the list of behaviors registered for this table
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database. In some cases you may need to explicitly add objects
+     * to the cache in order to ensure that the same objects are always returned by find*()
+     * and findPk*() calls.
      *
-     * @return array Associative array (name => parameters) of behaviors
+     * @param \Models\UserNote $obj A \Models\UserNote object.
+     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
-    public function getBehaviors()
+    public static function addInstanceToPool($obj, $key = null)
     {
-        return array(
-            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'false', ),
-        );
-    } // getBehaviors()
+        if (Propel::isInstancePoolingEnabled()) {
+            if (null === $key) {
+                $key = serialize(array((string) $obj->getUserId(), (string) $obj->getNoteId()));
+            } // if key === null
+            self::$instances[$key] = $obj;
+        }
+    }
+
+    /**
+     * Removes an object from the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database.  In some cases -- especially when you override doDelete
+     * methods in your stub classes -- you may need to explicitly remove objects
+     * from the cache in order to prevent returning objects that no longer exist.
+     *
+     * @param mixed $value A \Models\UserNote object or a primary key value.
+     */
+    public static function removeInstanceFromPool($value)
+    {
+        if (Propel::isInstancePoolingEnabled() && null !== $value) {
+            if (is_object($value) && $value instanceof \Models\UserNote) {
+                $key = serialize(array((string) $value->getUserId(), (string) $value->getNoteId()));
+
+            } elseif (is_array($value) && count($value) === 2) {
+                // assume we've been passed a primary key";
+                $key = serialize(array((string) $value[0], (string) $value[1]));
+            } elseif ($value instanceof Criteria) {
+                self::$instances = [];
+
+                return;
+            } else {
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \Models\UserNote object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                throw $e;
+            }
+
+            unset(self::$instances[$key]);
+        }
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -203,11 +231,11 @@ class GroupTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('NoteId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+        return serialize(array((string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)], (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('NoteId', TableMap::TYPE_PHPNAME, $indexType)]));
     }
 
     /**
@@ -224,11 +252,20 @@ class GroupTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (int) $row[
+            $pks = [];
+
+        $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)
         ];
+        $pks[] = (int) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 1 + $offset
+                : self::translateFieldName('NoteId', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+
+        return $pks;
     }
 
     /**
@@ -244,7 +281,7 @@ class GroupTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? GroupTableMap::CLASS_DEFAULT : GroupTableMap::OM_CLASS;
+        return $withPrefix ? UserNoteTableMap::CLASS_DEFAULT : UserNoteTableMap::OM_CLASS;
     }
 
     /**
@@ -258,22 +295,22 @@ class GroupTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Group object, last column rank)
+     * @return array           (UserNote object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = GroupTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = GroupTableMap::getInstanceFromPool($key))) {
+        $key = UserNoteTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = UserNoteTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + GroupTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + UserNoteTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = GroupTableMap::OM_CLASS;
-            /** @var Group $obj */
+            $cls = UserNoteTableMap::OM_CLASS;
+            /** @var UserNote $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            GroupTableMap::addInstanceToPool($obj, $key);
+            UserNoteTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -296,18 +333,18 @@ class GroupTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = GroupTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = GroupTableMap::getInstanceFromPool($key))) {
+            $key = UserNoteTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = UserNoteTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Group $obj */
+                /** @var UserNote $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                GroupTableMap::addInstanceToPool($obj, $key);
+                UserNoteTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -328,15 +365,13 @@ class GroupTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(GroupTableMap::COL_ID);
-            $criteria->addSelectColumn(GroupTableMap::COL_NAME);
-            $criteria->addSelectColumn(GroupTableMap::COL_CREATED_AT);
-            $criteria->addSelectColumn(GroupTableMap::COL_UPDATED_AT);
+            $criteria->addSelectColumn(UserNoteTableMap::COL_USER_ID);
+            $criteria->addSelectColumn(UserNoteTableMap::COL_NOTE_ID);
+            $criteria->addSelectColumn(UserNoteTableMap::COL_RIGHTS);
         } else {
-            $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.created_at');
-            $criteria->addSelectColumn($alias . '.updated_at');
+            $criteria->addSelectColumn($alias . '.user_id');
+            $criteria->addSelectColumn($alias . '.note_id');
+            $criteria->addSelectColumn($alias . '.rights');
         }
     }
 
@@ -349,7 +384,7 @@ class GroupTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(GroupTableMap::DATABASE_NAME)->getTable(GroupTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(UserNoteTableMap::DATABASE_NAME)->getTable(UserNoteTableMap::TABLE_NAME);
     }
 
     /**
@@ -357,16 +392,16 @@ class GroupTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(GroupTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(GroupTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new GroupTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UserNoteTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(UserNoteTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new UserNoteTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Group or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a UserNote or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Group object or primary key or array of primary keys
+     * @param mixed               $values Criteria or UserNote object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -377,27 +412,37 @@ class GroupTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(GroupTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UserNoteTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Models\Group) { // it's a model object
+        } elseif ($values instanceof \Models\UserNote) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(GroupTableMap::DATABASE_NAME);
-            $criteria->add(GroupTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(UserNoteTableMap::DATABASE_NAME);
+            // primary key is composite; we therefore, expect
+            // the primary key passed to be an array of pkey values
+            if (count($values) == count($values, COUNT_RECURSIVE)) {
+                // array is not multi-dimensional
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                $criterion = $criteria->getNewCriterion(UserNoteTableMap::COL_USER_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(UserNoteTableMap::COL_NOTE_ID, $value[1]));
+                $criteria->addOr($criterion);
+            }
         }
 
-        $query = GroupQuery::create()->mergeWith($criteria);
+        $query = UserNoteQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            GroupTableMap::clearInstancePool();
+            UserNoteTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                GroupTableMap::removeInstanceFromPool($singleval);
+                UserNoteTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -405,20 +450,20 @@ class GroupTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the group_of_users table.
+     * Deletes all rows from the user_note table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return GroupQuery::create()->doDeleteAll($con);
+        return UserNoteQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Group or Criteria object.
+     * Performs an INSERT on the database, given a UserNote or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Group object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or UserNote object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -427,22 +472,18 @@ class GroupTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(GroupTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UserNoteTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Group object
-        }
-
-        if ($criteria->containsKey(GroupTableMap::COL_ID) && $criteria->keyContainsValue(GroupTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.GroupTableMap::COL_ID.')');
+            $criteria = $criteria->buildCriteria(); // build Criteria from UserNote object
         }
 
 
         // Set the correct dbName
-        $query = GroupQuery::create()->mergeWith($criteria);
+        $query = UserNoteQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -451,7 +492,7 @@ class GroupTableMap extends TableMap
         });
     }
 
-} // GroupTableMap
+} // UserNoteTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-GroupTableMap::buildTableMap();
+UserNoteTableMap::buildTableMap();

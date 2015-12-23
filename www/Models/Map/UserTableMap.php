@@ -272,6 +272,13 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'Shareds', true);
+        $this->addRelation('UserNote', '\\Models\\UserNote', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'UserNotes', false);
         $this->addRelation('Group', '\\Models\\Group', RelationMap::MANY_TO_MANY, array(), null, null, 'Groups');
     } // buildRelations()
 

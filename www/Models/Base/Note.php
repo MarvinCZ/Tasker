@@ -20,6 +20,8 @@ use Models\SharedQuery as ChildSharedQuery;
 use Models\SubNote as ChildSubNote;
 use Models\SubNoteQuery as ChildSubNoteQuery;
 use Models\User as ChildUser;
+use Models\UserNote as ChildUserNote;
+use Models\UserNoteQuery as ChildUserNoteQuery;
 use Models\UserQuery as ChildUserQuery;
 use Models\Map\NoteTableMap;
 use Propel\Runtime\Propel;
@@ -94,7 +96,7 @@ abstract class Note implements ActiveRecordInterface
     /**
      * The value for the importance field.
      *
-     * Note: this column has a database default value of: -1
+     * Note: this column has a database default value of: 0
      * @var        int
      */
     protected $importance;
@@ -211,6 +213,12 @@ abstract class Note implements ActiveRecordInterface
     protected $collSharedsPartial;
 
     /**
+     * @var        ObjectCollection|ChildUserNote[] Collection to store aggregation of ChildUserNote objects.
+     */
+    protected $collUserNotes;
+    protected $collUserNotesPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -249,6 +257,12 @@ abstract class Note implements ActiveRecordInterface
     protected $sharedsScheduledForDeletion = null;
 
     /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildUserNote[]
+     */
+    protected $userNotesScheduledForDeletion = null;
+
+    /**
      * Applies default values to this object.
      * This method should be called from the object's constructor (or
      * equivalent initialization method).
@@ -256,7 +270,7 @@ abstract class Note implements ActiveRecordInterface
      */
     public function applyDefaultValues()
     {
-        $this->importance = -1;
+        $this->importance = 0;
         $this->state = 0;
     }
 
@@ -964,7 +978,7 @@ abstract class Note implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->importance !== -1) {
+            if ($this->importance !== 0) {
                 return false;
             }
 
@@ -1134,6 +1148,8 @@ abstract class Note implements ActiveRecordInterface
             $this->collComments = null;
 
             $this->collShareds = null;
+
+            $this->collUserNotes = null;
 
         } // if (deep)
     }
@@ -1357,6 +1373,23 @@ abstract class Note implements ActiveRecordInterface
 
             if ($this->collShareds !== null) {
                 foreach ($this->collShareds as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->userNotesScheduledForDeletion !== null) {
+                if (!$this->userNotesScheduledForDeletion->isEmpty()) {
+                    \Models\UserNoteQuery::create()
+                        ->filterByPrimaryKeys($this->userNotesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->userNotesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collUserNotes !== null) {
+                foreach ($this->collUserNotes as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1750,6 +1783,21 @@ abstract class Note implements ActiveRecordInterface
 
                 $result[$key] = $this->collShareds->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collUserNotes) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'userNotes';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'user_notes';
+                        break;
+                    default:
+                        $key = 'UserNotes';
+                }
+
+                $result[$key] = $this->collUserNotes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -2106,6 +2154,12 @@ abstract class Note implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getUserNotes() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addUserNote($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -2263,6 +2317,9 @@ abstract class Note implements ActiveRecordInterface
         }
         if ('Shared' == $relationName) {
             return $this->initShareds();
+        }
+        if ('UserNote' == $relationName) {
+            return $this->initUserNotes();
         }
     }
 
@@ -3507,6 +3564,252 @@ abstract class Note implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collUserNotes collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addUserNotes()
+     */
+    public function clearUserNotes()
+    {
+        $this->collUserNotes = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collUserNotes collection loaded partially.
+     */
+    public function resetPartialUserNotes($v = true)
+    {
+        $this->collUserNotesPartial = $v;
+    }
+
+    /**
+     * Initializes the collUserNotes collection.
+     *
+     * By default this just sets the collUserNotes collection to an empty array (like clearcollUserNotes());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initUserNotes($overrideExisting = true)
+    {
+        if (null !== $this->collUserNotes && !$overrideExisting) {
+            return;
+        }
+        $this->collUserNotes = new ObjectCollection();
+        $this->collUserNotes->setModel('\Models\UserNote');
+    }
+
+    /**
+     * Gets an array of ChildUserNote objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildNote is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildUserNote[] List of ChildUserNote objects
+     * @throws PropelException
+     */
+    public function getUserNotes(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collUserNotesPartial && !$this->isNew();
+        if (null === $this->collUserNotes || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collUserNotes) {
+                // return empty collection
+                $this->initUserNotes();
+            } else {
+                $collUserNotes = ChildUserNoteQuery::create(null, $criteria)
+                    ->filterByNote($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collUserNotesPartial && count($collUserNotes)) {
+                        $this->initUserNotes(false);
+
+                        foreach ($collUserNotes as $obj) {
+                            if (false == $this->collUserNotes->contains($obj)) {
+                                $this->collUserNotes->append($obj);
+                            }
+                        }
+
+                        $this->collUserNotesPartial = true;
+                    }
+
+                    return $collUserNotes;
+                }
+
+                if ($partial && $this->collUserNotes) {
+                    foreach ($this->collUserNotes as $obj) {
+                        if ($obj->isNew()) {
+                            $collUserNotes[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collUserNotes = $collUserNotes;
+                $this->collUserNotesPartial = false;
+            }
+        }
+
+        return $this->collUserNotes;
+    }
+
+    /**
+     * Sets a collection of ChildUserNote objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $userNotes A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function setUserNotes(Collection $userNotes, ConnectionInterface $con = null)
+    {
+        /** @var ChildUserNote[] $userNotesToDelete */
+        $userNotesToDelete = $this->getUserNotes(new Criteria(), $con)->diff($userNotes);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->userNotesScheduledForDeletion = clone $userNotesToDelete;
+
+        foreach ($userNotesToDelete as $userNoteRemoved) {
+            $userNoteRemoved->setNote(null);
+        }
+
+        $this->collUserNotes = null;
+        foreach ($userNotes as $userNote) {
+            $this->addUserNote($userNote);
+        }
+
+        $this->collUserNotes = $userNotes;
+        $this->collUserNotesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related UserNote objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related UserNote objects.
+     * @throws PropelException
+     */
+    public function countUserNotes(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collUserNotesPartial && !$this->isNew();
+        if (null === $this->collUserNotes || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collUserNotes) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getUserNotes());
+            }
+
+            $query = ChildUserNoteQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByNote($this)
+                ->count($con);
+        }
+
+        return count($this->collUserNotes);
+    }
+
+    /**
+     * Method called to associate a ChildUserNote object to this object
+     * through the ChildUserNote foreign key attribute.
+     *
+     * @param  ChildUserNote $l ChildUserNote
+     * @return $this|\Models\Note The current object (for fluent API support)
+     */
+    public function addUserNote(ChildUserNote $l)
+    {
+        if ($this->collUserNotes === null) {
+            $this->initUserNotes();
+            $this->collUserNotesPartial = true;
+        }
+
+        if (!$this->collUserNotes->contains($l)) {
+            $this->doAddUserNote($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildUserNote $userNote The ChildUserNote object to add.
+     */
+    protected function doAddUserNote(ChildUserNote $userNote)
+    {
+        $this->collUserNotes[]= $userNote;
+        $userNote->setNote($this);
+    }
+
+    /**
+     * @param  ChildUserNote $userNote The ChildUserNote object to remove.
+     * @return $this|ChildNote The current object (for fluent API support)
+     */
+    public function removeUserNote(ChildUserNote $userNote)
+    {
+        if ($this->getUserNotes()->contains($userNote)) {
+            $pos = $this->collUserNotes->search($userNote);
+            $this->collUserNotes->remove($pos);
+            if (null === $this->userNotesScheduledForDeletion) {
+                $this->userNotesScheduledForDeletion = clone $this->collUserNotes;
+                $this->userNotesScheduledForDeletion->clear();
+            }
+            $this->userNotesScheduledForDeletion[]= clone $userNote;
+            $userNote->setNote(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Note is new, it will return
+     * an empty collection; or if this Note has previously
+     * been saved, it will retrieve related UserNotes from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Note.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildUserNote[] List of ChildUserNote objects
+     */
+    public function getUserNotesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildUserNoteQuery::create(null, $criteria);
+        $query->joinWith('User', $joinBehavior);
+
+        return $this->getUserNotes($query, $con);
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -3576,6 +3879,11 @@ abstract class Note implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collUserNotes) {
+                foreach ($this->collUserNotes as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collSubNotes = null;
@@ -3583,6 +3891,7 @@ abstract class Note implements ActiveRecordInterface
         $this->collNotifications = null;
         $this->collComments = null;
         $this->collShareds = null;
+        $this->collUserNotes = null;
         $this->aUser = null;
         $this->aCategory = null;
     }

@@ -167,9 +167,9 @@ class SharedTableMap extends TableMap
         $this->addForeignKey('what_type', 'WhatType', 'VARCHAR', 'note', '', false, 55, null);
         $this->addForeignKey('what_type', 'WhatType', 'VARCHAR', 'category', '', false, 55, null);
         $this->addForeignKey('to_id', 'ToId', 'INTEGER', 'user', 'id', false, null, null);
-        $this->addForeignKey('to_id', 'ToId', 'INTEGER', 'group', 'id', false, null, null);
+        $this->addForeignKey('to_id', 'ToId', 'INTEGER', 'group_of_users', 'id', false, null, null);
         $this->addForeignKey('to_type', 'ToType', 'VARCHAR', 'user', '', false, 55, null);
-        $this->addForeignKey('to_type', 'ToType', 'VARCHAR', 'group', '', false, 55, null);
+        $this->addForeignKey('to_type', 'ToType', 'VARCHAR', 'group_of_users', '', false, 55, null);
         $this->addColumn('rights', 'Rights', 'INTEGER', true, null, 0);
         $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);

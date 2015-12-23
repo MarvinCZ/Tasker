@@ -225,7 +225,7 @@ class NoteTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
-        $this->addColumn('importance', 'Importance', 'INTEGER', false, null, -1);
+        $this->addColumn('importance', 'Importance', 'INTEGER', false, null, 0);
         $this->addColumn('title', 'Title', 'VARCHAR', false, 25, null);
         $this->addColumn('deadline', 'Deadline', 'TIMESTAMP', false, null, null);
         $this->addForeignKey('category_id', 'CategoryId', 'INTEGER', 'category', 'id', false, null, null);
@@ -308,6 +308,13 @@ class NoteTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'Shareds', true);
+        $this->addRelation('UserNote', '\\Models\\UserNote', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':note_id',
+    1 => ':id',
+  ),
+), null, null, 'UserNotes', false);
     } // buildRelations()
 
     /**

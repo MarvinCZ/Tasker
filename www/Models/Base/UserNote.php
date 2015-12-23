@@ -3,16 +3,14 @@
 namespace Models\Base;
 
 use \Exception;
-use \PDO;
-use Models\Group as ChildGroup;
-use Models\GroupQuery as ChildGroupQuery;
+use Models\Note as ChildNote;
+use Models\NoteQuery as ChildNoteQuery;
 use Models\User as ChildUser;
-use Models\UserGroupQuery as ChildUserGroupQuery;
+use Models\UserNoteQuery as ChildUserNoteQuery;
 use Models\UserQuery as ChildUserQuery;
-use Models\Map\UserGroupTableMap;
+use Models\Map\UserNoteTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
-use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
 use Propel\Runtime\Connection\ConnectionInterface;
@@ -23,18 +21,18 @@ use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 
 /**
- * Base class that represents a row from the 'user_group' table.
+ * Base class that represents a row from the 'user_note' table.
  *
  *
  *
 * @package    propel.generator.Models.Base
 */
-abstract class UserGroup implements ActiveRecordInterface
+abstract class UserNote implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\Models\\Map\\UserGroupTableMap';
+    const TABLE_MAP = '\\Models\\Map\\UserNoteTableMap';
 
 
     /**
@@ -71,16 +69,15 @@ abstract class UserGroup implements ActiveRecordInterface
     protected $user_id;
 
     /**
-     * The value for the group_id field.
+     * The value for the note_id field.
      *
      * @var        int
      */
-    protected $group_id;
+    protected $note_id;
 
     /**
      * The value for the rights field.
      *
-     * Note: this column has a database default value of: 0
      * @var        int
      */
     protected $rights;
@@ -91,9 +88,9 @@ abstract class UserGroup implements ActiveRecordInterface
     protected $aUser;
 
     /**
-     * @var        ChildGroup
+     * @var        ChildNote
      */
-    protected $aGroup;
+    protected $aNote;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -104,23 +101,10 @@ abstract class UserGroup implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Applies default values to this object.
-     * This method should be called from the object's constructor (or
-     * equivalent initialization method).
-     * @see __construct()
-     */
-    public function applyDefaultValues()
-    {
-        $this->rights = 0;
-    }
-
-    /**
-     * Initializes internal state of Models\Base\UserGroup object.
-     * @see applyDefaults()
+     * Initializes internal state of Models\Base\UserNote object.
      */
     public function __construct()
     {
-        $this->applyDefaultValues();
     }
 
     /**
@@ -212,9 +196,9 @@ abstract class UserGroup implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>UserGroup</code> instance.  If
-     * <code>obj</code> is an instance of <code>UserGroup</code>, delegates to
-     * <code>equals(UserGroup)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>UserNote</code> instance.  If
+     * <code>obj</code> is an instance of <code>UserNote</code>, delegates to
+     * <code>equals(UserNote)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -280,7 +264,7 @@ abstract class UserGroup implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|UserGroup The current object, for fluid interface
+     * @return $this|UserNote The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -349,13 +333,13 @@ abstract class UserGroup implements ActiveRecordInterface
     }
 
     /**
-     * Get the [group_id] column value.
+     * Get the [note_id] column value.
      *
      * @return int
      */
-    public function getGroupId()
+    public function getNoteId()
     {
-        return $this->group_id;
+        return $this->note_id;
     }
 
     /**
@@ -372,9 +356,9 @@ abstract class UserGroup implements ActiveRecordInterface
      * Set the value of [user_id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\UserGroup The current object (for fluent API support)
+     * @return $this|\Models\UserNote The current object (for fluent API support)
      */
-    public function setUserId($v)
+    protected function setUserId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
@@ -382,7 +366,7 @@ abstract class UserGroup implements ActiveRecordInterface
 
         if ($this->user_id !== $v) {
             $this->user_id = $v;
-            $this->modifiedColumns[UserGroupTableMap::COL_USER_ID] = true;
+            $this->modifiedColumns[UserNoteTableMap::COL_USER_ID] = true;
         }
 
         if ($this->aUser !== null && $this->aUser->getId() !== $v) {
@@ -393,36 +377,36 @@ abstract class UserGroup implements ActiveRecordInterface
     } // setUserId()
 
     /**
-     * Set the value of [group_id] column.
+     * Set the value of [note_id] column.
      *
      * @param int $v new value
-     * @return $this|\Models\UserGroup The current object (for fluent API support)
+     * @return $this|\Models\UserNote The current object (for fluent API support)
      */
-    public function setGroupId($v)
+    protected function setNoteId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->group_id !== $v) {
-            $this->group_id = $v;
-            $this->modifiedColumns[UserGroupTableMap::COL_GROUP_ID] = true;
+        if ($this->note_id !== $v) {
+            $this->note_id = $v;
+            $this->modifiedColumns[UserNoteTableMap::COL_NOTE_ID] = true;
         }
 
-        if ($this->aGroup !== null && $this->aGroup->getId() !== $v) {
-            $this->aGroup = null;
+        if ($this->aNote !== null && $this->aNote->getId() !== $v) {
+            $this->aNote = null;
         }
 
         return $this;
-    } // setGroupId()
+    } // setNoteId()
 
     /**
      * Set the value of [rights] column.
      *
      * @param int $v new value
-     * @return $this|\Models\UserGroup The current object (for fluent API support)
+     * @return $this|\Models\UserNote The current object (for fluent API support)
      */
-    public function setRights($v)
+    protected function setRights($v)
     {
         if ($v !== null) {
             $v = (int) $v;
@@ -430,7 +414,7 @@ abstract class UserGroup implements ActiveRecordInterface
 
         if ($this->rights !== $v) {
             $this->rights = $v;
-            $this->modifiedColumns[UserGroupTableMap::COL_RIGHTS] = true;
+            $this->modifiedColumns[UserNoteTableMap::COL_RIGHTS] = true;
         }
 
         return $this;
@@ -446,10 +430,6 @@ abstract class UserGroup implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->rights !== 0) {
-                return false;
-            }
-
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -476,13 +456,13 @@ abstract class UserGroup implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : UserGroupTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : UserNoteTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserGroupTableMap::translateFieldName('GroupId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->group_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserNoteTableMap::translateFieldName('NoteId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->note_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserGroupTableMap::translateFieldName('Rights', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserNoteTableMap::translateFieldName('Rights', TableMap::TYPE_PHPNAME, $indexType)];
             $this->rights = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -492,10 +472,10 @@ abstract class UserGroup implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = UserGroupTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 3; // 3 = UserNoteTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\Models\\UserGroup'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\Models\\UserNote'), 0, $e);
         }
     }
 
@@ -517,256 +497,10 @@ abstract class UserGroup implements ActiveRecordInterface
         if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
             $this->aUser = null;
         }
-        if ($this->aGroup !== null && $this->group_id !== $this->aGroup->getId()) {
-            $this->aGroup = null;
+        if ($this->aNote !== null && $this->note_id !== $this->aNote->getId()) {
+            $this->aNote = null;
         }
     } // ensureConsistency
-
-    /**
-     * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
-     *
-     * This will only work if the object has been saved and has a valid primary key set.
-     *
-     * @param      boolean $deep (optional) Whether to also de-associated any related objects.
-     * @param      ConnectionInterface $con (optional) The ConnectionInterface connection to use.
-     * @return void
-     * @throws PropelException - if this object is deleted, unsaved or doesn't have pk match in db
-     */
-    public function reload($deep = false, ConnectionInterface $con = null)
-    {
-        if ($this->isDeleted()) {
-            throw new PropelException("Cannot reload a deleted object.");
-        }
-
-        if ($this->isNew()) {
-            throw new PropelException("Cannot reload an unsaved object.");
-        }
-
-        if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(UserGroupTableMap::DATABASE_NAME);
-        }
-
-        // We don't need to alter the object instance pool; we're just modifying this instance
-        // already in the pool.
-
-        $dataFetcher = ChildUserGroupQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
-        $row = $dataFetcher->fetch();
-        $dataFetcher->close();
-        if (!$row) {
-            throw new PropelException('Cannot find matching row in the database to reload object values.');
-        }
-        $this->hydrate($row, 0, true, $dataFetcher->getIndexType()); // rehydrate
-
-        if ($deep) {  // also de-associate any related objects?
-
-            $this->aUser = null;
-            $this->aGroup = null;
-        } // if (deep)
-    }
-
-    /**
-     * Removes this object from datastore and sets delete attribute.
-     *
-     * @param      ConnectionInterface $con
-     * @return void
-     * @throws PropelException
-     * @see UserGroup::setDeleted()
-     * @see UserGroup::isDeleted()
-     */
-    public function delete(ConnectionInterface $con = null)
-    {
-        if ($this->isDeleted()) {
-            throw new PropelException("This object has already been deleted.");
-        }
-
-        if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserGroupTableMap::DATABASE_NAME);
-        }
-
-        $con->transaction(function () use ($con) {
-            $deleteQuery = ChildUserGroupQuery::create()
-                ->filterByPrimaryKey($this->getPrimaryKey());
-            $ret = $this->preDelete($con);
-            if ($ret) {
-                $deleteQuery->delete($con);
-                $this->postDelete($con);
-                $this->setDeleted(true);
-            }
-        });
-    }
-
-    /**
-     * Persists this object to the database.
-     *
-     * If the object is new, it inserts it; otherwise an update is performed.
-     * All modified related objects will also be persisted in the doSave()
-     * method.  This method wraps all precipitate database operations in a
-     * single transaction.
-     *
-     * @param      ConnectionInterface $con
-     * @return int             The number of rows affected by this insert/update and any referring fk objects' save() operations.
-     * @throws PropelException
-     * @see doSave()
-     */
-    public function save(ConnectionInterface $con = null)
-    {
-        if ($this->isDeleted()) {
-            throw new PropelException("You cannot save an object that has been deleted.");
-        }
-
-        if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserGroupTableMap::DATABASE_NAME);
-        }
-
-        return $con->transaction(function () use ($con) {
-            $isInsert = $this->isNew();
-            $ret = $this->preSave($con);
-            if ($isInsert) {
-                $ret = $ret && $this->preInsert($con);
-            } else {
-                $ret = $ret && $this->preUpdate($con);
-            }
-            if ($ret) {
-                $affectedRows = $this->doSave($con);
-                if ($isInsert) {
-                    $this->postInsert($con);
-                } else {
-                    $this->postUpdate($con);
-                }
-                $this->postSave($con);
-                UserGroupTableMap::addInstanceToPool($this);
-            } else {
-                $affectedRows = 0;
-            }
-
-            return $affectedRows;
-        });
-    }
-
-    /**
-     * Performs the work of inserting or updating the row in the database.
-     *
-     * If the object is new, it inserts it; otherwise an update is performed.
-     * All related objects are also updated in this method.
-     *
-     * @param      ConnectionInterface $con
-     * @return int             The number of rows affected by this insert/update and any referring fk objects' save() operations.
-     * @throws PropelException
-     * @see save()
-     */
-    protected function doSave(ConnectionInterface $con)
-    {
-        $affectedRows = 0; // initialize var to track total num of affected rows
-        if (!$this->alreadyInSave) {
-            $this->alreadyInSave = true;
-
-            // We call the save method on the following object(s) if they
-            // were passed to this object by their corresponding set
-            // method.  This object relates to these object(s) by a
-            // foreign key reference.
-
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
-                }
-                $this->setUser($this->aUser);
-            }
-
-            if ($this->aGroup !== null) {
-                if ($this->aGroup->isModified() || $this->aGroup->isNew()) {
-                    $affectedRows += $this->aGroup->save($con);
-                }
-                $this->setGroup($this->aGroup);
-            }
-
-            if ($this->isNew() || $this->isModified()) {
-                // persist changes
-                if ($this->isNew()) {
-                    $this->doInsert($con);
-                    $affectedRows += 1;
-                } else {
-                    $affectedRows += $this->doUpdate($con);
-                }
-                $this->resetModified();
-            }
-
-            $this->alreadyInSave = false;
-
-        }
-
-        return $affectedRows;
-    } // doSave()
-
-    /**
-     * Insert the row in the database.
-     *
-     * @param      ConnectionInterface $con
-     *
-     * @throws PropelException
-     * @see doSave()
-     */
-    protected function doInsert(ConnectionInterface $con)
-    {
-        $modifiedColumns = array();
-        $index = 0;
-
-
-         // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(UserGroupTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
-        }
-        if ($this->isColumnModified(UserGroupTableMap::COL_GROUP_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'group_id';
-        }
-        if ($this->isColumnModified(UserGroupTableMap::COL_RIGHTS)) {
-            $modifiedColumns[':p' . $index++]  = 'rights';
-        }
-
-        $sql = sprintf(
-            'INSERT INTO user_group (%s) VALUES (%s)',
-            implode(', ', $modifiedColumns),
-            implode(', ', array_keys($modifiedColumns))
-        );
-
-        try {
-            $stmt = $con->prepare($sql);
-            foreach ($modifiedColumns as $identifier => $columnName) {
-                switch ($columnName) {
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
-                        break;
-                    case 'group_id':
-                        $stmt->bindValue($identifier, $this->group_id, PDO::PARAM_INT);
-                        break;
-                    case 'rights':
-                        $stmt->bindValue($identifier, $this->rights, PDO::PARAM_INT);
-                        break;
-                }
-            }
-            $stmt->execute();
-        } catch (Exception $e) {
-            Propel::log($e->getMessage(), Propel::LOG_ERR);
-            throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
-        }
-
-        $this->setNew(false);
-    }
-
-    /**
-     * Update the row in the database.
-     *
-     * @param      ConnectionInterface $con
-     *
-     * @return Integer Number of updated rows
-     * @see doSave()
-     */
-    protected function doUpdate(ConnectionInterface $con)
-    {
-        $selectCriteria = $this->buildPkeyCriteria();
-        $valuesCriteria = $this->buildCriteria();
-
-        return $selectCriteria->doUpdate($valuesCriteria, $con);
-    }
 
     /**
      * Retrieves a field from the object by name passed in as a string.
@@ -780,7 +514,7 @@ abstract class UserGroup implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = UserGroupTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = UserNoteTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -800,7 +534,7 @@ abstract class UserGroup implements ActiveRecordInterface
                 return $this->getUserId();
                 break;
             case 1:
-                return $this->getGroupId();
+                return $this->getNoteId();
                 break;
             case 2:
                 return $this->getRights();
@@ -829,14 +563,14 @@ abstract class UserGroup implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['UserGroup'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['UserNote'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['UserGroup'][$this->hashCode()] = true;
-        $keys = UserGroupTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['UserNote'][$this->hashCode()] = true;
+        $keys = UserNoteTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getUserId(),
-            $keys[1] => $this->getGroupId(),
+            $keys[1] => $this->getNoteId(),
             $keys[2] => $this->getRights(),
         );
         $virtualColumns = $this->virtualColumns;
@@ -860,129 +594,24 @@ abstract class UserGroup implements ActiveRecordInterface
 
                 $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->aGroup) {
+            if (null !== $this->aNote) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'group';
+                        $key = 'note';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'group_of_users';
+                        $key = 'note';
                         break;
                     default:
-                        $key = 'Group';
+                        $key = 'Note';
                 }
 
-                $result[$key] = $this->aGroup->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aNote->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
         return $result;
-    }
-
-    /**
-     * Sets a field from the object by name passed in as a string.
-     *
-     * @param  string $name
-     * @param  mixed  $value field value
-     * @param  string $type The type of fieldname the $name is of:
-     *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
-     *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
-     *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\Models\UserGroup
-     */
-    public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
-    {
-        $pos = UserGroupTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
-
-        return $this->setByPosition($pos, $value);
-    }
-
-    /**
-     * Sets a field from the object by Position as specified in the xml schema.
-     * Zero-based.
-     *
-     * @param  int $pos position in xml schema
-     * @param  mixed $value field value
-     * @return $this|\Models\UserGroup
-     */
-    public function setByPosition($pos, $value)
-    {
-        switch ($pos) {
-            case 0:
-                $this->setUserId($value);
-                break;
-            case 1:
-                $this->setGroupId($value);
-                break;
-            case 2:
-                $this->setRights($value);
-                break;
-        } // switch()
-
-        return $this;
-    }
-
-    /**
-     * Populates the object using an array.
-     *
-     * This is particularly useful when populating an object from one of the
-     * request arrays (e.g. $_POST).  This method goes through the column
-     * names, checking to see whether a matching key exists in populated
-     * array. If so the setByName() method is called for that column.
-     *
-     * You can specify the key type of the array by additionally passing one
-     * of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME,
-     * TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
-     * The default key type is the column's TableMap::TYPE_PHPNAME.
-     *
-     * @param      array  $arr     An array to populate the object from.
-     * @param      string $keyType The type of keys the array uses.
-     * @return void
-     */
-    public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
-    {
-        $keys = UserGroupTableMap::getFieldNames($keyType);
-
-        if (array_key_exists($keys[0], $arr)) {
-            $this->setUserId($arr[$keys[0]]);
-        }
-        if (array_key_exists($keys[1], $arr)) {
-            $this->setGroupId($arr[$keys[1]]);
-        }
-        if (array_key_exists($keys[2], $arr)) {
-            $this->setRights($arr[$keys[2]]);
-        }
-    }
-
-     /**
-     * Populate the current object from a string, using a given parser format
-     * <code>
-     * $book = new Book();
-     * $book->importFrom('JSON', '{"Id":9012,"Title":"Don Juan","ISBN":"0140422161","Price":12.99,"PublisherId":1234,"AuthorId":5678}');
-     * </code>
-     *
-     * You can specify the key type of the array by additionally passing one
-     * of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME,
-     * TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
-     * The default key type is the column's TableMap::TYPE_PHPNAME.
-     *
-     * @param mixed $parser A AbstractParser instance,
-     *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
-     * @param string $data The source data to import from
-     * @param string $keyType The type of keys the array uses.
-     *
-     * @return $this|\Models\UserGroup The current object, for fluid interface
-     */
-    public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
-    {
-        if (!$parser instanceof AbstractParser) {
-            $parser = AbstractParser::getParser($parser);
-        }
-
-        $this->fromArray($parser->toArray($data), $keyType);
-
-        return $this;
     }
 
     /**
@@ -992,16 +621,16 @@ abstract class UserGroup implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(UserGroupTableMap::DATABASE_NAME);
+        $criteria = new Criteria(UserNoteTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(UserGroupTableMap::COL_USER_ID)) {
-            $criteria->add(UserGroupTableMap::COL_USER_ID, $this->user_id);
+        if ($this->isColumnModified(UserNoteTableMap::COL_USER_ID)) {
+            $criteria->add(UserNoteTableMap::COL_USER_ID, $this->user_id);
         }
-        if ($this->isColumnModified(UserGroupTableMap::COL_GROUP_ID)) {
-            $criteria->add(UserGroupTableMap::COL_GROUP_ID, $this->group_id);
+        if ($this->isColumnModified(UserNoteTableMap::COL_NOTE_ID)) {
+            $criteria->add(UserNoteTableMap::COL_NOTE_ID, $this->note_id);
         }
-        if ($this->isColumnModified(UserGroupTableMap::COL_RIGHTS)) {
-            $criteria->add(UserGroupTableMap::COL_RIGHTS, $this->rights);
+        if ($this->isColumnModified(UserNoteTableMap::COL_RIGHTS)) {
+            $criteria->add(UserNoteTableMap::COL_RIGHTS, $this->rights);
         }
 
         return $criteria;
@@ -1019,9 +648,9 @@ abstract class UserGroup implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildUserGroupQuery::create();
-        $criteria->add(UserGroupTableMap::COL_USER_ID, $this->user_id);
-        $criteria->add(UserGroupTableMap::COL_GROUP_ID, $this->group_id);
+        $criteria = ChildUserNoteQuery::create();
+        $criteria->add(UserNoteTableMap::COL_USER_ID, $this->user_id);
+        $criteria->add(UserNoteTableMap::COL_NOTE_ID, $this->note_id);
 
         return $criteria;
     }
@@ -1035,20 +664,20 @@ abstract class UserGroup implements ActiveRecordInterface
     public function hashCode()
     {
         $validPk = null !== $this->getUserId() &&
-            null !== $this->getGroupId();
+            null !== $this->getNoteId();
 
         $validPrimaryKeyFKs = 2;
         $primaryKeyFKs = [];
 
-        //relation user_group_fk_29554a to table user
+        //relation user_note_fk_29554a to table user
         if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
             $primaryKeyFKs[] = $hash;
         } else {
             $validPrimaryKeyFKs = false;
         }
 
-        //relation user_group_fk_3a4cbf to table group_of_users
-        if ($this->aGroup && $hash = spl_object_hash($this->aGroup)) {
+        //relation user_note_fk_b85003 to table note
+        if ($this->aNote && $hash = spl_object_hash($this->aNote)) {
             $primaryKeyFKs[] = $hash;
         } else {
             $validPrimaryKeyFKs = false;
@@ -1072,7 +701,7 @@ abstract class UserGroup implements ActiveRecordInterface
     {
         $pks = array();
         $pks[0] = $this->getUserId();
-        $pks[1] = $this->getGroupId();
+        $pks[1] = $this->getNoteId();
 
         return $pks;
     }
@@ -1086,7 +715,7 @@ abstract class UserGroup implements ActiveRecordInterface
     public function setPrimaryKey($keys)
     {
         $this->setUserId($keys[0]);
-        $this->setGroupId($keys[1]);
+        $this->setNoteId($keys[1]);
     }
 
     /**
@@ -1095,7 +724,7 @@ abstract class UserGroup implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getUserId()) && (null === $this->getGroupId());
+        return (null === $this->getUserId()) && (null === $this->getNoteId());
     }
 
     /**
@@ -1104,7 +733,7 @@ abstract class UserGroup implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \Models\UserGroup (or compatible) type.
+     * @param      object $copyObj An object of \Models\UserNote (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
@@ -1112,7 +741,7 @@ abstract class UserGroup implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setUserId($this->getUserId());
-        $copyObj->setGroupId($this->getGroupId());
+        $copyObj->setNoteId($this->getNoteId());
         $copyObj->setRights($this->getRights());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1128,7 +757,7 @@ abstract class UserGroup implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \Models\UserGroup Clone of current object.
+     * @return \Models\UserNote Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1145,7 +774,7 @@ abstract class UserGroup implements ActiveRecordInterface
      * Declares an association between this object and a ChildUser object.
      *
      * @param  ChildUser $v
-     * @return $this|\Models\UserGroup The current object (for fluent API support)
+     * @return $this|\Models\UserNote The current object (for fluent API support)
      * @throws PropelException
      */
     public function setUser(ChildUser $v = null)
@@ -1161,7 +790,7 @@ abstract class UserGroup implements ActiveRecordInterface
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildUser object, it will not be re-added.
         if ($v !== null) {
-            $v->addUserGroup($this);
+            $v->addUserNote($this);
         }
 
 
@@ -1185,7 +814,7 @@ abstract class UserGroup implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aUser->addUserGroups($this);
+                $this->aUser->addUserNotes($this);
              */
         }
 
@@ -1193,26 +822,26 @@ abstract class UserGroup implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildGroup object.
+     * Declares an association between this object and a ChildNote object.
      *
-     * @param  ChildGroup $v
-     * @return $this|\Models\UserGroup The current object (for fluent API support)
+     * @param  ChildNote $v
+     * @return $this|\Models\UserNote The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setGroup(ChildGroup $v = null)
+    public function setNote(ChildNote $v = null)
     {
         if ($v === null) {
-            $this->setGroupId(NULL);
+            $this->setNoteId(NULL);
         } else {
-            $this->setGroupId($v->getId());
+            $this->setNoteId($v->getId());
         }
 
-        $this->aGroup = $v;
+        $this->aNote = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildGroup object, it will not be re-added.
+        // If this object has already been added to the ChildNote object, it will not be re-added.
         if ($v !== null) {
-            $v->addUserGroup($this);
+            $v->addUserNote($this);
         }
 
 
@@ -1221,26 +850,26 @@ abstract class UserGroup implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildGroup object
+     * Get the associated ChildNote object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildGroup The associated ChildGroup object.
+     * @return ChildNote The associated ChildNote object.
      * @throws PropelException
      */
-    public function getGroup(ConnectionInterface $con = null)
+    public function getNote(ConnectionInterface $con = null)
     {
-        if ($this->aGroup === null && ($this->group_id !== null)) {
-            $this->aGroup = ChildGroupQuery::create()->findPk($this->group_id, $con);
+        if ($this->aNote === null && ($this->note_id !== null)) {
+            $this->aNote = ChildNoteQuery::create()->findPk($this->note_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aGroup->addUserGroups($this);
+                $this->aNote->addUserNotes($this);
              */
         }
 
-        return $this->aGroup;
+        return $this->aNote;
     }
 
     /**
@@ -1251,17 +880,16 @@ abstract class UserGroup implements ActiveRecordInterface
     public function clear()
     {
         if (null !== $this->aUser) {
-            $this->aUser->removeUserGroup($this);
+            $this->aUser->removeUserNote($this);
         }
-        if (null !== $this->aGroup) {
-            $this->aGroup->removeUserGroup($this);
+        if (null !== $this->aNote) {
+            $this->aNote->removeUserNote($this);
         }
         $this->user_id = null;
-        $this->group_id = null;
+        $this->note_id = null;
         $this->rights = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
-        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1281,7 +909,7 @@ abstract class UserGroup implements ActiveRecordInterface
         } // if ($deep)
 
         $this->aUser = null;
-        $this->aGroup = null;
+        $this->aNote = null;
     }
 
     /**
@@ -1291,7 +919,7 @@ abstract class UserGroup implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(UserGroupTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(UserNoteTableMap::DEFAULT_STRING_FORMAT);
     }
 
     /**

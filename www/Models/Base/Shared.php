@@ -1251,7 +1251,7 @@ abstract class Shared implements ActiveRecordInterface
                         $key = 'group';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'group';
+                        $key = 'group_of_users';
                         break;
                     default:
                         $key = 'Group';

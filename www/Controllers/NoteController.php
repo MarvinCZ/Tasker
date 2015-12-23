@@ -94,7 +94,7 @@ class NoteController extends ApplicationController{
 
 	protected function show($id){
 		$this->params['note'] = NoteQuery::create()->
-			filterByUser($this->params['user'])->
+			filterNotesForUser($this->params['user'])->
 			leftJoinWith('Note.Category')->
 			leftJoinWith('Note.Comment')->
 			leftJoinWith('Comment.User')->
@@ -115,7 +115,7 @@ class NoteController extends ApplicationController{
 
 	protected function edit($id){
 		$this->params['note'] = NoteQuery::create()->
-			filterByUser($this->params['user'])->
+			filterNotesForUser($this->params['user'])->
 			leftJoinWith('Note.Category')->
 			findPK($id);
 		$categories = CategoryQuery::create()->
@@ -129,7 +129,7 @@ class NoteController extends ApplicationController{
 	protected function save($id){
 		$params = $this->getAllowedKeysForEdit();
 		$note = NoteQuery::create()->
-			filterByUser($this->params['user'])->
+			filterNotesForUser($this->params['user'])->
 			leftJoinWith('Note.Category')->
 			findPK($id);
 		$note->fromArray($params);
@@ -164,7 +164,7 @@ class NoteController extends ApplicationController{
 
 	protected function change_state($id){
 		$note = NoteQuery::create()->
-			filterByUser($this->params['user'])->
+			filterNotesForUser($this->params['user'])->
 			findPK($id);
 		$note->setState($_GET['selected']);
 		$note->save();

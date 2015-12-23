@@ -11,6 +11,12 @@ use Models\Category;
 use Models\CategoryQuery;
 use Models\Comment;
 use Models\CommentQuery;
+use Models\Shared;
+use Models\SharedQuery;
+use Models\UserGroup;
+use Models\UserGroupQuery;
+use Models\Group;
+use Models\GroupQuery;
 
 class HomePageController extends ApplicationController{
 
@@ -18,6 +24,7 @@ class HomePageController extends ApplicationController{
 		parent::__construct();
 		$this->addBeforeFilter("redirect_if_logged");
 		$this->addBeforeFilterExeption("is_logged", "index");
+		$this->addBeforeFilterExeption("redirect_if_logged", "test");
 	}
 
 	protected function redirect_if_logged(){
@@ -31,5 +38,4 @@ class HomePageController extends ApplicationController{
 		//$b = 35;
 		//$this->params['c'] = $b; $b will be available in view as $c
 	}
-
 }

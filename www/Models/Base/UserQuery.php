@@ -136,7 +136,17 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery rightJoinWithShared() Adds a RIGHT JOIN clause and with to the query using the Shared relation
  * @method     ChildUserQuery innerJoinWithShared() Adds a INNER JOIN clause and with to the query using the Shared relation
  *
- * @method     \Models\NoteQuery|\Models\CategoryQuery|\Models\NotificationQuery|\Models\CommentQuery|\Models\IdentityQuery|\Models\UserGroupQuery|\Models\SharedQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildUserQuery leftJoinUserNote($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserNote relation
+ * @method     ChildUserQuery rightJoinUserNote($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserNote relation
+ * @method     ChildUserQuery innerJoinUserNote($relationAlias = null) Adds a INNER JOIN clause to the query using the UserNote relation
+ *
+ * @method     ChildUserQuery joinWithUserNote($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the UserNote relation
+ *
+ * @method     ChildUserQuery leftJoinWithUserNote() Adds a LEFT JOIN clause and with to the query using the UserNote relation
+ * @method     ChildUserQuery rightJoinWithUserNote() Adds a RIGHT JOIN clause and with to the query using the UserNote relation
+ * @method     ChildUserQuery innerJoinWithUserNote() Adds a INNER JOIN clause and with to the query using the UserNote relation
+ *
+ * @method     \Models\NoteQuery|\Models\CategoryQuery|\Models\NotificationQuery|\Models\CommentQuery|\Models\IdentityQuery|\Models\UserGroupQuery|\Models\SharedQuery|\Models\UserNoteQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildUser findOne(ConnectionInterface $con = null) Return the first ChildUser matching the query
  * @method     ChildUser findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUser matching the query, or a new ChildUser object populated from the query conditions when no match is found
@@ -1411,6 +1421,79 @@ abstract class UserQuery extends ModelCriteria
         return $this
             ->joinShared($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Shared', '\Models\SharedQuery');
+    }
+
+    /**
+     * Filter the query by a related \Models\UserNote object
+     *
+     * @param \Models\UserNote|ObjectCollection $userNote the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByUserNote($userNote, $comparison = null)
+    {
+        if ($userNote instanceof \Models\UserNote) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $userNote->getUserId(), $comparison);
+        } elseif ($userNote instanceof ObjectCollection) {
+            return $this
+                ->useUserNoteQuery()
+                ->filterByPrimaryKeys($userNote->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByUserNote() only accepts arguments of type \Models\UserNote or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the UserNote relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinUserNote($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('UserNote');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'UserNote');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the UserNote relation UserNote object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \Models\UserNoteQuery A secondary query class using the current class as primary query
+     */
+    public function useUserNoteQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinUserNote($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'UserNote', '\Models\UserNoteQuery');
     }
 
     /**

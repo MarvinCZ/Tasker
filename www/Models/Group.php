@@ -3,6 +3,7 @@
 namespace Models;
 
 use Models\Base\Group as BaseGroup;
+use Models\UserGroup;
 
 /**
  * Skeleton subclass for representing a row from the 'group' table.
@@ -16,5 +17,11 @@ use Models\Base\Group as BaseGroup;
  */
 class Group extends BaseGroup
 {
+	public function addUserWithRights($user, $rights){
+		$usergroup = new UserGroup();
+		$usergroup->setUser($user);
+		$usergroup->setRights($rights);
+		$this->addUserGroup($usergroup);
+	}
 
 }

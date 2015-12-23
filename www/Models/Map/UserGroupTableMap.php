@@ -138,7 +138,7 @@ class UserGroupTableMap extends TableMap
         $this->setIsCrossRef(true);
         // columns
         $this->addForeignPrimaryKey('user_id', 'UserId', 'INTEGER' , 'user', 'id', true, null, null);
-        $this->addForeignPrimaryKey('group_id', 'GroupId', 'INTEGER' , 'group', 'id', true, null, null);
+        $this->addForeignPrimaryKey('group_id', 'GroupId', 'INTEGER' , 'group_of_users', 'id', true, null, null);
         $this->addColumn('rights', 'Rights', 'INTEGER', true, null, 0);
     } // initialize()
 
