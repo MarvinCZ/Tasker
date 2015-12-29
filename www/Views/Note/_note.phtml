@@ -1,16 +1,18 @@
 <div class="col-xxs-12 col-xs-6 col-sm-4 col-md-3 col-xl-2 note-container">
 	<a href="notes/<?= $note->getId() ?>" class="nounderline">
 		<div class="note">
-			<?php if($note->getCategory()):?>
-				<div class="stripe stripe-<?= $note->getCategory()->getColor() ?>" title="<?= $note->getCategory()->getName() ?>"></div>
-			<?php endif ?>
 			<div class="title"><?= $note->getTitle() ?></div>
-			<div class="status status-<?= $note->getStateClass() ?>">
-				<?php if($note->getDeadline()): ?>
-					<span title="deadline"><i class="fa fa-clock-o"></i> <?= $note->getFormatedDeadline() ?></span>
-				<?php endif ?>
-			 	<?= $note->getStateText() ?>
+			<div class="info <?= $note->getCategory() ? "category-".$note->getCategory()->getColor() : "" ?>">
+				<?= $note->getCategory() ? $note->getCategory()->getName() : "Not in Category" ?>
+				<div class="pull-right">
+					<?= $note->getStateText() ?>
+				</div>
 			</div>
+			<?php if($note->getDeadline()): ?>
+				<div class="deadline deadline-<?= $note->getStateClass() ?>">
+					<span title="deadline"><i class="fa fa-clock-o"></i> <?= $note->getFormatedDeadline() ?></span>
+				</div>
+			<?php endif ?>				
 		</div>
 	</a>
 </div>

@@ -148,6 +148,11 @@ body{
 		font-size: 2.5em;
 		font-weight: bold;
 	}
+	.big-label{
+		margin-top: 0;
+		font-size: 2.5em;
+		font-weight: bold;		
+	}
 	&>label{
 		margin-top: 0;
 		font-size: 2.5em;
@@ -363,74 +368,67 @@ a{
 	position: relative;
 	background-color: white;
 	height: 140px;
-	padding: 5px;
-	box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.2);
-	margin-bottom: 10px;
+	box-shadow: -1px 1px 2px rgba(0, 0, 0, 0.2);
+	margin-bottom: 25px;
 	padding: 15px;
+	padding-top: 50px;
 	color: #333;
 	&:hover{
-		box-shadow: -1px 1px 2px rgba(0, 0, 0, 0.2);
+		box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.1);
 	}
 	.title{
 		font-size: 1.6em;
 		padding-right: 5px;
 		text-decoration: none;
 	}
-	.stripe{
-		position: absolute;
-		right: 0;
-		top: 0;
-		width: 0;
-		height: 0;
-		border-style: solid;
-		border-width: 0 45px 45px 0;
-		filter: drop-shadow(-1px 1px 2px rgba(0, 0, 0, 0.2));
-		&::after{
-			content: "";
-			display: block;
-			position: absolute;
-			right: -45px;
-			top: 0;
-			width: 0;
-			height: 0;
-			border-style: solid;
-			border-width: 0 25px 25px 0;
-			border-color: transparent white transparent transparent;
+	$category_colors: ('red', #FF7373),
+			('blue', #4957C0),
+			('green', #77D593),
+			('yellow', #FFE773);
+	@each $name, $color in $category_colors {
+		.category-#{$name} {
+			border-bottom: 3px solid $color;
 		}
 	}
-	.stripe-red{
-		border-color: transparent #FF7373 transparent transparent;
-	}
-	.stripe-blue{
-		border-color: transparent #4957C0 transparent transparent;
-	}
-	.stripe-green{
-		border-color: transparent #77D593 transparent transparent;
-	}
-	.stripe-yellow{
-		border-color: transparent #FFE773 transparent transparent;
-	}
-	.status{
+	.deadline{
 		position: absolute;
-		bottom: 0;
+		bottom: -15px;
+		right: 8px;
+		padding: 6px 10px;
+		font-size: 0.9em;
+		word-spacing: -1px;
+		background: #EEE;
+		box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+		border-bottom: 3px solid black;
+		font-weight: bold;
+	}
+	.deadline-ok{
+		border-color: #4D9749;
+		color: #4D9749;
+	}
+	.deadline-closed{
+		border-color: #525251;
+		color: #525251;
+	}
+	.deadline-soon{
+		border-color: #CAC700;
+		color: #CAC700;
+	}
+	.deadline-late{
+		border-color: #A94442;
+		color: #A94442;
+	}
+	.info{
+		position: absolute;
+		top: 0;
 		left: 0;
 		right: 0;
 		padding: 10px;
 		font-size: 0.9em;
 		word-spacing: -1px;
-	}
-	.status-ok{
-		background-color: #77D593;
-	}
-	.status-closed{
-		background-color: #DCDBDB;
-	}
-	.status-soon{
-		background-color: #FFEF8F;
-	}
-	.status-late{
-		background-color: #FFB3B3;
-		background-color: #FF9E8F;
+		background: #EEE;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+		font-weight: bold;
 	}
 }
 .new-note{
@@ -578,4 +576,28 @@ a{
 	background: url('../images/Lgoogle_icon.png');
 	height: 61px;
 	background-size: 100%;
+}
+.flashes{
+	margin-left: -15px;
+	margin-right: -15px;
+	.flash-message{
+		padding: 10px;
+		margin-left: 15px;
+		margin-right: 15px;
+		margin-bottom: 5px;
+		box-shadow: $default-box-shadow;
+		@media (max-width: $screen-xs-max) {
+			margin-left: 5px;
+			margin-right: 5px;
+		}
+
+	}
+	.flash-success{
+		background: #77D593;
+		color: white;
+	}
+	.flash-error{
+		background: #FF9E8F;
+		color: white;
+	}
 }

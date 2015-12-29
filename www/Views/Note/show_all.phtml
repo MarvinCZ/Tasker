@@ -34,6 +34,9 @@
 	<header class="header hidden-xs">
 		<a href="/notes"><h1>Notes</h1></a>
 		<div class="header-right">
+			<a href="/notes/add">
+				<div class="header-btn-large pull-left"><i class="fa fa-plus"></i></div>
+			</a>
 			<div class="header-btn-large show-filter pull-left"><i class="fa fa-search"></i></div>
 			<span class="user-name"><?= $user->getNick() ?></span>
 			<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
@@ -49,11 +52,11 @@
 			<?php includeFile("Views/flashes.phtml", $params) ?>
 		</div>
 		<div class="row notes">
-			<div class="col-xxs-12 col-xs-6 col-sm-4 col-md-3 col-xl-2 note-container">
+			<div class="col-xxs-12 col-xs-6 visible-xs note-container">
 				<a href="/notes/add">
-				<div class="note new-note">
-					<i class="fa fa-plus-circle"></i>
-				</div>
+					<div class="note new-note">
+						<i class="fa fa-plus-circle"></i>
+					</div>
 				</a>
 			</div>
 			<?php foreach ($notes as $note): ?>
