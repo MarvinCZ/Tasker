@@ -3,8 +3,9 @@
 namespace Models;
 
 use Models\Base\Note as BaseNote;
+use Propel\Runtime\Propel;
 use \DateTime;
-
+use \PDO;
 /**
  * Skeleton subclass for representing a row from the 'note' table.
  *
@@ -79,5 +80,13 @@ class Note extends BaseNote
 	 */
 	public function getEditPath(){
 		return '/notes/edit/' . $this->getId();
+	}
+
+	public function getSharedTo(){
+		$sql =  "SELECT shared.rights, shared.what_type, shared.to_type, CASE WHEN user.id IS NULL THEN group_of_users.name ELSE user.nick END AS name, CASE WHEN user.id IS NULL THEN COUNT(group_user.id) ELSE 1 END AS user_count from note LEFT JOIN category ON (category.id=note.category_id) LEFT JOIN shared ON ((shared.what_id=category.id) AND (shared.what_type='category')) OR ((shared.what_id=note.id) AND (shared.what_type='note')) LEFT JOIN user ON (shared.to_id=user.id) AND (shared.to_type='user') LEFT JOIN group_of_users ON (shared.to_id=group_of_users.id) AND (shared.to_type='group') LEFT JOIN user_group ON (group_of_users.id=user_group.group_id) LEFT JOIN user AS group_user ON (user_group.user_id=group_user.id) WHERE note.id=? AND shared.id IS NOT NULL GROUP BY shared.id";
+		$con = Propel::getWriteConnection(Map\NoteTableMap::DATABASE_NAME);
+		$stmt = $con->prepare($sql);
+		$stmt->execute(array($this->getId()));
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 }

@@ -62,18 +62,12 @@
 				<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
 				<div class="inner-box">
 					<h3>Sdileno s</h3>
-					<div class="row side-padding">
-						<div class="pull-left">Marvin</div>
-						<div class="pull-right">read, write</div>
-					</div>
-					<div class="row side-padding">
-						<div class="pull-left">Link(5)</div>
-						<div class="pull-right">read</div>
-					</div>
-					<div class="row side-padding">
-						<div class="pull-left">Link(2)</div>
-						<div class="pull-right">read, write</div>
-					</div>
+					<?php foreach ($shared_to as $shared): ?>
+						<div class="row side-padding">
+							<div class="pull-left"><?= $shared['name'] ?><?php if($shared['to_type'] == "group"):?> (<?= $shared['user_count'] ?>)<?php endif ?> přes <?= $shared['what_type'] ?></div>
+							<div class="pull-right"><?= $shared['rights'] ?></div>
+						</div>
+					<?php endforeach ?>
 				</div>
 			</div>
 		</div>

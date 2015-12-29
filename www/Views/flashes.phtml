@@ -1,7 +1,5 @@
 <?php if(!empty($params['flashes'])): ?>
-	<div class="container">
 		<?php foreach ($params['flashes'] as $value): ?>
-			<div class="<?= $value["type"] ?>"><?= $value["message"] ?></div>
+			<div class="flash-message flash-<?= $value["type"] ?>"><?= $value["message"] ?></div>
 		<?php endforeach ?>
-	</div>
 <?php endif ?>

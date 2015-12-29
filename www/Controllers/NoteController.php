@@ -16,14 +16,30 @@ use Models\CommentQuery;
 use \DateTime;
 
 class NoteController extends ApplicationController{
+
+	public function __construct(){
+		parent::__construct();
+	}
+
 	protected function show_all(){
 		$this->params['deadline_to'] = null;
 		$this->params['fulltext'] = "";
 		$this->params['importance'] = "0";
 
 		$note_query = NoteQuery::create()->
-			filterNotesForUser($this->params['user'])->
 			leftJoinWith('Note.Category');
+		$relation = isset($_GET['relation']) ? $_GET['relation'] : 'mine';
+		switch ($relation) {
+			case 'mine':
+				$note_query = $note_query->filterByUser($this->params['user']);
+				break;
+			case 'editable':
+				$note_query = $note_query->filterNotesForUser($this->params['user'], 1);
+				break;
+			default:
+				$note_query = $note_query->filterNotesForUser($this->params['user']);
+				break;
+		}
 
 		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
 			$note_query = $note_query->filterByDeadline(array('max' => $_GET['deadline_to']));
@@ -64,6 +80,9 @@ class NoteController extends ApplicationController{
 				case 'category':
 					$note_query = $note_query->addAscendingOrderByColumn("category.name");
 					break;
+				case 'state':
+					$note_query = $note_query->addAscendingOrderByColumn("state");
+					break;
 			}
 		}
 		$note_query = $note_query->addAscendingOrderByColumn("note.created_at");
@@ -86,7 +105,8 @@ class NoteController extends ApplicationController{
 		$selected  = isset($_GET['state']) ? $_GET['state'] : null;
 		$this->params['states'] = options_for_select(array('opened', 'done', 'wip', 'closed'), $selected);
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
-		$this->params['sort_by'] = options_for_select(array('created_at', 'deadline', 'relevance', 'importance', 'category'), $selected);
+		$this->params['sort_by'] = options_for_select(array('created_at', 'deadline', 'relevance', 'importance', 'category', 'state'), $selected);
+		$this->params['relation'] = options_for_select(array('mine', 'editable', 'all'), $relation);
 		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
 			$this->renderType('js.phtml');
 		}
@@ -98,8 +118,12 @@ class NoteController extends ApplicationController{
 			leftJoinWith('Note.Category')->
 			leftJoinWith('Note.Comment')->
 			leftJoinWith('Comment.User')->
+			leftJoinWith('Note.Shared')->
+			condition('shared_join', '((shared.what_id=note.id) AND (shared.what_type="note")) OR ((shared.what_id=category.id) AND (shared.what_type="category"))')->
+			setJoinCondition('Shared', 'shared_join')->
 			addAscendingOrderByColumn("comment.created_at")->
 			findPK($id);
+		$this->params['shared_to'] = $this->params['note']->getSharedTo();
 		$this->params['states'] = stateOptions($this->params['note']->getState());
 	}
 

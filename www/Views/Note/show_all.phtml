@@ -45,6 +45,9 @@
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-search"></i></div>
 	</div>
 	<div class="container container-lg-large">
+		<div class="flashes">
+			<?php includeFile("Views/flashes.phtml", $params) ?>
+		</div>
 		<div class="row notes">
 			<div class="col-xxs-12 col-xs-6 col-sm-4 col-md-3 col-xl-2 note-container">
 				<a href="/notes/add">
@@ -104,6 +107,7 @@
 			</div>
 			<?= select("State","state", true, $states, false) ?>
 			<?= select("Sort By","sort_by", false, $sort_by, true) ?>
+			<?= select("Relation","relation", false, $relation, true) ?>
 		</form>
 	</div>
 </div>

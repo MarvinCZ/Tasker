@@ -8,6 +8,7 @@ use Models\Note;
 use Models\NoteQuery;
 use Models\Category;
 use Models\CategoryQuery;
+use Helpers\LogHelper;
 
 /**
  * Basic controller
@@ -71,6 +72,7 @@ abstract class ApplicationController{
 			throw new Exception("Render was already called", 1);
 
 		includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$file));
+		LogHelper::logMessage("Rendering file: " . $file);
 
 		$this->rendered = true;
 	}
@@ -88,7 +90,9 @@ abstract class ApplicationController{
 		$controller = $back['class'];
 		$controller = substr($controller, 12, strlen($controller) - 22);
 
-		includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
+		$file = $controller."/".$action.".phtml";
+		includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$file));
+		LogHelper::logMessage("Rendering file: " . $file);
 
 		$this->rendered = true;
 	}
@@ -98,7 +102,8 @@ abstract class ApplicationController{
 	 * @param  String file to render
 	 */
 	protected function renderFile($file){
-		incldeFile("Views/".$file, $this->params);
+		includeFile("Views/".$file, $this->params);
+		LogHelper::logMessage("Rendering file: " . $file);
 		$this->rendered = true;
 	}
 
@@ -108,6 +113,7 @@ abstract class ApplicationController{
 	 */
 	protected function renderString($string){
 		echo($string);
+		LogHelper::logMessage("Rendering string: " . $string);
 		$this->rendered = true;
 	}
 
@@ -121,7 +127,9 @@ abstract class ApplicationController{
 		$controller = $back['class'];
 		$controller = substr($controller, 12, strlen($controller) - 22);
 
-		includeFile("Views/".$controller."/".$action.".".$type, $this->params);
+		$file = $controller."/".$action.".".$type;
+		includeFile("Views/".$file, $this->params);
+		LogHelper::logMessage("Rendering file: " . $file);
 
 		$this->rendered = true;
 	}
@@ -170,7 +178,9 @@ abstract class ApplicationController{
 			$controller = $back['class'];
 			$controller = substr($controller, 12, strlen($controller) - 22);
 
-			includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$controller."/".$action.".phtml"));
+			$file = $controller."/".$action.".phtml";
+			includeFile("Views/".$this->template, array('params' => $this->params, 'inside' => "Views/".$file));
+			LogHelper::logMessage("Rendering file: " . $file);
 		}
 	}
 

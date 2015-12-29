@@ -51,7 +51,7 @@ class NoteQuery extends BaseNoteQuery
 	 * @return Models\NoteQuery this query
 	 */
 	public function filterNotesForUser($user, $rights = 0){
-		if($rights <= 0)
+		if($rights > 0)
 			return $this->useUserNoteQuery()->filterByUser($user)->filterByRights(array('min' => $rights))->endUse();
 		return $this->useUserNoteQuery()->filterByUser($user)->endUse();
 	}
