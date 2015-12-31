@@ -13,6 +13,7 @@ use Models\Notification;
 use Models\NotificationQuery;
 use Models\Comment;
 use Models\CommentQuery;
+use Propel\Runtime\ActiveQuery\Criteria;
 use \DateTime;
 
 class NoteController extends ApplicationController{
@@ -113,7 +114,7 @@ class NoteController extends ApplicationController{
 	}
 
 	protected function show($id){
-		$this->params['note'] = NoteQuery::create()->
+		$note = NoteQuery::create()->
 			filterNotesForUser($this->params['user'])->
 			leftJoinWith('Note.Category')->
 			leftJoinWith('Note.Comment')->
@@ -123,8 +124,19 @@ class NoteController extends ApplicationController{
 			setJoinCondition('Shared', 'shared_join')->
 			addAscendingOrderByColumn("comment.created_at")->
 			findPK($id);
-		$this->params['shared_to'] = $this->params['note']->getSharedTo();
-		$this->params['states'] = stateOptions($this->params['note']->getState());
+		if($note){
+			$this->params['note'] = $note;
+			$criteria = new Criteria();
+			$criteria->add('user_note.user_id', $this->params['user']->getId(), Criteria::EQUAL);
+			$criteria->addDescendingOrderByColumn('user_note.rights');
+			$this->params['rights'] = $note->getUserNotes($criteria)[0]->getRights();
+			$this->params['shared_to'] = $this->params['note']->getSharedTo();
+			$this->params['states'] = stateOptions($this->params['note']->getState());
+		}
+		else{
+			$this->addFlash("error", "This note doesnt exists");
+			redirectTo('/notes');
+		}
 	}
 
 	protected function add(){
@@ -188,12 +200,18 @@ class NoteController extends ApplicationController{
 
 	protected function change_state($id){
 		$note = NoteQuery::create()->
-			filterNotesForUser($this->params['user'])->
+			filterNotesForUser($this->params['user'], 1)->
 			findPK($id);
-		$note->setState($_GET['selected']);
-		$note->save();
-		$log->addInfo('CHANGE: "status changed to ' . $note->getState());
-		$this->renderString("status changed to " . $note->getState());
+		if($note){
+			$note->setState($_GET['selected']);
+			$note->save();
+			$log->addInfo('CHANGE: "status changed to ' . $note->getState());
+			$this->renderString("status changed to " . $note->getState());
+		}
+		else{
+			$this->renderString("You dont have enought rights");
+			$log->addInfo('FAIL: user: ' . $this->params['user']->getId() . ' tryed to modify state of note: ' . $id);	
+		}
 	}
 
 	protected function comment($id){

@@ -59,7 +59,14 @@
 				</div>
 			</div>
 			<div class="col-md-4">
-				<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
+				<?php if($rights >= 1): ?>
+					<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
+				<?php else: ?>
+					<div class="inner-box">
+						<h3>State</h3>
+						<?= $note->getState() ?>
+					</div>
+				<?php endif ?>
 				<div class="inner-box">
 					<h3>Sdileno s</h3>
 					<?php foreach ($shared_to as $shared): ?>
@@ -68,6 +75,13 @@
 							<div class="pull-right"><?= $shared['rights'] ?></div>
 						</div>
 					<?php endforeach ?>
+				</div>
+				<div class="inner-box">
+					<h3>Files</h3>
+					<div class="file">
+						<i class="fa fa-paperclip"></i>
+						photo.jpeg
+					</div>
 				</div>
 			</div>
 		</div>
