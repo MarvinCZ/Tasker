@@ -78,3 +78,68 @@ function arrayKeysSnakeToCamel($array){
 function stateOptions($selected){
 	return options_for_select(array('opened', 'done', 'wip', 'closed'), $selected);
 }
+
+function sharedToHTML($to){
+	$html = '<div class="pull-left">';
+	if($to['to_type'] == 'user'){
+		$html .= '<a class="user-link" href="users/' . $to['to_id'] . '">' . $to['name'] . '</a>';
+	}
+	else{
+		$html .= '<a class="user-link" href="groups/' . $to['to_id'] . '">' . $to['name'] . ' (' . $to['user_count'] . ')' . '</a>' ;
+	}
+	$html .= ' přes ';
+	$html .= $to['what_type'] == "category" ? 'kategorii' : 'úkol';
+	$html .= '</div>';
+	$html .= '<div class="pull-right">';
+	switch ($to['rights']) {
+		case '0':
+			$html .= 'pouze čtení';
+			break;
+		case '1':
+			$html .= 'čtení, úprava';
+			break;
+		case '2':
+			$html .= 'správa';
+			break;
+		case '3':
+			$html .= 'majitel';
+			break;
+	}
+	$html .= '</div>';
+	return $html;
+}
+
+function optionsForSelect($options, $selected = ''){
+	$html = '';
+	foreach ($options as $key => $value) {
+		$html.='<option value="'.$key.'"'.($selected != $key ? '' : ' selected="selected"').'>'.$value.'</option>';
+	}
+	return $html;
+}
+
+function sharedToForm($to){
+	$params = array();
+	$params['target_link'] = $to['to_type'] == "user" ? 'users/' : 'groups/';
+	$params['target_link'] .= $to['to_id'];
+	$params['form_link'] = 'share/update/' . $to['id'];
+	$params['options'] = optionsForSelect(array(0=>'pouze čtení', 1=>'čtení, úprava', 2=>'správa', 3=>'majitel'), $to['rights']);
+	$params['rights'] = '';
+	switch ($to['rights']) {
+		case '0':
+			$params['rights'] = 'pouze čtení';
+			break;
+		case '1':
+			$params['rights'] = 'čtení, úprava';
+			break;
+		case '2':
+			$params['rights'] = 'správa';
+			break;
+		case '3':
+			$params['rights'] = 'majitel';
+			break;
+	}
+	$params['name'] = $to['name'];
+	if($to['to_type'] == 'group')
+		$params['name'] .= ' (' . $to['user_count'] . ')';
+	return renderToString('Views/Note/_sharedto_form.phtml',$params);
+}

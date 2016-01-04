@@ -2,8 +2,12 @@
 	<header class="header hidden-xs">
 		<a href="/notes"><h1>Note - <?= $note->getTitle() ?></h1></a>
 		<div class="header-right">
-			<div class="header-btn-large pull-left"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
-			<div class="header-btn-large show-share pull-left"><i class="fa fa-share-alt"></i></div>
+			<?php if($rights >= 1): ?>
+				<div class="header-btn-large pull-left"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
+			<?php endif ?>
+			<?php if($rights >= 2): ?>
+				<div class="header-btn-large show-share pull-left"><i class="fa fa-share-alt"></i></div>
+			<?php endif ?>
 			<span class="user-name"><?= $user->getNick() ?></span>
 			<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
 		</div>
@@ -36,13 +40,13 @@
 					</a>
 				<?php endif ?>
 				<?php if($note->getDeadline()): ?>
-				<div class="inner-box">
+				<div class="inner-box" id="deadline">
 					<h3>DeadLine</h3>
 					<?= $note->getDeadline()->format('d. m. Y  H:i') ?>
 					<div class="pull-right countdown" data-to="<?= $note->getDeadline()->format('d.m.Y.H.i') ?>"></div>
 				</div>
 				<?php endif ?>
-				<div class="inner-box">
+				<div class="inner-box" id="comments">
 					<h3>Comments</h3>
 					<div class="comments">
 						<?php foreach ($note->getComments() as $c): ?>
@@ -59,6 +63,7 @@
 				</div>
 			</div>
 			<div class="col-md-4">
+				<div class="select-state">
 				<?php if($rights >= 1): ?>
 					<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
 				<?php else: ?>
@@ -67,14 +72,19 @@
 						<?= $note->getState() ?>
 					</div>
 				<?php endif ?>
-				<div class="inner-box">
+				</div>
+				<div class="inner-box" id="shared-with">
 					<h3>Sdileno s</h3>
 					<?php foreach ($shared_to as $shared): ?>
 						<div class="row side-padding">
-							<div class="pull-left"><?= $shared['name'] ?><?php if($shared['to_type'] == "group"):?> (<?= $shared['user_count'] ?>)<?php endif ?> přes <?= $shared['what_type'] ?></div>
-							<div class="pull-right"><?= $shared['rights'] ?></div>
+							<?= sharedToHTML($shared) ?>
 						</div>
 					<?php endforeach ?>
+					<?php if(empty($shared_to)): ?>
+						<div class="row side-padding">
+							Tento úkol máte k dispozici jen vy. Pokud chcete sdílet přístup klikněte na <i class="fa fa-share-alt"></i>
+						</div>
+					<?php endif ?>
 				</div>
 				<div class="inner-box">
 					<h3>Files</h3>
@@ -96,13 +106,23 @@
 		</nav>
 	</div>
 </div>
-<div class="page page-right">
-	<div class="header row text-center">
-		<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
-		<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
-		Share
+<?php if($rights >= 2): ?>
+	<div class="page page-right">
+		<div class="header row text-center">
+			<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
+			<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
+			Share
+		</div>
+		<div class="container">
+			<div class="inner-box">
+				<h3>Existující sdílení:</h3>
+				<?php foreach ($shared_to as $shared): ?>
+					<?php if($shared['what_type'] == "note"): ?>
+						<?= sharedToForm($shared) ?>
+					<?php endif ?>
+				<?php endforeach ?>
+			</div>
+		</div>
 	</div>
-	<div class="container">
-	</div>
-</div>
+<?php endif ?>
 <div class="over"></div>

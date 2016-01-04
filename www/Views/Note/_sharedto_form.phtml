@@ -1,0 +1,26 @@
+<div class="row side-padding share-form">
+	<div class="show-info">
+		<div class="pull-left">
+			<a href="<?= $target_link ?>" class="user-link"><?= $name ?></a>
+		</div>
+		<div class="pull-right">
+			<?= $rights ?>
+			<div class="btn btn-primary edit-share">
+				<i class="fa fa-pencil"></i>
+			</div>
+		</div>
+	</div>
+	<div class="form">
+		<div class="pull-left">
+			<a href="<?= $target_link ?>" class="user-link"><?= $name ?></a>
+		</div>
+		<div class="pull-right">
+			<form action="<?= $form_link ?>" class="remote">
+				<select name="share_rights">
+					<?= $options ?>
+				</select>
+				<input type="submit" class="btn btn-primary" value="edit">
+			</form>
+		</div>		
+	</div>
+</div>

@@ -29,6 +29,21 @@ function options_for_select($array, $selected = null){
 	return $options;
 }
 
+function options_names_for_select($array, $selected = null){
+	if(!is_array($selected)){
+		$selected = array($selected);
+	}
+	$options = array();
+	foreach ($array as $key => $value) {
+		array_push($options, array(
+			'name' => $key,
+			'display_name' => ucfirst($value),
+			'selected' => in_array($key, $selected) ? 'checked' : ''
+			));
+	}
+	return $options;
+}
+
 //Returns string with html for select component
 function datetime_picker($title, $name, $required, $options = array()){
 	$value = isset($options['value']) ?

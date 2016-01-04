@@ -31,6 +31,16 @@ class Note extends BaseNote
 	 * @return string state
 	 */
 	public function getStateText(){
+		switch ($this->getState()) {
+			case 'opened':
+				return 'otevřené';
+			case 'done':
+				return 'hotové';
+			case 'wip':
+				return 'rozpracované';
+			case 'closed':
+				return 'uzavřené';
+		}
 		return $this->getState();
 	}
 
@@ -83,7 +93,7 @@ class Note extends BaseNote
 	}
 
 	public function getSharedTo(){
-		$sql =  "SELECT shared.rights, shared.what_type, shared.to_type, CASE WHEN user.id IS NULL THEN group_of_users.name ELSE user.nick END AS name, CASE WHEN user.id IS NULL THEN COUNT(group_user.id) ELSE 1 END AS user_count from note LEFT JOIN category ON (category.id=note.category_id) LEFT JOIN shared ON ((shared.what_id=category.id) AND (shared.what_type='category')) OR ((shared.what_id=note.id) AND (shared.what_type='note')) LEFT JOIN user ON (shared.to_id=user.id) AND (shared.to_type='user') LEFT JOIN group_of_users ON (shared.to_id=group_of_users.id) AND (shared.to_type='group') LEFT JOIN user_group ON (group_of_users.id=user_group.group_id) LEFT JOIN user AS group_user ON (user_group.user_id=group_user.id) WHERE note.id=? AND shared.id IS NOT NULL GROUP BY shared.id";
+		$sql =  "SELECT shared.id, shared.rights, shared.what_type, shared.to_id, shared.to_type, CASE WHEN user.id IS NULL THEN group_of_users.name ELSE user.nick END AS name, CASE WHEN user.id IS NULL THEN COUNT(group_user.id) ELSE 1 END AS user_count from note LEFT JOIN category ON (category.id=note.category_id) LEFT JOIN shared ON ((shared.what_id=category.id) AND (shared.what_type='category')) OR ((shared.what_id=note.id) AND (shared.what_type='note')) LEFT JOIN user ON (shared.to_id=user.id) AND (shared.to_type='user') LEFT JOIN group_of_users ON (shared.to_id=group_of_users.id) AND (shared.to_type='group') LEFT JOIN user_group ON (group_of_users.id=user_group.group_id) LEFT JOIN user AS group_user ON (user_group.user_id=group_user.id) WHERE note.id=? AND shared.id IS NOT NULL GROUP BY shared.id";
 		$con = Propel::getWriteConnection(Map\NoteTableMap::DATABASE_NAME);
 		$stmt = $con->prepare($sql);
 		$stmt->execute(array($this->getId()));

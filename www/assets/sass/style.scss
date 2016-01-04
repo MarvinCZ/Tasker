@@ -64,7 +64,7 @@ $small-border: 1px solid rgba(0, 0, 0, 0.2);
 	}
 }
 
-%button{
+%tab{
 	box-shadow: $default-box-shadow;
 	text-align: center;
 	padding: 15px;
@@ -72,6 +72,7 @@ $small-border: 1px solid rgba(0, 0, 0, 0.2);
 	&[data-selected="true"]{
 		box-shadow: none;
 		background: #EEE;
+		border-bottom: 2px solid #3097D1;
 	}
 	&[data-selected="true"]:hover{
 		box-shadow: inherit;
@@ -84,20 +85,25 @@ $small-border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 @for $i from 1 through $columns{
-	.button-#{$i}{
+	.tab-#{$i}{
 		width: 100%*$i/$columns;
 		float: left;
 	}
 }
 
 @for $i from 1 through 12{
-	.button-#{$i}{
-		@extend %button;
+	.tab-#{$i}{
+		@extend %tab;
 	}
 }
 
-.buttons{
+.tabs{
+	margin: -10px;
 	margin-bottom: 10px;
+}
+
+.user-link{
+	font-weight: bold;
 }
 
 *{
@@ -303,7 +309,7 @@ $page-right-width: 500px;
 		margin-left: -$page-right-width;
 		width: auto;
 	}
-	form{
+	form.search-form{
 		width: 437px;
 	}
 	.btn-down{
@@ -568,14 +574,18 @@ a{
 	}
 }
 .fb-login{
-	background: url('../images/Lfb_icon.png');
-	height: 61px;
-	background-size: 100%;
+	background-color: #3A5795;
 }
 .google-login{
-	background: url('../images/Lgoogle_icon.png');
+	background-color: #DC4E41;
+}
+.social-login{
 	height: 61px;
-	background-size: 100%;
+	line-height: 61px;
+	color: white;
+	text-align: center;
+	font-size: 1.8em;
+	border-radius: 5px;	
 }
 .flashes{
 	margin-left: -15px;
@@ -599,5 +609,17 @@ a{
 	.flash-error{
 		background: #FF9E8F;
 		color: white;
+	}
+}
+.share-form{
+	.show-info{
+		height: 34px;
+		line-height: 34px;
+	}
+	.form{
+		height: 34px;
+		line-height: 34px;
+		clear: both;
+		display: none;
 	}
 }

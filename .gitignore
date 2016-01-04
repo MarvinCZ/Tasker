@@ -1,5 +1,7 @@
 .sass-cache
 www/generated-conf/config.php
+www/Models/Base
+www/Models/Map
 www/propel.yml
 www/propel_tasker.log
 www/app.log

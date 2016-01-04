@@ -37,10 +37,10 @@ $(document).ready(function(){
 			array.push($.trim($(this).html()));
 		})
 		if(array.length > 0){
-			parent.find('.tab-closed').html('Selected: ' +  array.join(', '));
+			parent.find('.tab-closed').html('Vybráno: ' +  array.join(', '));
 		}
 		else{
-			parent.find('.tab-closed').html('Nothing selected');
+			parent.find('.tab-closed').html('Nic nevybráno');
 		}		
 	});
 	$('.tab-select .btn-nothing').click(function(e){
