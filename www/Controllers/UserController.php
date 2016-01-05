@@ -5,6 +5,8 @@ namespace Controllers;
 use Controllers\ApplicationController;
 use Models\User;
 use Models\UserQuery;
+use Models\Identity;
+use Models\IdentityQuery;
 use Helpers\LogHelper;
 
 class UserController extends ApplicationController{
@@ -56,8 +58,41 @@ class UserController extends ApplicationController{
 		try {
 			$accessToken = $helper->getAccessToken();
 			$fb->setDefaultAccessToken($accessToken);
-			$response = $fb->get('/me?fields=email,name,picture.width(300)');
-			$userNode = $response->getGraphUser();
+			$response = $fb->get('/me?fields=id,email');
+			$user = $response->getGraphUser();
+			$identity = IdentityQuery::create()->
+				filterByProvider('facebook')->
+				filterByUid($user['id'])->
+				joinWith('User')->
+				findOne();
+			if(!$identity){
+				$identity = new Identity();
+				$identity->setProvider('facebook');
+				$identity->setUid($user['id']);
+				$u = UserQuery::create()->
+						filterByEmail($user['email'])->
+						findOne();
+				if(!$u){
+					$response = $fb->get('/me?fields=email,name,picture.width(320)');
+					$userNode = $response->getGraphUser();
+					$u = new User();
+					if(!$userNode['picture']['is_silhouette']){
+						$picture = "";
+						do {
+							$picture = time().md5(rand(0,1000000000000)).'.jpg';
+						} while (file_exists("Uploads/Avatars/".$picture));
+						file_put_contents("Uploads/Avatars/".$picture, file_get_contents($userNode['picture']['url']));
+						$u->setAvatarPath($picture);
+					}
+					$u->setNick($userNode['name']);
+					$u->setEmail($userNode['email']);
+					$u->setPassword(md5(rand(0,1000000000000)));
+				}
+				$identity->setUser($u);
+				$identity->save();
+			}
+			$_SESSION['user'] = $identity->getUser()->getId();
+			redirectTo("/notes");
 		} catch(Facebook\Exceptions\FacebookResponseException $e) {
 			echo 'Graph returned an error: ' . $e->getMessage();
 			exit;
@@ -65,12 +100,5 @@ class UserController extends ApplicationController{
 			echo 'Facebook SDK returned an error: ' . $e->getMessage();
 			exit;
 		}
-
-		if (isset($accessToken)) {
-			$_SESSION['facebook_access_token'] = (string) $accessToken;
-		}
-		var_dump($userNode);
-		var_dump($userNode['picture']);
-		$this->renderString($accessToken);
 	}
 }

@@ -12,6 +12,9 @@
 		</div>
 	</div>
 	<div class="container">
+		<div class="flashes">
+			<?php includeFile("Views/flashes.phtml", $params) ?>
+		</div>
 		<div class="inner-box">
 			<h2>Co je to tasker</h2>
 			<p>Tasker je sluzbou, ktera spravuje vase poznamky a umoynuje je mit na jednom miste a vzdy k dispozici.</p>
@@ -32,11 +35,11 @@
 <div class="login">
 	<div class="inner-box">
 			<div>
-				<div class="buttons clearfix">
-					<div class="button-6 button" data-selected="true" data-part="part-login">
+				<div class="tabs clearfix">
+					<div class="tab-6 tab" data-selected="true" data-part="part-login">
 						LOGIN
 					</div>
-					<div class="button-6 button" data-part="part-register">
+					<div class="tab-6 tab" data-part="part-register">
 						REGISTER
 					</div>
 				</div>
@@ -107,13 +110,18 @@
 				</div>
 			</div>
 			<div>
-				<p>Příhláse je možné také pomocí sociálních sítí</p>
 				<div class="row">
 					<div class="col-md-6">
-						<div class="fb-login"></div>
+						<a href="<?= $fblogin ?>">
+							<div class="fb-login social-login">
+								<i class="fa fa-facebook-square"></i> Login with facebook
+							</div>
+						</a>
 					</div>
 					<div class="col-md-6">
-						<div class="google-login"></div>
+						<div class="google-login social-login">
+							<i class="fa fa-google-plus"></i> Login with g+
+						</div>
 					</div>
 				</div>
 			</div>

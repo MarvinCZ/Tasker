@@ -33,9 +33,9 @@ class HomePageController extends ApplicationController{
 	}
 
 	protected function index(){
-		//$a = "Text";
-		//$this->params = array_merge($this->params, get_defined_vars()); $a will be available in view
-		//$b = 35;
-		//$this->params['c'] = $b; $b will be available in view as $c
+		$fb = getFacebook();
+		$helper = $fb->getRedirectLoginHelper();
+		$permissions = ['email', 'public_profile'];
+		$this->params['fblogin'] = $helper->getLoginUrl('http://' . $_SERVER['HTTP_HOST'] . '/fb-login-callback', $permissions);
 	}
 }

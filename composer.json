@@ -2,6 +2,7 @@
     "require": {
         "propel/propel": "~2.0@dev",
         "aura/router": "2.x",
-        "monolog/monolog": "^1.17"
+        "monolog/monolog": "^1.17",
+        "facebook/php-sdk-v4" : "~5.0"
     }
 }

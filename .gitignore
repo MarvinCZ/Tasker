@@ -5,5 +5,7 @@ www/Models/Map
 www/propel.yml
 www/propel_tasker.log
 www/app.log
+www/Uploads/Avatars
+www/Config/default.php
 vendor
 .idea

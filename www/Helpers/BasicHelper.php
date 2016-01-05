@@ -143,3 +143,11 @@ function sharedToForm($to){
 		$params['name'] .= ' (' . $to['user_count'] . ')';
 	return renderToString('Views/Note/_sharedto_form.phtml',$params);
 }
+
+function getFacebook(){
+	return new Facebook\Facebook([
+  'app_id' => '593319754150363',
+  'app_secret' => Helpers\ConfigHelper::getValue('oauth.facebook.secret'),
+  'default_graph_version' => 'v2.2',
+  ]);
+}

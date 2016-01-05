@@ -17,3 +17,5 @@ $router->addGet('Note.change_state', '/note/{id}/state/');
 $router->addPost('Note.comment', '/notes/{id}/comment');
 
 $router->addPost('Shared.update', '/share/update/{id}');
+
+$router->addGet('User.fb_login', '/fb-login-callback');

@@ -3,10 +3,12 @@
 use Aura\Router\RouterFactory;
 use Propel\Runtime\Propel;
 use Helpers\LogHelper;
+use Helpers\ConfigHelper;
 
 session_start();
 
 mb_internal_encoding("UTF-8");
+
 
 //Register composers autoload
 require_once '../vendor/autoload.php';
@@ -28,6 +30,8 @@ spl_autoload_register(function ($class) {
         require_once($file);
     }
 });
+
+ConfigHelper::loadFile('Config/default.php');
 
 //Create new logger
 LogHelper::init();
