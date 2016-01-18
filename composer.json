@@ -3,6 +3,7 @@
         "propel/propel": "~2.0@dev",
         "aura/router": "2.x",
         "monolog/monolog": "^1.17",
-        "facebook/php-sdk-v4" : "~5.0"
+        "facebook/php-sdk-v4" : "~5.0",
+        "google/apiclient": "1.0.*@beta"
     }
 }

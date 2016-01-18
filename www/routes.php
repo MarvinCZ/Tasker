@@ -19,3 +19,4 @@ $router->addPost('Note.comment', '/notes/{id}/comment');
 $router->addPost('Shared.update', '/share/update/{id}');
 
 $router->addGet('User.fb_login', '/fb-login-callback');
+$router->addGet('User.g_login', '/google-callback');

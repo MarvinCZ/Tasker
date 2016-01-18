@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e12c65a1815a1ebed2539146c5e8d242",
-    "content-hash": "aee497a22c8e61194b9f5684957be553",
+    "hash": "b6ce1977820a73082237ddc28e8832ff",
+    "content-hash": "5d091c7c9fc93a96eb389622d1eae6c0",
     "packages": [
         {
             "name": "aura/router",
@@ -115,6 +115,51 @@
                 "sdk"
             ],
             "time": "2015-11-19 21:07:36"
+        },
+        {
+            "name": "google/apiclient",
+            "version": "1.0.6-beta",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/google/google-api-php-client.git",
+                "reference": "a41a9dc0662e36420030eaab802dbb1f85459479"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/a41a9dc0662e36420030eaab802dbb1f85459479",
+                "reference": "a41a9dc0662e36420030eaab802dbb1f85459479",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "src/"
+            ],
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Client library for Google APIs",
+            "homepage": "http://developers.google.com/api-client-library/php",
+            "keywords": [
+                "google"
+            ],
+            "time": "2014-09-30 19:33:59"
         },
         {
             "name": "monolog/monolog",
@@ -753,7 +798,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "propel/propel": 20
+        "propel/propel": 20,
+        "google/apiclient": 10
     },
     "prefer-stable": false,
     "prefer-lowest": false,

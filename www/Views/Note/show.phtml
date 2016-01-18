@@ -13,10 +13,12 @@
 		</div>
 	</header>
 	<div class="header row text-center visible-xs">
-		<div class="header-btn pull-left go-back"><i class="fa fa-chevron-left"></i></div>
+		<div class="header-btn pull-left"><a href="/notes"><i class="fa fa-home"></i></a></div>
 		Note
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-share-alt"></i></div>
-		<div class="header-btn pull-right"><i class="fa fa-pencil"></i></div>
+		<?php if($rights >= 1): ?>
+			<div class="header-btn pull-right"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
+		<?php endif ?>
 	</div>
 	<div class="container">
 		<div class="row">
@@ -109,7 +111,7 @@
 <?php if($rights >= 2): ?>
 	<div class="page page-right">
 		<div class="header row text-center">
-			<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
+			<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-reply"></i></div>
 			<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
 			Share
 		</div>

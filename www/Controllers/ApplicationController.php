@@ -54,6 +54,10 @@ abstract class ApplicationController{
 		$this->params['user_logged'] = false;
 	}
 
+	private function save_backpage(){
+		$_SESSION['backpage'] = "";
+	}
+
 	/**
 	 * redirect if user is not logged
 	 */

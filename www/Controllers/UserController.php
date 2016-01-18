@@ -12,7 +12,7 @@ use Helpers\LogHelper;
 class UserController extends ApplicationController{
 	public function __construct(){
 		parent::__construct();
-		$this->addBeforeFilterExeption("is_logged", array('create', 'login', 'fb_login'));
+		$this->addBeforeFilterExeption("is_logged", array('create', 'login', 'fb_login', 'g_login'));
 	}
 
 	protected function show($id){
@@ -99,6 +99,44 @@ class UserController extends ApplicationController{
 		} catch(Facebook\Exceptions\FacebookSDKException $e) {
 			echo 'Facebook SDK returned an error: ' . $e->getMessage();
 			exit;
+		}
+	}
+
+	protected function g_login(){
+		if(isset($_GET['code'])){
+			$google_client = getGoogle();
+			$google_client->authenticate($_GET['code']);
+			$service = new \Google_Service_Oauth2($google_client);
+			$info = $service->userinfo->get();
+			$identity = IdentityQuery::create()->
+				filterByProvider('google')->
+				filterByUid($info->id)->
+				joinWith('User')->
+				findOne();
+			if(!$identity){
+				$identity = new Identity();
+				$identity->setProvider('google');
+				$identity->setUid($info->id);
+				$u = UserQuery::create()->
+						filterByEmail($info->email)->
+						findOne();
+				if(!$u){
+					$u = new User();
+					$picture = "";
+					do {
+						$picture = time().md5(rand(0,1000000000000)).'.jpg';
+					} while (file_exists("Uploads/Avatars/".$picture));
+					file_put_contents("Uploads/Avatars/".$picture, file_get_contents($info->picture));
+					$u->setAvatarPath($picture);
+					$u->setNick($info->name);
+					$u->setEmail($info->email);
+					$u->setPassword(md5(rand(0,1000000000000)));
+				}
+				$identity->setUser($u);
+				$identity->save();
+			}
+			$_SESSION['user'] = $identity->getUser()->getId();
+			redirectTo("/notes");
 		}
 	}
 }

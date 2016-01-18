@@ -151,3 +151,13 @@ function getFacebook(){
   'default_graph_version' => 'v2.2',
   ]);
 }
+
+function getGoogle(){
+	$client = new Google_Client();
+	$client->setAuthConfigFile('Config/googlekey.json');
+	$client->addScope("email");
+	$client->addScope("profile");
+	$client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/google-callback');
+	$client->setAccessType("offline");
+	return $client;
+}
