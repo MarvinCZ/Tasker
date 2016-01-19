@@ -248,11 +248,13 @@ $(document).ready(function(){
 	});
 
 	$('.tab').click(function(){
-		var parent = $(this).parent();
-		parent.find('.tab').attr("data-selected", "false");
-		$(this).attr("data-selected", "true");
-		parent.parent().find('.parts>*').hide();
-		parent.parent().find('.parts>.' + $(this).data('part')).show();
+		if ($(this).attr('data-part')) {
+			var parent = $(this).parent();
+			parent.find('.tab').attr("data-selected", "false");
+			$(this).attr("data-selected", "true");
+			parent.parent().find('.parts>*').hide();
+			parent.parent().find('.parts>.' + $(this).data('part')).show();
+		}
 	});
 
 	$('.show-login').click(function(){

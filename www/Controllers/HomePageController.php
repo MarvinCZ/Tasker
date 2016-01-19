@@ -38,7 +38,6 @@ class HomePageController extends ApplicationController{
 		$permissions = ['email', 'public_profile'];
 		$this->params['fblogin'] = $helper->getLoginUrl('http://' . $_SERVER['HTTP_HOST'] . '/fb-login-callback', $permissions);
 		$google_client = getGoogle();
-		$google_client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/google-callback');
 		$this->params['glogin'] = $google_client->createAuthUrl();
 	}
 }
