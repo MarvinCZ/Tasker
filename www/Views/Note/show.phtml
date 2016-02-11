@@ -60,7 +60,9 @@
 					</div>
 					<div class="input-group">
 						<input type="text" name="comment-message" class="form-control">
-						<div class="input-group-addon sent-message" data-note="<?= $note->getId() ?>">Sent</div>
+						<span class="input-group-btn">
+							<button class="btn btn-primary sent-message" type="button" data-note="<?= $note->getId() ?>">Odeslat</button>
+						</span>
 					</div>
 				</div>
 			</div>
@@ -120,9 +122,24 @@
 				<h3>Existující sdílení:</h3>
 				<?php foreach ($shared_to as $shared): ?>
 					<?php if($shared['what_type'] == "note"): ?>
-						<?= sharedToForm($shared) ?>
+						<?= sharedToForm($shared, $rights) ?>
 					<?php endif ?>
 				<?php endforeach ?>
+			</div>
+			<div class="inner-box">
+				<h3>Přidat uživatele</h3>
+				<form action="share/add/note/<?= $note->getId() ?>" method="POST">
+						<div class="pull-left">
+							<input name="name" class="form-control complete-user">
+						</div>
+						<div class="pull-right">
+							<select name="share_rights">
+								<?= shareOptionsForSelect(null, $rights) ?>
+							</select>
+							<input type="submit" class="btn btn-primary" value="add">
+						</div>
+				</form>
+				<div class="clearfix"></div>
 			</div>
 		</div>
 	</div>

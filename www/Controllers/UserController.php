@@ -51,6 +51,22 @@ class UserController extends ApplicationController{
 		$_SESSION['user'] = null;
 		redirectTo("/");
 	}
+	
+	protected function auto_complete(){
+		$users = UserQuery::create()->
+			filterByNick($_GET['query'].'%')->
+			select(array('id', 'nick'))->
+			find()->
+			toArray();
+		$users = array_map(function($users) {
+    	return array(
+        'value' => $users['nick'],
+        'data' => $users['id']
+    	);
+		}, $users);
+		$this->renderString(json_encode(array("suggestions"=>$users)));
+		
+	}
 
 	protected function fb_login(){
 		$fb = getFacebook();

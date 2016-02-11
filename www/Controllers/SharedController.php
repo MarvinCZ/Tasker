@@ -34,6 +34,41 @@ class SharedController extends ApplicationController{
 			$s->setRights($_POST['share_rights']);
 			$s->save();
 		}
-		$this->renderString($id);
+		redirectBack();
+	}
+	
+	protected function add_to_note($id){
+		$note = NoteQuery::create()->findPK($id);
+		$user = UserQuery::create()->
+			filterByNick($_POST['name'])->
+			findOne();
+		if($note && $user){
+			$rights = getUserRights($this->params['user'], $note);
+			if($rights >= 2){
+				$share = new Shared();
+				$share->setUser($user);
+				$share->setNote($note);
+				$share->setRights($_POST['share_rights']);
+				$share->save();
+			}
+			else{
+				//nema prava
+			}
+		}
+		else{
+			//neexistuje
+		}
+		redirectTo('/notes/'.$id);	
+	}
+	
+	protected function remove($id){
+		$shared = SharedQuery::create()->findPK($id);
+		$note = $shared->getNote();
+		$rights = getUserRights($this->params['user'], $note);
+		var_dump($rights);
+		if($rights >= 2 && $shared->getRights() < $rights){
+			$shared->delete();
+		}
+		redirectBack();
 	}
 }

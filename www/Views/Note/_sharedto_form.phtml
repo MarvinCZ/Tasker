@@ -8,6 +8,11 @@
 			<div class="btn btn-primary edit-share">
 				<i class="fa fa-pencil"></i>
 			</div>
+			<a href="share/remove/<?= $id ?>">
+				<div class="btn btn-danger">
+					<i class="fa fa-trash"></i>
+				</div>
+			</a>
 		</div>
 	</div>
 	<div class="form">
@@ -15,7 +20,7 @@
 			<a href="<?= $target_link ?>" class="user-link"><?= $name ?></a>
 		</div>
 		<div class="pull-right">
-			<form action="<?= $form_link ?>" class="remote">
+			<form action="<?= $form_link ?>" method="POST">
 				<select name="share_rights">
 					<?= $options ?>
 				</select>

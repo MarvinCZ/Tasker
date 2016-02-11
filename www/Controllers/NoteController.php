@@ -126,10 +126,7 @@ class NoteController extends ApplicationController{
 			findPK($id);
 		if($note){
 			$this->params['note'] = $note;
-			$criteria = new Criteria();
-			$criteria->add('user_note.user_id', $this->params['user']->getId(), Criteria::EQUAL);
-			$criteria->addDescendingOrderByColumn('user_note.rights');
-			$this->params['rights'] = $note->getUserNotes($criteria)[0]->getRights();
+			$this->params['rights'] = getUserRights($this->params['user'], $note);
 			$this->params['shared_to'] = $this->params['note']->getSharedTo();
 			$this->params['states'] = stateOptions($this->params['note']->getState());
 		}

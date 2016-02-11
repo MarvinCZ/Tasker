@@ -117,12 +117,14 @@ function optionsForSelect($options, $selected = ''){
 	return $html;
 }
 
-function sharedToForm($to){
+function sharedToForm($to, $rights){
+	if($to['rights']>=$rights)
+		return;
 	$params = array();
 	$params['target_link'] = $to['to_type'] == "user" ? 'users/' : 'groups/';
 	$params['target_link'] .= $to['to_id'];
 	$params['form_link'] = 'share/update/' . $to['id'];
-	$params['options'] = optionsForSelect(array(0=>'pouze čtení', 1=>'čtení, úprava', 2=>'správa', 3=>'majitel'), $to['rights']);
+	$params['options'] = shareOptionsForSelect($to['rights'], $rights);
 	$params['rights'] = '';
 	switch ($to['rights']) {
 		case '0':
@@ -141,7 +143,13 @@ function sharedToForm($to){
 	$params['name'] = $to['name'];
 	if($to['to_type'] == 'group')
 		$params['name'] .= ' (' . $to['user_count'] . ')';
+	$params['id'] = $to['id'];
 	return renderToString('Views/Note/_sharedto_form.phtml',$params);
+}
+
+function shareOptionsForSelect($selected = null, $max = 3){
+	$arr = array(0=>'pouze čtení', 1=>'čtení, úprava', 2=>'správa', 3=>'majitel');
+	return optionsForSelect(array_slice($arr, 0, $max), $selected);
 }
 
 function getFacebook(){
@@ -160,4 +168,16 @@ function getGoogle(){
 	$client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/google-callback');
 	$client->setAccessType("offline");
 	return $client;
+}
+
+function getUserRights($user, $note){
+	$criteria = new Propel\Runtime\ActiveQuery\Criteria();
+	$criteria->add('user_note.user_id', $user->getId(), Propel\Runtime\ActiveQuery\Criteria::EQUAL);
+	$criteria->addDescendingOrderByColumn('user_note.rights');
+	return $note->getUserNotes($criteria)[0]->getRights();
+}
+
+function redirectBack(){
+		header('Location: '.$_SERVER['HTTP_REFERER']);
+		die();
 }

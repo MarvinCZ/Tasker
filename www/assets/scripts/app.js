@@ -233,7 +233,7 @@ $(document).ready(function(){
 	$('.sent-message').click(function(){
 		var id = $('.sent-message').data('note');
 		var path = "notes/" + id + "/comment";
-		var message = $('.sent-message').prev('input').val().trim();
+		var message = $('.sent-message').parent().prev('input').val().trim();
 		if(message){
 			$.ajax({
 				url: path,
@@ -271,6 +271,10 @@ $(document).ready(function(){
 		var parent = $(this).closest('.share-form');
 		parent.find('.show-info').hide();
 		parent.find('.form').show();
+	});
+
+	$('.complete-user').autocomplete({
+  	  serviceUrl: "/users/auto-complete"
 	});
 
 });

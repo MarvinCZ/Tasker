@@ -2,6 +2,7 @@
 
 $router->addGet('HomePage.index', '/');
 
+$router->addGet('User.auto_complete', '/users/auto-complete');
 $router->addGet('User.show', '/users/{id}');
 $router->addGet('User.logout', '/logout');
 $router->addPost('User.create', '/register');
@@ -17,6 +18,8 @@ $router->addGet('Note.change_state', '/note/{id}/state/');
 $router->addPost('Note.comment', '/notes/{id}/comment');
 
 $router->addPost('Shared.update', '/share/update/{id}');
+$router->addPost('Shared.add_to_note', '/share/add/note/{id}');
+$router->addGet('Shared.remove', '/share/remove/{id}');
 
 $router->addGet('User.fb_login', '/fb-login-callback');
 $router->addGet('User.g_login', '/google-callback');
