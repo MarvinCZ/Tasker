@@ -2,9 +2,12 @@
 
 namespace Controllers;
 
+use Propel\Runtime\Propel;
 use Controllers\ApplicationController;
 use Models\User;
 use Models\UserQuery;
+use Models\Group;
+use Models\GroupQuery;
 use Models\Note;
 use Models\NoteQuery;
 use Models\Category;
@@ -42,21 +45,39 @@ class SharedController extends ApplicationController{
 		$user = UserQuery::create()->
 			filterByNick($_POST['name'])->
 			findOne();
-		if($note && $user){
+		if($note){
 			$rights = getUserRights($this->params['user'], $note);
 			if($rights >= 2){
 				$share = new Shared();
-				$share->setUser($user);
-				$share->setNote($note);
 				$share->setRights($_POST['share_rights']);
-				$share->save();
+				$share->setNote($note);
+				$ok = false;
+				if($user){
+					$share->setUser($user);
+					$ok = true;
+				}
+				else{
+					$group = GroupQuery::create()->
+						filterByName($_POST['name'])->
+						findOne();
+					if($group){
+						$share->setGroup($group);
+						$ok = true;
+					}
+				}
+				if($ok){
+					$share->save();
+				}
+				else{
+					//neexistuje
+				}
 			}
 			else{
-				//nema prava
+					//nema prava
 			}
 		}
 		else{
-			//neexistuje
+			//note neexistuje
 		}
 		redirectTo('/notes/'.$id);	
 	}
@@ -70,5 +91,16 @@ class SharedController extends ApplicationController{
 			$shared->delete();
 		}
 		redirectBack();
+	}
+
+	protected function possible(){
+			$sql =  'SELECT id as data, nick as value FROM user WHERE nick LIKE :name
+								UNION
+								SELECT id as data, name as value FROM group_of_users LEFT JOIN user_group ON group_of_users.id = user_group.group_id WHERE user_id = :user_id AND user_group.rights >= 1 AND name LIKE :name';
+			$con = Propel::getWriteConnection(\Models\Map\UserTableMap::DATABASE_NAME);
+			$stmt = $con->prepare($sql);
+			$stmt->execute(array('name' => $_GET['query'].'%', 'user_id' => $this->params['user']->getId()));
+			$pos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			$this->renderString(json_encode(array('suggestions' =>$pos)));
 	}
 }

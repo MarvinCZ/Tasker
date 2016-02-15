@@ -274,7 +274,7 @@ $(document).ready(function(){
 	});
 
 	$('.complete-user').autocomplete({
-  	  serviceUrl: "/users/auto-complete"
+		serviceUrl: "/share/possible"
 	});
 
 });

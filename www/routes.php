@@ -20,6 +20,7 @@ $router->addPost('Note.comment', '/notes/{id}/comment');
 $router->addPost('Shared.update', '/share/update/{id}');
 $router->addPost('Shared.add_to_note', '/share/add/note/{id}');
 $router->addGet('Shared.remove', '/share/remove/{id}');
+$router->addGet('Shared.possible', '/share/possible');
 
 $router->addGet('User.fb_login', '/fb-login-callback');
 $router->addGet('User.g_login', '/google-callback');
