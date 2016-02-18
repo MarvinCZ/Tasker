@@ -104,13 +104,21 @@
 					</div>
 				</div>
 			</div>
-			<?= select("Kategorie","category", true, $categories, false) ?>
+			<div class="inner-box">
+				<?= select("Kategorie","category", true, $categories, false) ?>
+			</div>
 			<div class="filter_submit container-width">
 				<input type="submit" value="Search" class="big-btn"/>
 			</div>
-			<?= select("Stav","state", true, $states, false) ?>
-			<?= select("Seřadit dle","sort_by", false, $sort_by, true) ?>
-			<?= select("Vztah","relation", false, $relation, true) ?>
+			<div class="inner-box">
+				<?= select("Stav","state", true, $states, false) ?>
+			</div>
+			<div class="inner-box">
+				<?= select("Seřadit dle","sort_by", false, $sort_by, true) ?>
+			</div>
+			<div class="inner-box">
+				<?= select("Vztah","relation", false, $relation, true) ?>
+			</div>
 		</form>
 	</div>
 </div>

@@ -69,7 +69,9 @@
 			<div class="col-md-4">
 				<div class="select-state">
 				<?php if($rights >= 1): ?>
-					<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
+					<div class="inner-box">
+						<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
+					</div>
 				<?php else: ?>
 					<div class="inner-box">
 						<h3>State</h3>
@@ -129,17 +131,23 @@
 			<div class="inner-box">
 				<h3>Přidat uživatele - skupinu</h3>
 				<form action="share/add/note/<?= $note->getId() ?>" method="POST">
-						<div class="pull-left">
-							<input name="name" class="form-control complete-user">
-						</div>
-						<div class="pull-right">
-							<select name="share_rights">
-								<?= shareOptionsForSelect(null, $rights) ?>
-							</select>
-							<input type="submit" class="btn btn-primary" value="add">
-						</div>
+					<input name="name" class="form-control complete-user">
+					<?= select("Práva","share_rights", false, $rights, true) ?>
+					<input type="submit" class="btn btn-primary btn-full" value="Přidat">
 				</form>
 				<div class="clearfix"></div>
+			</div>
+			<div class="inner-box">
+				<h3>Nová skupina</h3>
+				<form action="/share/new_group" method="POST" class="new-group">
+					<input type="hidden" value="<?= $note->getId() ?>" name="note_id">
+					<input type="text" class="form-control" name="name" placeholder="Jméno skupiny">
+					<?= select("Práva","share_rights", false, $rights, true) ?>
+					<div class="row">
+						<div class="col-xs-6"><div class="btn btn-success btn-full" data-newuser="1">Přidat uzivatele</div></div>
+						<div class="col-xs-6"><input type="submit" class="btn btn-primary btn-full" value="Uložit"/></div>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>

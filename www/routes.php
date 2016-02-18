@@ -7,6 +7,8 @@ $router->addGet('User.show', '/users/{id}');
 $router->addGet('User.logout', '/logout');
 $router->addPost('User.create', '/register');
 $router->addPost('User.login', '/login');
+$router->addGet('User.fb_login', '/fb-login-callback');
+$router->addGet('User.g_login', '/google-callback');
 
 $router->addGet('Note.show_all', '/notes');
 $router->addGet('Note.add', '/notes/add');
@@ -21,6 +23,6 @@ $router->addPost('Shared.update', '/share/update/{id}');
 $router->addPost('Shared.add_to_note', '/share/add/note/{id}');
 $router->addGet('Shared.remove', '/share/remove/{id}');
 $router->addGet('Shared.possible', '/share/possible');
+$router->addPost('Shared.new_group_to_note', '/share/new_group');
 
-$router->addGet('User.fb_login', '/fb-login-callback');
-$router->addGet('User.g_login', '/google-callback');
+$router->addPost('Group.add', '/group/add');

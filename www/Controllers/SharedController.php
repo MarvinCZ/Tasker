@@ -81,6 +81,27 @@ class SharedController extends ApplicationController{
 		}
 		redirectTo('/notes/'.$id);	
 	}
+
+	protected function new_group_to_note(){
+		$note = NoteQuery::create()->findPK($_POST['note_id']);
+		if($note){
+			$share = new Shared();
+			$share->setRights($_POST['share_rights']);
+			$share->setNote($note);
+			$group = new Group();
+			$group->setName($_POST['name']);
+			foreach ($_POST['user'] as $u) {
+				$user = UserQuery::create()->
+					filterByNick($u)->
+					findOne();
+				$group->addUserWithRights($user, 0);
+			}
+			$group->addUserWithRights($this->params['user'], 3);
+			$share->setGroup($group);
+			$share->save();
+		}
+		redirectBack();
+	}
 	
 	protected function remove($id){
 		$shared = SharedQuery::create()->findPK($id);

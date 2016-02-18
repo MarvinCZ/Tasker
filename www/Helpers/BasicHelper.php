@@ -148,8 +148,8 @@ function sharedToForm($to, $rights){
 }
 
 function shareOptionsForSelect($selected = null, $max = 3){
-	$arr = array(0=>'pouze čtení', 1=>'čtení, úprava', 2=>'správa', 3=>'majitel');
-	return optionsForSelect(array_slice($arr, 0, $max), $selected);
+	$arr = array(0=>'Pouze čtení', 1=>'Čtení, Úprava', 2=>'Správa', 3=>'Majitel');
+	return array_slice($arr, 0, $max);
 }
 
 function getFacebook(){

@@ -277,4 +277,17 @@ $(document).ready(function(){
 		serviceUrl: "/share/possible"
 	});
 
+	$('div[data-newuser]').click(function(){
+		var id = $(this).data('newuser');
+		$(this).data('newuser', id+1);
+		$(this).closest('.row').before('<div class="input-group"><input type="text" class="form-control" name="user[' + id + ']" placeholder="Jméno uživatele"><span class="input-group-btn"><span class="btn btn-danger remove-user-field"><i class="fa fa-trash"></i></span></span></div>');
+		$(this).closest('.row').prev().find('input').autocomplete({
+			serviceUrl: "/users/auto-complete"
+		});
+		$(this).closest('.row').prev().find('.remove-user-field').click(function(){
+			$(this).closest('.input-group').remove();
+		});
+
+	});
+
 });

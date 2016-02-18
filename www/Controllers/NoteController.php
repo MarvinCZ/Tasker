@@ -126,7 +126,8 @@ class NoteController extends ApplicationController{
 			findPK($id);
 		if($note){
 			$this->params['note'] = $note;
-			$this->params['rights'] = getUserRights($this->params['user'], $note);
+			$rights = getUserRights($this->params['user'], $note);
+			$this->params['rights'] = options_names_for_select(shareOptionsForSelect($rights));
 			$this->params['shared_to'] = $this->params['note']->getSharedTo();
 			$this->params['states'] = stateOptions($this->params['note']->getState());
 		}
