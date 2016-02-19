@@ -124,7 +124,7 @@ function sharedToForm($to, $rights){
 	$params['target_link'] = $to['to_type'] == "user" ? 'users/' : 'groups/';
 	$params['target_link'] .= $to['to_id'];
 	$params['form_link'] = 'share/update/' . $to['id'];
-	$params['options'] = shareOptionsForSelect($to['rights'], $rights);
+	$params['options'] = options_names_for_select(shareOptionsForSelect($rights), $to['rights']);
 	$params['rights'] = '';
 	switch ($to['rights']) {
 		case '0':

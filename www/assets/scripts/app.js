@@ -273,6 +273,12 @@ $(document).ready(function(){
 		parent.find('.form').show();
 	});
 
+	$('.share-form .close-edit-share').click(function(){
+		var parent = $(this).closest('.share-form');
+		parent.find('.show-info').show();
+		parent.find('.form').hide();
+	});
+
 	$('.complete-user').autocomplete({
 		serviceUrl: "/share/possible"
 	});

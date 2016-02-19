@@ -28,14 +28,14 @@
 				</div>
 				<?php if(!empty($note->getDescription())): ?>
 					<div class="inner-box">
-						<h3>Description</h3>
+						<h3>Popis</h3>
 						<?= $note->getDescription() ?>
 					</div>
 				<?php endif ?>
 				<?php if($note->getCategoryId()): ?>
 					<a href="<?= $note->getCategory()->getShowPath() ?>">
 						<div class="inner-box">
-							<h3>Category</h3>
+							<h3>Kategorie</h3>
 							<?= $note->getCategory()->getName() ?>
 							<div class="cat-stripe cat-stripe-<?= $note->getCategory()->getColor() ?>" title="<?= $note->getCategory()->getName() ?>"></div>
 						</div>
@@ -43,13 +43,13 @@
 				<?php endif ?>
 				<?php if($note->getDeadline()): ?>
 				<div class="inner-box" id="deadline">
-					<h3>DeadLine</h3>
+					<h3>Termín</h3>
 					<?= $note->getDeadline()->format('d. m. Y  H:i') ?>
 					<div class="pull-right countdown" data-to="<?= $note->getDeadline()->format('d.m.Y.H.i') ?>"></div>
 				</div>
 				<?php endif ?>
 				<div class="inner-box" id="comments">
-					<h3>Comments</h3>
+					<h3>Komentáře</h3>
 					<div class="comments">
 						<?php foreach ($note->getComments() as $c): ?>
 							<?php includeFile("Views/Note/_comment.phtml", array('comment' => $c)) ?>
@@ -70,17 +70,17 @@
 				<div class="select-state">
 				<?php if($rights >= 1): ?>
 					<div class="inner-box">
-						<?= select("State","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
+						<?= select("Stav","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
 					</div>
 				<?php else: ?>
 					<div class="inner-box">
-						<h3>State</h3>
+						<h3>Stav</h3>
 						<?= $note->getState() ?>
 					</div>
 				<?php endif ?>
 				</div>
 				<div class="inner-box" id="shared-with">
-					<h3>Sdileno s</h3>
+					<h3>Sdíleno s</h3>
 					<?php foreach ($shared_to as $shared): ?>
 						<div class="row side-padding">
 							<?= sharedToHTML($shared) ?>
@@ -131,8 +131,10 @@
 			<div class="inner-box">
 				<h3>Přidat uživatele - skupinu</h3>
 				<form action="share/add/note/<?= $note->getId() ?>" method="POST">
-					<input name="name" class="form-control complete-user">
-					<?= select("Práva","share_rights", false, $rights, true) ?>
+					<div class="form-group">
+						<input name="name" class="form-control complete-user" placeholder="Jméno uživatele nebo skupiny">
+					</div>
+					<?= select("Práva","share_rights", false, $rights_select, true) ?>
 					<input type="submit" class="btn btn-primary btn-full" value="Přidat">
 				</form>
 				<div class="clearfix"></div>
@@ -142,7 +144,7 @@
 				<form action="/share/new_group" method="POST" class="new-group">
 					<input type="hidden" value="<?= $note->getId() ?>" name="note_id">
 					<input type="text" class="form-control" name="name" placeholder="Jméno skupiny">
-					<?= select("Práva","share_rights", false, $rights, true) ?>
+					<?= select("Práva","share_rights", false, $rights_select, true) ?>
 					<div class="row">
 						<div class="col-xs-6"><div class="btn btn-success btn-full" data-newuser="1">Přidat uzivatele</div></div>
 						<div class="col-xs-6"><input type="submit" class="btn btn-primary btn-full" value="Uložit"/></div>

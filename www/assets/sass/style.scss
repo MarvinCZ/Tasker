@@ -279,6 +279,7 @@ body{
 	}
 	.container{
 		margin-top: 65px;
+		margin-bottom: 10px;
 	}
 }
 .page-left{
@@ -496,6 +497,7 @@ a{
 	.inner-box{
 		margin: 0;
 		height: 100%;
+		overflow: auto;
 		@media (min-width: 600px) {
 			.tab-4{
 				width: 200px;
@@ -643,7 +645,6 @@ a{
 		line-height: 34px;
 	}
 	.form{
-		height: 34px;
 		line-height: 34px;
 		clear: both;
 		display: none;
