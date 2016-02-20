@@ -26,3 +26,6 @@ $router->addGet('Shared.possible', '/share/possible');
 $router->addPost('Shared.new_group_to_note', '/share/new_group');
 
 $router->addPost('Group.add', '/group/add');
+
+$router->addGet('Settings.index', '/settings');
+$router->addGet('Settings.category', '/settings/category');

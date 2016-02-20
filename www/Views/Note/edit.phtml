@@ -9,13 +9,4 @@
 	<div class="container">
 		<?php includeFile("Views/Note/_form.phtml", array('note' => $note, 'categories' => $categories)) ?>
 	</div>
-	<div class="inner-box no-padding user-menu">
-		<nav>
-			<ul>
-			<a href="<?= $user->getPath() ?>"><li>PROFILE</li></a>
-				<a href="options"><li>OPTIONS</li></a>
-				<a href="logout"><li>LOG OUT</li></a>
-			</ul>
-		</nav>
-	</div>
 </div>

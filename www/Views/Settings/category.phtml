@@ -1,0 +1,10 @@
+<table class="table categories">
+	<tr>
+		<th>Barva</th>
+		<th>Jmeno</th>
+		<th>Akce</th>
+	</tr>
+	<?php foreach ($categories as $cat): ?>
+		<?php includeFile('Views/Settings/_category_entry.phtml', array('category'=>$cat)) ?>
+	<?php endforeach ?>
+</table>

@@ -380,6 +380,20 @@ a{
 		width: 90%;
 	}
 }
+$category_colors: ('red', #FF7373),
+		('blue', #4957C0),
+		('green', #77D593),
+		('yellow', #FFE773);
+.block{
+	border-radius: 2px;
+	width: 100%;
+	padding-bottom: 100%;
+}
+@each $name, $color in $category_colors {
+	.block-#{$name} {
+		background: $color;
+	}
+}
 .note{
 	position: relative;
 	background-color: white;
@@ -400,10 +414,6 @@ a{
 		padding-right: 5px;
 		text-decoration: none;
 	}
-	$category_colors: ('red', #FF7373),
-			('blue', #4957C0),
-			('green', #77D593),
-			('yellow', #FFE773);
 	@each $name, $color in $category_colors {
 		.category-#{$name} {
 			border-bottom: 3px solid $color;
@@ -671,5 +681,41 @@ a{
 	}
 	.input-group{
 		margin-top: 5px;
+	}
+}
+.user-name{
+	font-weight: bold;
+	font-size: 1.5em;
+	text-align: center;
+	margin: 10px 0;
+}
+.settings-menu{
+	padding: 0;
+	list-style-type: none;
+	li{
+		font-size: 1.1em;
+		padding: 5px;
+		border-bottom: 1px solid #ddd;
+		&:hover{
+			background: #ddd;
+		}
+		.fa{
+			margin-right: 5px;
+		}
+	}
+}
+table.categories{
+	td:first-child, th:first-child{
+		width: 30px;
+	}
+	td:last-child, th:last-child{
+		width: 90px;
+	}
+	tbody{
+		tr{
+			td{
+				vertical-align: middle;
+			}
+		}
 	}
 }

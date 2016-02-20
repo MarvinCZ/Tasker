@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<base href="/">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="MarvinCZ">
+		<title><?= $params['title'] ?></title>
+		<link rel="stylesheet" type="text/css" href="assets/styles/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="assets/styles/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/styles/nouislider.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/styles/autocomplete.min.css">
+		<script src="assets/scripts/jquery-1.11.3.js"></script>
+		<script src="assets/scripts/hammer.min.js"></script>
+		<script src="assets/scripts/bootstrap.min.js"></script>
+		<script src="assets/scripts/app.js"></script>
+		<script src="assets/scripts/select.js"></script>
+		<script src="assets/scripts/datetime_picker.js"></script>
+		<script src="assets/scripts/nouislider.min.js"></script>
+		<script src="assets/scripts/jquery.autocomplete.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="assets/styles/style.css" />
+		<link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png"/>
+	</head>
+	<body>
+		<div class="page page-middle">
+			<header class="header hidden-xs">
+				<a href="/notes"><h1>Nastavení</h1></a>
+				<div class="header-right">
+					<span class="user-name"><?= $params['user']->getNick() ?></span>
+					<img src="<?= $params['user']->getAvatarPath() ?>" class="header-img img-circle">
+				</div>
+			</header>
+			<div class="header row text-center visible-xs">
+				<div class="header-btn pull-left"><a href="/notes"><i class="fa fa-home"></i></a></div>
+				Nastavení
+				<div class="header-btn page-show-right pull-right"><i class="fa fa-share-alt"></i></div>
+			</div>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-2">
+						<div class="inner-box">
+							<img src="<?= $params['user']->getAvatarPath() ?>" class="img-circle img-responsive">
+							<div class="user-name">
+								<?= $params['user']->getDisplayName() ?>
+							</div>
+							<ul class="settings-menu">
+								<a href="/settings"><li><i class="fa fa-user fa-fw"></i>Obecné</li></a>
+								<a href="/settings/category"><li><i class="fa fa-tags fa-fw"></i>Kategorie</li></a>
+								<a href="/settings"><li><i class="fa fa-user fa-fw"></i>Skupiny</li></a>
+							</ul>
+						</div>
+					</div>
+					<div class="col-md-10">
+						<div class="inner-box">
+							<?php includeFile($inside, $params) ?>							
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php includeFile("Views/_menu.phtml", array('user' => $params['user'])) ?>
+		</div>
+	</body>
+</html>
