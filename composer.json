@@ -4,6 +4,12 @@
         "aura/router": "2.x",
         "monolog/monolog": "^1.17",
         "facebook/php-sdk-v4" : "~5.0",
-        "google/apiclient": "1.0.*@beta"
+        "google/apiclient": "1.0.*@beta",
+        "philipp15b/php-i18n": "^3.0"
+    },
+    "autoload": {
+        "classmap": [
+            "www/Propel/Behavior/ValidateI18n"
+        ]
     }
 }

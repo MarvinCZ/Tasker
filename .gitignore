@@ -7,5 +7,6 @@ www/propel_tasker.log
 www/app.log
 www/Uploads/Avatars
 www/Config/default.php
+www/cache
 vendor
 .idea
