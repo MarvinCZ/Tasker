@@ -1,5 +1,5 @@
 <?php if(!empty($params['flashes'])): ?>
 		<?php foreach ($params['flashes'] as $value): ?>
-			<div class="flash-message flash-<?= $value["type"] ?>"><?= $value["message"] ?></div>
+			<div class="flash-message alert-<?= $value["type"] ?>"><?= $value["message"] ?></div>
 		<?php endforeach ?>
 <?php endif ?>

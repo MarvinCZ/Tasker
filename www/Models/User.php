@@ -3,6 +3,7 @@
 namespace Models;
 
 use Models\Base\User as BaseUser;
+use Propel\Runtime\Connection\ConnectionInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'user' table.
@@ -16,6 +17,12 @@ use Models\Base\User as BaseUser;
  */
 class User extends BaseUser
 {
+
+	public function preSave(ConnectionInterface $con = null)
+	{
+		return $this->validate();
+	}
+
 	/**
 	 * @return string path to user's avatar
 	 */

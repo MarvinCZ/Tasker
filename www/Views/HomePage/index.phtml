@@ -16,8 +16,8 @@
 			<?php includeFile("Views/flashes.phtml", $params) ?>
 		</div>
 		<div class="inner-box">
-			<h2>Co je to tasker</h2>
-			<p>Tasker je sluzbou, ktera spravuje vase poznamky a umoynuje je mit na jednom miste a vzdy k dispozici.</p>
+			<h2><?= t('.what_is_h') ?></h2>
+			<p><?= t('.what_is_p') ?></p>
 		</div>
 		<div class="inner-box">
 			<h2>Co nabizi</h2>
@@ -55,10 +55,13 @@
 			</div>
 			<div class="parts">
 				<div class="part-login">
-					<form action="login" method="post" class="form-horizontal logreg-form">
+					<form action="login" method="post" class="form-horizontal logreg-form remote">
 						<div class="col-md-8 col-md-push-2">
+							<div class="error-common error-box"></div>
 							<div class="form-group">
 								<input type="text" class="form-control" id="inputNick" placeholder="Nick" name="user[nick]">
+							</div>
+							<div class="form-group">
 								<input type="password" class="form-control" id="inputPassword" placeholder="Password" name="user[password]">
 							</div>
 							<div class="form-group">
@@ -68,13 +71,23 @@
 					</form>
 				</div>
 				<div class="part-register">
-					<form action="register" method="post" class="form-horizontal logreg-form">
+					<form action="register" method="post" class="form-horizontal logreg-form remote" novalidate>
 						<div class="col-md-8 col-md-push-2">
 							<div class="form-group">
 								<input type="email" class="form-control" id="inputRegEmail" placeholder="Email" name="user[email]">
+								<div class="error-email error-box"></div>
+							</div>
+							<div class="form-group">
 								<input type="text" class="form-control" id="inputRegNick" placeholder="Přezdívka" name="user[nick]">
+								<div class="error-nick error-box"></div>
+							</div>
+							<div class="form-group">
 								<input type="password" class="form-control" id="inputRegPassword" placeholder="Heslo" name="user[password]">
+								<div class="error-password error-box"></div>
+							</div>
+							<div class="form-group">
 								<input type="password" class="form-control" id="inputRegPassword2" placeholder="Zopakujte heslo" name="user[password2]">
+								<div class="error-password2 error-box"></div>
 							</div>
 							<div class="form-group">
 								<button type="submit" class="btn btn-default btn-primary btn-block">Registrovat se</button>

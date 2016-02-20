@@ -263,7 +263,27 @@ $(document).ready(function(){
 	});
 
 	$('form.remote').submit(function(e){
-		$.ajax({url: $(this).attr('action'), type: 'POST', data: $(this).serialize()});
+		var form = $(this);
+		$.ajax({
+			url: $(this).attr('action'),
+			type: $(this).attr('method'),
+			data: $(this).serialize(),
+			dataType: 'JSON',
+			success: function(data){
+				form.find('.error-box').html('');
+				form.find('.has-error').removeClass('has-error');
+				if(data.hasOwnProperty('redirect')){
+					window.location = data.redirect;
+				}
+				else{
+					$.each(data, function(key, value){
+						var el = form.find('.error-' + value['path']);
+						el.html(value['message']);
+						el.closest('.form-group').addClass('has-error');
+					});
+				}
+			}
+		});
 		e.preventDefault();
 	});
 

@@ -24,6 +24,8 @@
 	</head>
 	<body>
 		<?php includeFile($inside, $params) ?>
-		<?php includeFile("Views/_menu.phtml", array('user' => $params['user'])) ?>
+		<?php if(isset($params['user'])): ?>
+			<?php includeFile("Views/_menu.phtml", array('user' => $params['user'])) ?>
+		<?php endif ?>
 	</body>
 </html>

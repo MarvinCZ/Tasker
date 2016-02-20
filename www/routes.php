@@ -9,6 +9,7 @@ $router->addPost('User.create', '/register');
 $router->addPost('User.login', '/login');
 $router->addGet('User.fb_login', '/fb-login-callback');
 $router->addGet('User.g_login', '/google-callback');
+$router->addGet('User.confirm_email', '/confirm');
 
 $router->addGet('Note.show_all', '/notes');
 $router->addGet('Note.add', '/notes/add');

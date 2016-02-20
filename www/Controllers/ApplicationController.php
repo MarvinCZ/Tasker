@@ -271,6 +271,7 @@ abstract class ApplicationController{
 	 * @param string message, which will be displayed
 	 */
 	protected function addFlash($type, $message){
+		$type = $type == "error" ? "danger" : $type;
 		array_push($_SESSION['flashes'], ['type' => $type, 'message' => $message]);
 	}
 
@@ -280,6 +281,7 @@ abstract class ApplicationController{
 	 * @param string message, which will be displayed
 	 */
 	protected function addFlashNow($type, $message){
+		$type = $type == "error" ? "danger" : $type;
 		array_push($this->params['flashes'], ['type' => $type, 'message' => $message]);
 	}
 }

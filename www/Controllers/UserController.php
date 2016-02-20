@@ -19,17 +19,31 @@ class UserController extends ApplicationController{
 
 	}
 
+	protected function confirm_email(){
+
+	}
+
 	protected function create(){
 		$params = arrayKeysSnakeToCamel($_POST['user']);
+		$errors = [];
 		if($_POST['user']['password'] != $_POST['user']['password2']){
-			$this->addFlash("error", "passwords aint matching");
-			redirectTo("/");
+			$errors = [['path'=>'password2', 'message'=>t('.password_not_match')]];
+		}
+		if(strlen($_POST['user']['password']) < 8){
+			array_push($errors, ['path' => 'password', 'message' => t('models.user.validation.password.min_length')]);
 		}
 		$user = new User();
 		$user->fromArray($params);
-		$user->save();
-		$this->addFlash("success", "registered");
-		redirectTo("/");
+		$user->validate();
+		if(empty($errors) && $user->save()){
+			$this->addFlash("success", "registered");
+			$_SESSION['user'] = $user->getId();
+			$this->renderString(json_encode(['redirect'=>'/confirm']));
+		}
+		else{
+			$errors = array_merge($errors, $user->getValidationFailuresI18n());
+			$this->renderString(json_encode($errors));
+		}
 	}
 
 	protected function login(){
@@ -39,11 +53,13 @@ class UserController extends ApplicationController{
 			findOne();
 		if($user){
 			$_SESSION['user'] = $user->getId();
-			redirectTo("/notes");
+			$this->renderString(json_encode(['redirect'=>'/notes']));
 		}
 		else{
-			$this->addFlash("error", "user does not exists or password is invalid");
-			redirectTo("/");
+			$this->renderString(json_encode([[
+					'path' => 'common',
+					'message' => t('.user_not_match')
+				]]));
 		}
 	}
 

@@ -18,6 +18,13 @@
         <column name="last_signin_at" type="timestamp"/>
 
         <behavior name="timestampable" />
+        <behavior name="ValidateI18n">
+            <parameter name="nick_uniq" value="{column: nick, validator: Unique, options: {message: nick_uniq}}" />
+            <parameter name="nick_not_blank" value="{column: nick, validator: NotBlank, options: {message: nick_not_blank}}" />
+            <parameter name="email_uniq" value="{column: email, validator: Unique, options: {message: email_uniq}}" />
+            <parameter name="email_not_blank" value="{column: email, validator: NotBlank, options: {message: email_not_blank}}" />
+            <parameter name="email_format" value="{column: email, validator: Email, options: {message: email_format}}" />
+        </behavior>
     </table>
 
     <table name="note" phpName="Note">
@@ -44,12 +51,16 @@
         </foreign-key>
 
         <behavior name="timestampable"/>
+        <behavior name="ValidateI18n">
+            <parameter name="title_not_blank" value="{column: title, validator: NotBlank, options: {message: title_not_blank}}" />
+            <parameter name="title_max_length" value="{column: title, validator: Length, options: {message: title_max_length, max: 25}}" />
+            <parameter name="description_max_length" value="{column: description, validator: Length, options: {message: description_max_length, max: 300}}" />
+        </behavior>
 
         <index>
             <index-column name="title"/>
             <index-column name="description"/>
         </index>
-
         <index>
             <index-column name="title"/>
         </index>
@@ -70,6 +81,9 @@
         </foreign-key>
 
         <behavior name="timestampable" />
+        <behavior name="ValidateI18n">
+            <parameter name="text_max_length" value="{column: text, validator: Length, options: {message: text_max_length, max: 100}}" />
+        </behavior>
     </table>
 
     <table name="file" phpName="File">
@@ -87,14 +101,18 @@
     <table name="category" phpName="Category">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="user_id" type="integer" required="true"/>
-        <column name="name" type="varchar" size="20"/>
-        <column name="color" type="varchar" size="6" required="true"/>
+        <column name="name" type="varchar" size="20" required="true"/>
+        <column name="color" type="varchar" size="6"/>
 
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id"/>
         </foreign-key>
 
         <behavior name="timestampable" />
+        <behavior name="ValidateI18n">
+            <parameter name="name_not_blank" value="{column: name, validator: NotBlank, options: {message: category_not_blank}}" />
+            <parameter name="name_max_length" value="{column: name, validator: Length, options: {message: category_max_length, max: 20}}" />
+        </behavior>
     </table>
 
     <table name="notification" phpName="Notification">

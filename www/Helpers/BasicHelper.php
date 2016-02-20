@@ -181,3 +181,25 @@ function redirectBack(){
 		header('Location: '.$_SERVER['HTTP_REFERER']);
 		die();
 }
+
+function t($path, $params = array()){
+	$path = str_replace('.', '_', $path);
+	if($path[0] == '_'){
+		$back = debug_backtrace();
+		if(isset($back[1]['class'])){
+			//from model or controller
+			$path = str_replace('\\', '_', strtolower($back[1]['class'])) . $path;
+			$path = str_replace('_base', '', $path);
+		}
+		if(isset($back[2]['function']) && $back[2]['function'] == 'includeFile'){
+			//from view
+			$data = explode('/', $back[2]['args'][0]);
+			$path = 'view_' . $data[1] . '_' . substr($data[2], 0, strpos($data[2], '.')) . $path;
+		}
+	}
+	$s = L::__callStatic($path, null);
+	for ($i=0; $i < count($params); $i++) {
+		$s = str_replace('#'.$i, $params[$i], $s);
+	}
+	return $s;
+}

@@ -19,6 +19,7 @@ include("generated-conf/config.php");
 //Load helper classes.
 require_once("Helpers/BasicHelper.php");
 require_once("Helpers/ComponentsHelper.php");
+require_once("Helpers/TranslatorHelper.php");
 
 //Load by namespace in thi project
 spl_autoload_register(function ($class) {
@@ -36,6 +37,11 @@ ConfigHelper::loadFile('Config/default.php');
 //Create new logger
 LogHelper::init();
 
+$i18n = new i18n();
+$i18n->setForcedLang('cs');
+$i18n->setFilePath('Languages/{LANGUAGE}.yml');
+$i18n->setCachePath('./cache');
+$i18n->init();
 
 //Add logger to Propel
 Propel::getServiceContainer()->setLogger('defaultLogger', LogHelper::getLogger());
