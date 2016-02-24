@@ -1,38 +1,43 @@
 models:
-	user:
-		validation:
-			nick:
-				uniq: 'Nick muí být unikátní'
-				not_blank: 'Nick nesmí být prázdný'
-			email:
-				uniq: 'Email musí být unikátní'
-				not_blank: 'Email nesmí být prázdný'
-				format: 'Email není ve správném formátu'
-			password:
-				min_length: 'Heslo musí být dlouhé alespoň 8 znaků'
-	note:
-		validation:
-			title:
-				not_blank: 'Titulek nesmí být prázdný'
-				max_length: 'Titulek nesmí přesáhnout 25 znaků'
-			description:
-				max_length: 'Popisek nesmí přesáhnout 300 znaků'
-	sub_note:
-		validation:
-			text:
-				max_length: 'Text nesmí přesáhnout 100 znaků'
-	category:
-		validation:
-			name:
-				not_blank: 'Název nesmí být prázdný'
-				max_length: 'Název nesmí přesáhnout 20 znaků'
+  user:
+    validation:
+      nick:
+        uniq: 'Nick muí být unikátní'
+        not_blank: 'Nick nesmí být prázdný'
+      email:
+        uniq: 'Email musí být unikátní'
+        not_blank: 'Email nesmí být prázdný'
+        format: 'Email není ve správném formátu'
+      password:
+        min_length: 'Heslo musí být dlouhé alespoň 8 znaků'
+  note:
+    validation:
+      title:
+        not_blank: 'Titulek nesmí být prázdný'
+        max_length: 'Titulek nesmí přesáhnout 25 znaků'
+      description:
+        max_length: 'Popisek nesmí přesáhnout 300 znaků'
+  sub_note:
+    validation:
+      text:
+      max_length: 'Text nesmí přesáhnout 100 znaků'
+  category:
+    validation:
+      name:
+        not_blank: 'Název nesmí být prázdný'
+        max_length: 'Název nesmí přesáhnout 20 znaků'
+  comment:
+    validation:
+      text:
+        not_blank: 'Text nesmí být prázdný'
+        max_length: 'Text nesmí přesáhnout 150 znaků'
 controllers:
-	usercontroller:
-		user_not_match: 'Nenalezen uživatel se zadaným jménem nebo heslem'
-		password_not_match: 'Hesla se neschodují'
+  usercontroller:
+    user_not_match: 'Nenalezen uživatel se zadaným jménem nebo heslem'
+    password_not_match: 'Hesla se neschodují'
 
 view:
-	HomePage:
-		index:
-			what_is_h: 'Co je to Tasker'
-			what_is_p: 'Tasker je sluzbou, ktera spravuje vase poznamky a umoznuje je mit na jednom miste a vzdy k dispozici.'
+  HomePage:
+    index:
+      what_is_h: 'Co je to Tasker'
+      what_is_p: 'Tasker je sluzbou, ktera spravuje vase poznamky a umoznuje je mit na jednom miste a vzdy k dispozici.'

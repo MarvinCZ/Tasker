@@ -700,3 +700,9 @@ table.categories{
 .error-box{
 	color: #A94442;
 }
+
+.has-error{
+	.btn{
+		border-color: #a94442;
+	}
+}

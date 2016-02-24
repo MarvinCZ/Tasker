@@ -3,6 +3,7 @@
 namespace Models;
 
 use Models\Base\Comment as BaseComment;
+use Propel\Runtime\Connection\ConnectionInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'comment' table.
@@ -16,5 +17,8 @@ use Models\Base\Comment as BaseComment;
  */
 class Comment extends BaseComment
 {
-
+	public function preSave(ConnectionInterface $con = null)
+	{
+		return $this->validate();
+	}
 }

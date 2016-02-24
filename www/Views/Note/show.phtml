@@ -58,12 +58,17 @@
 							<p>Jste to nikdo nekomentoval. Budte prvni.</p>
 						<?php endif ?>
 					</div>
-					<div class="input-group">
-						<input type="text" name="comment-message" class="form-control">
-						<span class="input-group-btn">
-							<button class="btn btn-primary sent-message" type="button" data-note="<?= $note->getId() ?>">Odeslat</button>
-						</span>
-					</div>
+					<form action="/notes/<?= $note->getId() ?>/comment" class="remote" method="post">
+						<div class="form-group">
+							<div class="input-group">
+								<input type="text" name="message" class="form-control">
+								<span class="input-group-btn">
+									<input type="submit" class="btn btn-primary" type="button" value="Odeslat"/>
+								</span>
+							</div>
+							<div class="error-text error-box"></div>
+						</div>
+					</form>
 				</div>
 			</div>
 			<div class="col-md-4">

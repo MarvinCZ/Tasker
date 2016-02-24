@@ -220,10 +220,13 @@ class NoteController extends ApplicationController{
 		$comment = new Comment();
 		$comment->setUser($this->params['user']);
 		$comment->setNote($note);
-		$comment->setText($_POST['msg']);
-		$comment->save();
-		$this->params['comments'] = $note->getComments();
-		$this->renderType('js.phtml');
+		$comment->setText($_POST['message']);
+		if($comment->save()){
+			$this->renderString(json_encode(['redirect'=>'/notes/'.$id]));
+		}
+		else{
+			$this->renderString(json_encode($comment->getValidationFailuresI18n()));
+		}
 	}
 
 	protected function getAllowedKeysForCreate(){
