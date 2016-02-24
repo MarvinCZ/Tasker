@@ -26,9 +26,7 @@ public function getValidationFailuresI18n()
 		array_push($array, $fail);
 	}
 	$a = array_map(function($fail){
-		$p = ".validation." . $fail->getMessage();
-		return array('path' => $fail->getPropertyPath(),'message' => t($p));
+		return array('path' => $fail->getPropertyPath(),'message' => t($fail->getMessage()));
 	},$array);
 	return $a;
-    return $this->validationFailures;
 }

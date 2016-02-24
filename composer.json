@@ -9,7 +9,8 @@
     },
     "autoload": {
         "classmap": [
-            "www/Propel/Behavior/ValidateI18n"
+            "www/Propel/Behavior/ValidateI18n",
+            "www/Propel/Runtime/Validator/Constraints/Uniqueness.php"
         ]
     }
 }

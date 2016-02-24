@@ -19,9 +19,9 @@
 
         <behavior name="timestampable" />
         <behavior name="ValidateI18n">
-            <parameter name="nick_uniq" value="{column: nick, validator: Unique, options: {message: nick_uniq}}" />
+            <parameter name="nick_uniq" value="{column: nick, validator: Uniqueness, options: {message: nick_uniq}}" />
             <parameter name="nick_not_blank" value="{column: nick, validator: NotBlank, options: {message: nick_not_blank}}" />
-            <parameter name="email_uniq" value="{column: email, validator: Unique, options: {message: email_uniq}}" />
+            <parameter name="email_uniq" value="{column: email, validator: Uniqueness, options: {message: email_uniq}}" />
             <parameter name="email_not_blank" value="{column: email, validator: NotBlank, options: {message: email_not_blank}}" />
             <parameter name="email_format" value="{column: email, validator: Email, options: {message: email_format}}" />
         </behavior>
@@ -53,8 +53,8 @@
         <behavior name="timestampable"/>
         <behavior name="ValidateI18n">
             <parameter name="title_not_blank" value="{column: title, validator: NotBlank, options: {message: title_not_blank}}" />
-            <parameter name="title_max_length" value="{column: title, validator: Length, options: {message: title_max_length, max: 25}}" />
-            <parameter name="description_max_length" value="{column: description, validator: Length, options: {message: description_max_length, max: 300}}" />
+            <parameter name="title_max_length" value="{column: title, validator: Length, options: {maxMessage: title_max_length, max: 25}}" />
+            <parameter name="description_max_length" value="{column: description, validator: Length, options: {maxMessage: description_max_length, max: 300}}" />
         </behavior>
 
         <index>
@@ -82,7 +82,7 @@
 
         <behavior name="timestampable" />
         <behavior name="ValidateI18n">
-            <parameter name="text_max_length" value="{column: text, validator: Length, options: {message: text_max_length, max: 100}}" />
+            <parameter name="text_max_length" value="{column: text, validator: Length, options: {maxMessage: text_max_length, max: 100}}" />
         </behavior>
     </table>
 
@@ -111,7 +111,7 @@
         <behavior name="timestampable" />
         <behavior name="ValidateI18n">
             <parameter name="name_not_blank" value="{column: name, validator: NotBlank, options: {message: category_not_blank}}" />
-            <parameter name="name_max_length" value="{column: name, validator: Length, options: {message: category_max_length, max: 20}}" />
+            <parameter name="name_max_length" value="{column: name, validator: Length, options: {maxMessage: category_max_length, max: 20}}" />
         </behavior>
     </table>
 
@@ -152,6 +152,10 @@
         </foreign-key>
 
         <behavior name="timestampable" />
+        <behavior name="ValidateI18n">
+            <parameter name="text_not_blank" value="{column: text, validator: NotBlank, options: {message: text_not_blank}}" />
+            <parameter name="text_max_length" value="{column: text, validator: Length, options: {maxMessage: text_max_length, max: 150}}" />
+        </behavior>
     </table>
 
     <table name="identity" phpName="Identity">
