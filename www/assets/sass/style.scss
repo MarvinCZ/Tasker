@@ -602,17 +602,10 @@ $category_colors: ('red', #F84758),
 	right: 0;
 	width: 40px;
 }
-.cat-stripe-red{
-	background-color: #FF7373;
-}
-.cat-stripe-blue{
-	background-color: #4957C0;
-}
-.cat-stripe-green{
-	background-color: #77D593;
-}
-.cat-stripe-yellow{
-	background-color: #FFE773;
+@each $name, $color in $category_colors {
+	.cat-stripe-#{$name} {
+		background: $color;
+	}
 }
 .comments{
 	overflow: auto;

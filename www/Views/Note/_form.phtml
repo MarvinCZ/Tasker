@@ -16,7 +16,7 @@
   <div class="form-group inner-box">
     <label for="description"><?= t('models.note.description') ?>:</label>
     <input type="text" class="form-control" id="description" name="note[description]"  value="<?= $note->getDescription() ?>">
-    <div class="error-title error-box"></div>
+    <div class="error-description error-box"></div>
   </div>
   <div class="inner-box">
     <?= select(t('models.note.state'),"note[state]", false, stateOptions($note->getState()), true) ?>
