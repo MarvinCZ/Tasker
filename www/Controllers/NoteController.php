@@ -22,7 +22,7 @@ class NoteController extends ApplicationController{
 		parent::__construct();
 	}
 
-	protected function show_all(){
+	protected function show_category($category){
 		$this->params['deadline_to'] = null;
 		$this->params['fulltext'] = "";
 		$this->params['importance'] = "0";
@@ -46,7 +46,18 @@ class NoteController extends ApplicationController{
 			$note_query = $note_query->filterByDeadline(array('max' => $_GET['deadline_to']));
 			$this->params['deadline_to'] = $_GET['deadline_to'];
 		}
-		if(isset($_GET['category']) && is_array($_GET['category'])){
+		$this->params['category_only'] = false;
+		if($category != null){
+			$this->params['category'] = CategoryQuery::create()->findPK($category);
+			$note_query = $note_query->
+				filterByCategoryId($category);
+			$this->params['category_only'] = true;
+			$this->params['shared_to'] = $this->params['category']->getSharedTo();
+			$rights = getUserRightsCategory($this->params['user'], $this->params['category']);
+			$this->params['rights_select'] = options_names_for_select(shareOptionsForSelect($rights));
+			$this->params['rights'] = $rights;
+		}
+		else if(isset($_GET['category']) && is_array($_GET['category'])){
 			$note_query = $note_query->
 			  	useCategoryQuery()->
     				filterByName($_GET['category'])->
@@ -96,13 +107,14 @@ class NoteController extends ApplicationController{
 		$this->params['notifications'] = NotificationQuery::create()->
 			filterByUser($this->params['user'])->
 			find();
-
-		$categories = CategoryQuery::create()->
-			select('name')->
-			filterByUser($this->params['user'])->
-			find();
-		$selected  = isset($_GET['category']) ? $_GET['category'] : null;
-		$this->params['categories'] = options_for_select($categories, $selected);
+		if(!$this->params['category_only']){
+			$categories = CategoryQuery::create()->
+				select('name')->
+				filterByUser($this->params['user'])->
+				find();
+			$selected  = isset($_GET['category']) ? $_GET['category'] : null;
+			$this->params['categories'] = options_for_select($categories, $selected);
+		}
 		$selected  = isset($_GET['state']) ? $_GET['state'] : null;
 		$this->params['states'] = options_names_for_select(array('opened' => 'otevřený', 'done'=>'hotový', 'wip'=>'rozpracovaný', 'closed'=>'uzavřený'), $selected);
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
@@ -111,6 +123,13 @@ class NoteController extends ApplicationController{
 		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
 			$this->renderType('js.phtml');
 		}
+		else{
+			$this->renderFileToTemplate('Note/show_all.phtml');
+		}
+	}
+
+	protected function show_all(){
+		$this->show_category(null);
 	}
 
 	protected function show($id){

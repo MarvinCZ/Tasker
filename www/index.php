@@ -89,14 +89,14 @@ else{
 	if ($failure->failedMethod()) {
 		header("HTTP/1.0 405 Method Not Allowed");
 		echo("405 Method Not Allowed");
-		$log->addInfo('405 FOUND');
+		LogHelper::logMessage('405 FOUND');
 	} elseif ($failure->failedAccept()) {
 		header("HTTP/1.0 406 Not Acceptable");
 		echo("406 Not Acceptable");
-		$log->addInfo('406 FOUND');
+		LogHelper::logMessage('406 FOUND');
 	} else {
 		header("HTTP/1.0 404 Not Found");
 		echo("404 Not found");
-		$log->addInfo('404 FOUND');
+		LogHelper::logMessage('404 FOUND');
 	}
 }

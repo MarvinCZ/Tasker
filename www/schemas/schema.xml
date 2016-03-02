@@ -244,6 +244,19 @@
         </foreign-key>
     </table>
 
+    <table name="user_category" skipSql="true" readonly="true">
+        <column name="user_id" type="integer" primaryKey="true"/>
+        <column name="category_id" type="integer" primaryKey="true"/>
+        <column name="rights" type="integer" />
+
+        <foreign-key foreignTable="user">
+            <reference local="user_id" foreign="id" refPhpName="UserWithAcces"/>
+        </foreign-key>
+        <foreign-key foreignTable="category">
+            <reference local="category_id" foreign="id" refPhpName="AwailableCategories"/>
+        </foreign-key>
+    </table>
+
     <table name="link_action" phpName="LinkAction">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="name" type="varchar" size="50"/>

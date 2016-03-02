@@ -19,19 +19,23 @@
 </div>
 <div class="page page-middle">
 	<header class="header hidden-xs">
-		<a href="/notes"><h1>Ůkoly</h1></a>
+		<a href="/notes"><h1>Ůkoly<?= $category_only ? ' - '.$category->getName() : ''?></h1></a>
 		<div class="header-right">
 			<a href="/notes/add">
 				<div class="header-btn-large pull-left"><i class="fa fa-plus"></i></div>
 			</a>
 			<div class="header-btn-large show-filter pull-left"><i class="fa fa-search"></i></div>
+			<?php if($category_only): ?>
+				<div class="header-btn-large show-sharing pull-left"><i class="fa fa-share-alt"></i></div>
+			<?php endif ?>
 			<span class="user-name"><?= $user->getNick() ?></span>
 			<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
 		</div>
 	</header>
 	<div class="header row text-center visible-xs">
 		<div class="header-btn page-show-left pull-left"><i class="fa fa-bars"></i></div>
-		Ůkoly
+		Ůkoly<?= $category_only ? ' - '.$category->getName() : ''?>
+		<div class="header-btn page-show-right-2 pull-right"><i class="fa fa-share-alt"></i></div>
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-search"></i></div>
 	</div>
 	<div class="container container-lg-large">
@@ -60,6 +64,7 @@
 		<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
 		<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
 		Filtr
+		<div class="header-btn page-show-right-2 pull-right visible-xs"><i class="fa fa-share-alt"></i></div>
 	</div>
 	<div class="container btn-down">
 		<form class="search-form">
@@ -82,9 +87,11 @@
 					</div>
 				</div>
 			</div>
-			<div class="inner-box">
-				<?= select("Kategorie","category", true, $categories, false) ?>
-			</div>
+			<?php if(!$category_only): ?>
+				<div class="inner-box">
+					<?= select("Kategorie","category", true, $categories, false) ?>
+				</div>
+			<?php endif ?>
 			<div class="filter_submit container-width">
 				<input type="submit" value="Search" class="big-btn"/>
 			</div>
@@ -100,4 +107,46 @@
 		</form>
 	</div>
 </div>
+<?php if($category_only): ?>
+	<div class="page page-right-2">
+		<div class="header row text-center">
+			<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
+			<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
+			Share
+		</div>
+		<div class="container">
+			<div class="inner-box">
+				<h3>Existující sdílení:</h3>
+				<?php foreach ($shared_to as $shared): ?>
+					<?php if($shared['what_type'] == "category"): ?>
+						<?= sharedToForm($shared, $rights) ?>
+					<?php endif ?>
+				<?php endforeach ?>
+			</div>
+			<div class="inner-box">
+				<h3>Přidat uživatele - skupinu</h3>
+				<form action="share/add/category/<?= $category->getId() ?>" method="POST">
+					<div class="form-group">
+						<input name="name" class="form-control complete-user" placeholder="Jméno uživatele nebo skupiny">
+					</div>
+					<?= select("Práva","share_rights", false, $rights_select, true) ?>
+					<input type="submit" class="btn btn-primary btn-full" value="Přidat">
+				</form>
+				<div class="clearfix"></div>
+			</div>
+			<div class="inner-box">
+				<h3>Nová skupina</h3>
+				<form action="/share/new_group" method="POST" class="new-group">
+					<input type="hidden" value="<?= $category->getId() ?>" name="category_id">
+					<input type="text" class="form-control" name="name" placeholder="Jméno skupiny">
+					<?= select("Práva","share_rights", false, $rights_select, true) ?>
+					<div class="row">
+						<div class="col-xs-6"><div class="btn btn-success btn-full" data-newuser="1">Přidat uzivatele</div></div>
+						<div class="col-xs-6"><input type="submit" class="btn btn-primary btn-full" value="Uložit"/></div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+<?php endif ?>
 <div class="over"></div>

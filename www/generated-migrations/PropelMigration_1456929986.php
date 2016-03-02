@@ -5,7 +5,7 @@
  * up to version 1450885939.
  * Generated on 2015-12-23 16:52:19 by marvin
  */
-class PropelMigration_1450885939
+class PropelMigration_1456929986
 {
     public $comment = '';
 
@@ -43,9 +43,9 @@ class PropelMigration_1450885939
 # It "suspends judgement" for fkey relationships until are tables are set.
 SET FOREIGN_KEY_CHECKS = 0;
 
-CREATE VIEW user_note AS
-SELECT note.id as note_id, user.id as user_id,
-  CASE WHEN note.user_id = user.id
+CREATE VIEW user_category AS
+SELECT category.id as category_id, user.id as user_id,
+  CASE WHEN category.user_id = user.id
                THEN 3
                ELSE MAX(shared.rights)
        END as rights
@@ -56,23 +56,13 @@ LEFT JOIN shared ON
   ((shared.to_id=user.id) AND (shared.to_type="user"))
   OR
   ((shared.to_id=group_of_users.id) AND (shared.to_type="group"))
-LEFT JOIN category ON
-  (shared.what_id=category.id)
+INNER JOIN category ON
+  ((shared.what_id=category.id)
   AND
-  (shared.what_type="category")
-LEFT JOIN note ON 
-  (note.category_id=category.id)
+  (shared.what_type="category"))
   OR
-  ((shared.what_id=note.id) AND (shared.what_type="note"))
-  OR
-  (note.user_id=user.id)
-GROUP BY note_id, user_id;
-
-CREATE FULLTEXT INDEX `note_i_639136` ON `note` (`title`);
-
-CREATE FULLTEXT INDEX `note_i_fdba4e` ON `note` (`description`);
-
-CREATE FULLTEXT INDEX `note_i_fdba4e` ON `note` (`title, description`);
+  (category.user_id = user.id)
+GROUP BY category_id, user_id;
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
@@ -94,7 +84,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 # It "suspends judgement" for fkey relationships until are tables are set.
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP VIEW user_note;
+DROP VIEW user_category;
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

@@ -17,4 +17,15 @@ use Models\Base\CategoryQuery as BaseCategoryQuery;
 class CategoryQuery extends BaseCategoryQuery
 {
 
+	/**
+	 * Select only that notes, which can user access with givel level of access
+	 * @param  Models\User user
+	 * @param  integer level of access (0 - read, 1 - 0 + write, 2 - 1 + manage, 3 - owner)
+	 * @return Models\NoteQuery this query
+	 */
+	public function filterCategoriesForUser($user, $rights = 0){
+		if($rights > 0)
+			return $this->useUserCategoryQuery()->filterByUser($user)->filterByRights(array('min' => $rights))->endUse();
+		return $this->useUserCategoryQuery()->filterByUser($user)->endUse();
+	}
 }

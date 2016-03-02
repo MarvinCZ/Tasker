@@ -2,21 +2,30 @@ var time = 300;
 var left_done = function(){
 	$('.page-right').css("display", "none");
 	$('.page-middle').css("display", "none");
+	$('.page-right-2').css("display", "none");
 }
 var middle_done = function(){
 	$('.page-left').css("display", "none");
 	$('.page-right').css("display", "none");
+	$('.page-right-2').css("display", "none");
 }
 var right_done = function(){
 	$('.page-left').css("display", "none");
 	$('.page-middle').css("display", "none");
+	$('.page-right-2').css("display", "none");
 	$('.page-right .filter_submit').slideDown(100);
+}
+var right_2_done = function(){
+	$('.page-left').css("display", "none");
+	$('.page-middle').css("display", "none");
+	$('.page-right').css("display", "none");
 }
 var show_left = function(){
 	$('.page-right .filter_submit').hide();
 	$('.page-left').css("display", "block");
 	$('.page-right').css("display", "block");
-	$('.page-middle').css("display", "block");
+	$('.page-middle').css("display", "block");	
+	$('.page-right-2').css("display", "block");
 	$('.page-left').animate({
     	left: "0"
   	}, time);
@@ -24,7 +33,10 @@ var show_left = function(){
     	left: "100%"
   	}, time);
 	$('.page-right').animate({
-    	left: "200%"
+    	left: "100%"
+  	}, time);
+	$('.page-right-2').animate({
+    	left: "100%"
   	}, time, left_done);
 	$('.page-left .header').animate({
     	left: "0"
@@ -33,7 +45,10 @@ var show_left = function(){
     	left: "100%"
   	}, time);
 	$('.page-right .header').animate({
-    	left: "200%"
+    	left: "100%"
+  	}, time);
+	$('.page-right-2 .header').animate({
+    	left: "100%"
   	}, time);
 }
 var show_middle = function(){
@@ -41,6 +56,7 @@ var show_middle = function(){
 	$('.page-left').css("display", "block");
 	$('.page-right').css("display", "block");
 	$('.page-middle').css("display", "block");
+	$('.page-right-2').css("display", "block");
 	$('.page-left').animate({
     	left: "-100%"
   	}, time);
@@ -48,6 +64,9 @@ var show_middle = function(){
     	left: "0"
   	}, time);
 	$('.page-right').animate({
+    	left: "100%"
+  	}, time);
+	$('.page-right-2').animate({
     	left: "100%"
   	}, time, middle_done);
 	$('.page-left .header').animate({
@@ -59,28 +78,69 @@ var show_middle = function(){
 	$('.page-right .header').animate({
     	left: "100%"
   	}, time);
+	$('.page-right-2 .header').animate({
+    	left: "100%"
+  	}, time);
 }
 var show_right = function(){
 	$('.page-right .filter_submit').hide();
 	$('.page-left').css("display", "block");
 	$('.page-right').css("display", "block");
 	$('.page-middle').css("display", "block");
+	$('.page-right-2').css("display", "block");
 	$('.page-left').animate({
-    	left: "-200%"
+    	left: "-100%"
   	}, time);
 	$('.page-middle').animate({
     	left: "-100%"
   	}, time);
 	$('.page-right').animate({
     	left: "0"
+  	}, time);
+	$('.page-right-2').animate({
+    	left: "100%"
   	}, time, right_done);
 	$('.page-left .header').animate({
-    	left: "-200%"
+    	left: "-100%"
   	}, time);
 	$('.page-middle .header').animate({
     	left: "-100%"
   	}, time);
 	$('.page-right .header').animate({
+    	left: "0"
+  	}, time);
+	$('.page-right-2 .header').animate({
+    	left: "100%"
+  	}, time);
+}
+var show_right_2 = function(){
+	$('.page-right .filter_submit').hide();
+	$('.page-left').css("display", "block");
+	$('.page-right').css("display", "block");
+	$('.page-middle').css("display", "block");
+	$('.page-right-2').css("display", "block");
+	$('.page-left').animate({
+    	left: "-300%"
+  	}, time);
+	$('.page-middle').animate({
+    	left: "-200%"
+  	}, time);
+	$('.page-right').animate({
+    	left: "-100%"
+  	}, time);
+	$('.page-right-2').animate({
+    	left: "0"
+  	}, time, right_2_done);
+	$('.page-left .header').animate({
+    	left: "-300%"
+  	}, time);
+	$('.page-middle .header').animate({
+    	left: "-200%"
+  	}, time);
+	$('.page-right .header').animate({
+    	left: "-100%"
+  	}, time);
+	$('.page-right-2 .header').animate({
     	left: "0"
   	}, time);
 }
@@ -148,6 +208,11 @@ $(document).ready(function(){
 	if($('.page-right').length > 0){
 		var right = new Hammer($('.page-right')[0]);
 		right.on( "swiperight", show_middle );
+		right.on( "swipeleft", show_right_2 );
+	}
+	if($('.page-right-2').length > 0){
+		var right = new Hammer($('.page-right-2')[0]);
+		right.on( "swiperight", show_right );
 	}
 	$('.page-show-middle').click(function(){
 		show_middle();
@@ -158,13 +223,21 @@ $(document).ready(function(){
 	$('.page-show-right').click(function(){
 		show_right();
 	});
+	$('.page-show-right-2').click(function(){
+		show_right_2();
+	});
 	$('.page-hide-right').click(function(){
 		$(this).closest('.page').removeClass('page-right-show');
 		$('.over').hide();
 	});
 	$('.show-filter, .show-share').click(function(e){
-		$('.page-right').addClass('page-right-show');		
+		$('.page-right').addClass('page-right-show');
 		$('.page-right .filter_submit').show();
+		$('.over').show();
+		e.stopPropagation();
+	});
+	$('.show-sharing').click(function(e){
+		$('.page-right-2').addClass('page-right-show');
 		$('.over').show();
 		e.stopPropagation();
 	});
@@ -172,6 +245,9 @@ $(document).ready(function(){
 		if($('.page-right').hasClass('page-right-show')){
 			$('.page-right').removeClass('page-right-show');
 			$('.page-right .filter_submit').hide();
+		}
+		if($('.page-right-2').hasClass('page-right-show')){
+			$('.page-right-2').removeClass('page-right-show');
 		}
 		$('.over').hide();
 		$('.login').hide();

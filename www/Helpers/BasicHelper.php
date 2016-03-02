@@ -178,7 +178,16 @@ function getUserRights($user, $note){
 	$criteria = new Propel\Runtime\ActiveQuery\Criteria();
 	$criteria->add('user_note.user_id', $user->getId(), Propel\Runtime\ActiveQuery\Criteria::EQUAL);
 	$criteria->addDescendingOrderByColumn('user_note.rights');
-	return $note->getUserNotes($criteria)[0]->getRights();
+	$acc = $note->getUserNotes($criteria)->getFirst();
+	return $acc == null ? 0 : $acc ->getRights();	
+}
+
+function getUserRightsCategory($user, $category){
+	$criteria = new Propel\Runtime\ActiveQuery\Criteria();
+	$criteria->add('user_category.user_id', $user->getId(), Propel\Runtime\ActiveQuery\Criteria::EQUAL);
+	$criteria->addDescendingOrderByColumn('user_category.rights');
+	$acc = $category->getUserCategories($criteria)->getFirst();
+	return $acc == null ? 0 : $acc ->getRights();	
 }
 
 function redirectBack(){

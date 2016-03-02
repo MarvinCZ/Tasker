@@ -22,18 +22,7 @@ use Models\SharedQuery;
 class SharedController extends ApplicationController{
 	protected function update($id){
 		$s = SharedQuery::create()->findPK($id);
-		$can_change = false;
-		if($s){
-			if($s->getWhatType() == "note"){
-				$note = NoteQuery::create()->
-					filterById($s->getWhatId())->
-					filterNotesForUser($this->params['user'], 2);
-				if($note){
-					$can_change = true;
-				}
-			}
-		}
-		if($can_change){
+		if($this->can_change($s)){
 			$s->setRights($_POST['share_rights']);
 			$s->save();
 		}
@@ -81,20 +70,77 @@ class SharedController extends ApplicationController{
 		}
 		redirectTo('/notes/'.$id);	
 	}
+	
+	protected function add_to_category($id){
+		$category = CategoryQuery::create()->findPK($id);
+		$user = UserQuery::create()->
+			filterByNick($_POST['name'])->
+			findOne();
+		if($category){
+			$rights = getUserRightsCategory($this->params['user'], $category);
+			if($rights >= 2){
+				$share = new Shared();
+				$share->setRights($_POST['share_rights']);
+				$share->setCategory($category);
+				$ok = false;
+				if($user){
+					$share->setUser($user);
+					$ok = true;
+				}
+				else{
+					$group = GroupQuery::create()->
+						filterByName($_POST['name'])->
+						findOne();
+					if($group){
+						$share->setGroup($group);
+						$ok = true;
+					}
+				}
+				if($ok){
+					$share->save();
+				}
+				else{
+					//neexistuje
+				}
+			}
+			else{
+					//nema prava
+			}
+		}
+		else{
+			//note neexistuje
+		}
+		redirectTo('/category/'.$id);	
+	}
 
-	protected function new_group_to_note(){
-		$note = NoteQuery::create()->findPK($_POST['note_id']);
-		if($note){
+	protected function new_group(){
+		$note = true;
+		if(isset($_POST['note_id'])){
+			$item = NoteQuery::create()->
+					filterById($_POST['note_id'])->
+					filterNotesForUser($this->params['user'], 2)->
+					findOne();
+		}
+		elseif(isset($_POST['category_id'])){
+			$item = CategoryQuery::create()->
+					filterById($_POST['category_id'])->
+					filterCategoriesForUser($this->params['user'], 2)->
+					findOne();
+			$note = false;
+		}
+		if($item){
 			$share = new Shared();
 			$share->setRights($_POST['share_rights']);
-			$share->setNote($note);
+			$share->setWhat($item);
 			$group = new Group();
 			$group->setName($_POST['name']);
-			foreach ($_POST['user'] as $u) {
-				$user = UserQuery::create()->
-					filterByNick($u)->
-					findOne();
-				$group->addUserWithRights($user, 0);
+			if(isset($_POST['user'])){
+				foreach ($_POST['user'] as $u) {
+					$user = UserQuery::create()->
+						filterByNick($u)->
+						findOne();
+					$group->addUserWithRights($user, 0);
+				}
 			}
 			$group->addUserWithRights($this->params['user'], 3);
 			$share->setGroup($group);
@@ -105,10 +151,7 @@ class SharedController extends ApplicationController{
 	
 	protected function remove($id){
 		$shared = SharedQuery::create()->findPK($id);
-		$note = $shared->getNote();
-		$rights = getUserRights($this->params['user'], $note);
-		var_dump($rights);
-		if($rights >= 2 && $shared->getRights() < $rights){
+		if($this->can_change($shared)){
 			$shared->delete();
 		}
 		redirectBack();
@@ -123,5 +166,25 @@ class SharedController extends ApplicationController{
 			$stmt->execute(array('name' => $_GET['query'].'%', 'user_id' => $this->params['user']->getId()));
 			$pos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 			$this->renderString(json_encode(array('suggestions' =>$pos)));
+	}
+
+	private function can_change($s){
+		if($s->getWhatType() == "note"){
+			$note = NoteQuery::create()->
+				filterById($s->getWhatId())->
+				filterNotesForUser($this->params['user'], 2);
+			if($note){
+				return true;
+			}
+		}
+		if($s->getWhatType() == "category"){
+			$category = CategoryQuery::create()->
+				filterById($s->getWhatId())->
+				filterCategoriesForUser($this->params['user'], 2);
+			if($category){
+				return true;
+			}
+		}
+		return false;
 	}
 }

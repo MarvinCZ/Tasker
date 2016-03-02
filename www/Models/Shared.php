@@ -3,6 +3,8 @@
 namespace Models;
 
 use Models\Base\Shared as BaseShared;
+use Models\Category;
+use Models\Note;
 
 /**
  * Skeleton subclass for representing a row from the 'shared' table.
@@ -16,5 +18,14 @@ use Models\Base\Shared as BaseShared;
  */
 class Shared extends BaseShared
 {
+	public function setWhat($item){
+		if ($item instanceof Note){
+			$this->setNote($item);
+		}
+		elseif ($item instanceof Category) {
+			$this->setCategory($item);
+		}
+
+	}
 
 }

@@ -22,9 +22,10 @@ $router->addPost('Note.comment', '/notes/{id}/comment');
 
 $router->addPost('Shared.update', '/share/update/{id}');
 $router->addPost('Shared.add_to_note', '/share/add/note/{id}');
+$router->addPost('Shared.add_to_category', '/share/add/category/{id}');
 $router->addGet('Shared.remove', '/share/remove/{id}');
 $router->addGet('Shared.possible', '/share/possible');
-$router->addPost('Shared.new_group_to_note', '/share/new_group');
+$router->addPost('Shared.new_group', '/share/new_group');
 
 $router->addPost('Group.add', '/group/add');
 
@@ -33,3 +34,4 @@ $router->addGet('Settings.category', '/settings/category');
 
 $router->addPost('Category.add', '/category/add');
 $router->addGet('Category.remove', '/category/{id}/remove');
+$router->addGet('Note.show_category', '/category/{id}');
