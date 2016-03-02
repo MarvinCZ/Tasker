@@ -4,20 +4,7 @@
 		<div class="header-btn page-show-middle pull-right"><i class="fa fa-home"></i></div>
 	</div>
 	<div class="container">
-		<a href="<?= $user->getPath() ?>" class="nounderline">
-			<div class="inner-box">
-				<img src="<?= $user->getAvatarPath() ?>" class="menu-img">
-				<div class="title"><?= $user->getDisplayName() ?></div>
-			</div>
-		</a>
-		<div class="inner-box no-padding">
-			<nav>
-				<ul>
-					<a href="options"><li>OPTIONS</li></a>
-					<a href="logout"><li>LOG OUT</li></a>
-				</ul>
-			</nav>
-		</div>
+		<?php includeFile("Views/_menu_small.phtml", array('user' => $params['user'])) ?>
 		<div class="inner-box no-side-padding">
 			<h3>Notifications</h3>
 			<?php foreach ($notifications as $notification): ?>

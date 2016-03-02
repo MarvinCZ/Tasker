@@ -1,10 +1,26 @@
 <table class="table categories">
 	<tr>
-		<th>Barva</th>
-		<th>Jmeno</th>
-		<th>Akce</th>
+		<th><?= t('.color') ?></th>
+		<th><?= t('.name') ?></th>
+		<th><?= t('.action') ?></th>
 	</tr>
 	<?php foreach ($categories as $cat): ?>
 		<?php includeFile('Views/Settings/_category_entry.phtml', array('category'=>$cat)) ?>
 	<?php endforeach ?>
 </table>
+<form action="category/add" class="remote" method="POST">
+	<div class="form-group">
+		<label for="category_name"><?= t('.name') ?></label>
+		<input type="text" class="form-control" name="category_name" id="category_name">
+		<div class="error-name error-box"></div>
+	</div>
+	<div class="form-group color-select">
+		<div class="small-block block-none block-selected" data-color=""></div>
+		<?php foreach ($colors as $color): ?>
+			<div class="small-block block-<?= $color ?>" data-color="<?= $color ?>"></div>
+		<?php endforeach ?>
+		<input type="hidden" name="category_color">
+		<div class="error-color error-box"></div>
+	</div>
+	<input type="submit" class="btn btn-primary" value="<?= t('btn.add') ?>">
+</form>

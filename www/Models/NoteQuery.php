@@ -27,8 +27,8 @@ class NoteQuery extends BaseNoteQuery
 	 */
 	public function filterByText($text){
 		$this->full_text = true;
-		$this->fulltext_text = $text;
-		return $this->where('match(note.title, note.description) against (?)', $text);
+		$this->fulltext_text = $text.'*';
+		return $this->where('match(note.title, note.description) against (? IN BOOLEAN MODE)', $this->fulltext_text);
 	}
 
 	/**
@@ -39,8 +39,8 @@ class NoteQuery extends BaseNoteQuery
 		if(!$this->full_text)
 			return $this;
 		$against = Propel::getServiceContainer()->getReadConnection($this->getDbName())->quote($this->fulltext_text);
-		return $this->withColumn('match (title) against (' . $against . ')', 's1')->
-			withColumn('match(description) against (' . $against . ')', 's2')->
+		return $this->withColumn('match (title) against (' . $against . ' IN BOOLEAN MODE)', 's1')->
+			withColumn('match(description) against (' . $against . ' IN BOOLEAN MODE)', 's2')->
 			addDescendingOrderByColumn("(s1*2)+s2");
 	}
 

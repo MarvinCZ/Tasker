@@ -34,8 +34,7 @@ class UserController extends ApplicationController{
 		}
 		$user = new User();
 		$user->fromArray($params);
-		$user->validate();
-		if(empty($errors) && $user->save()){
+		if($user->save() && empty($errors)){
 			$this->addFlash("success", "registered");
 			$_SESSION['user'] = $user->getId();
 			$this->renderString(json_encode(['redirect'=>'/confirm']));

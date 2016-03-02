@@ -3,6 +3,10 @@
           xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd"
           namespace="Models"
         >
+    <vendor type="mysql">
+        <parameter name="Charset" value="utf8"/>
+        <parameter name="Collate" value="utf8_unicode_ci"/>
+    </vendor>
 
     <table name="user" phpName="User">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
@@ -28,9 +32,6 @@
     </table>
 
     <table name="note" phpName="Note">
-        <vendor type="mysql">
-            <parameter name="Index_type" value="FULLTEXT"/>
-        </vendor>
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="user_id" type="integer" required="true"/>
         <column name="importance" type="integer" defaultValue="0"/>
@@ -110,9 +111,19 @@
 
         <behavior name="timestampable" />
         <behavior name="ValidateI18n">
-            <parameter name="name_not_blank" value="{column: name, validator: NotBlank, options: {message: category_not_blank}}" />
-            <parameter name="name_max_length" value="{column: name, validator: Length, options: {maxMessage: category_max_length, max: 20}}" />
+            <parameter name="name_not_blank" value="{column: name, validator: NotBlank, options: {message: name_not_blank}}" />
+            <parameter name="name_max_length" value="{column: name, validator: Length, options: {maxMessage: name_max_length, max: 20}}" />
         </behavior>
+        <unique name="category-index">
+            <unique-column name="user_id" />
+            <unique-column name="name" />
+        </unique>
+        <index>
+            <index-column name="id"/>
+        </index>
+        <index>
+            <index-column name="user_id"/>
+        </index>
     </table>
 
     <table name="notification" phpName="Notification">

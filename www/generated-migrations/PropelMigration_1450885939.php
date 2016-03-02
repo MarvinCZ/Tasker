@@ -43,8 +43,6 @@ class PropelMigration_1450885939
 # It "suspends judgement" for fkey relationships until are tables are set.
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP VIEW user_note;
-
 CREATE VIEW user_note AS
 SELECT note.id as note_id, user.id as user_id,
   CASE WHEN note.user_id = user.id
@@ -69,6 +67,12 @@ LEFT JOIN note ON
   OR
   (note.user_id=user.id)
 GROUP BY note_id, user_id;
+
+CREATE FULLTEXT INDEX `note_i_639136` ON `note` (`title`);
+
+CREATE FULLTEXT INDEX `note_i_fdba4e` ON `note` (`description`);
+
+CREATE FULLTEXT INDEX `note_i_fdba4e` ON `note` (`title, description`);
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

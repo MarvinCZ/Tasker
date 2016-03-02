@@ -76,7 +76,11 @@ function arrayKeysSnakeToCamel($array){
 }
 
 function stateOptions($selected){
-	return options_for_select(array('opened', 'done', 'wip', 'closed'), $selected);
+	$arr = [];
+	foreach (['opened', 'done', 'wip', 'closed'] as $value) {
+		$arr[$value] = t('models.note.states.'.$value);
+	}
+	return options_names_for_select($arr, $selected);
 }
 
 function sharedToHTML($to){

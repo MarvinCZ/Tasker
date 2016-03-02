@@ -175,26 +175,34 @@ class NoteController extends ApplicationController{
 			findOne();
 		if($category != null)
 			$note->setCategory($category);
-		$note->save();
-		$this->addFlash("success", "Note added");
-		redirectTo($note->getShowPath());
+		if($note->save()){
+			$this->addFlash("success", "edited");
+			$this->renderString(json_encode(['redirect'=> $note->getShowPath()]));
+		}
+		else{
+			$this->renderString(json_encode($note->getValidationFailuresI18n()));
+		}
 	}
 
 	protected function create(){
 		$params = $this->getAllowedKeysForCreate();
 		$note = new Note();
 		$note->fromArray($params);
-		$category = $_POST['category'];
-		$category = CategoryQuery::create()->
-			filterByUser($this->params['user'])->
-			filterByName($category)->
-			findOne();
-		if($category != null)
-			$note->setCategory($category);
+		$category = isset($_POST['category']) ?
+				CategoryQuery::create()->
+				filterByUser($this->params['user'])->
+				filterByName($_POST['category'])->
+				findOne()
+			: null;
+		$note->setCategory($category);
 		$note->setUser($this->params['user']);
-		$note->save();
-		$this->addFlash("success", "Note added");
-		redirectTo($note->getShowPath());
+		if($note->save()){
+			$this->addFlash("success", "edited");
+			$this->renderString(json_encode(['redirect'=> $note->getShowPath()]));
+		}
+		else{
+			$this->renderString(json_encode($note->getValidationFailuresI18n()));
+		}
 	}
 
 	protected function change_state($id){

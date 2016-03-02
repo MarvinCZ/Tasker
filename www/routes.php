@@ -30,3 +30,5 @@ $router->addPost('Group.add', '/group/add');
 
 $router->addGet('Settings.index', '/settings');
 $router->addGet('Settings.category', '/settings/category');
+
+$router->addPost('Category.add', '/category/add');

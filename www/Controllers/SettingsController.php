@@ -16,5 +16,6 @@ class SettingsController extends ApplicationController{
 
 	protected function category(){
 		$this->params['categories'] = $this->params['user']->getCategories();
+		$this->params['colors'] = ['red', 'blue', 'green', 'yellow'];
 	}
 }

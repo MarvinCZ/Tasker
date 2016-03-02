@@ -1,23 +1,25 @@
-<form method="POST">
+<form method="POST" class="remote">
   <input type="hidden" name="note[id]" value="<?= $note->getId() ?>">
   <div class="form-group inner-box">
-    <label for="title">Titulek:</label>
+    <label for="title"><?= t('models.note.title') ?>:</label>
     <input type="text" class="form-control" id="title" name="note[title]" value="<?= $note->getTitle() ?>">
+    <div class="error-title error-box"></div>
   </div>
   <div class="form-group">
     <div class="inner-box">
-      <?= select("Ketegorie","category", false, $categories, false) ?>
+      <?= select(t('models.note.category'),"category", false, $categories, false) ?>
     </div>
   </div>
   <div class="form-group">
-    <?= datetime_picker('Termín', 'note[deadline]', false, array('value' => $note->getDeadline())) ?>
+    <?= datetime_picker(t('models.note.deadline'), 'note[deadline]', false, array('value' => $note->getDeadline())) ?>
   </div>
   <div class="form-group inner-box">
-    <label for="description">Popis:</label>
+    <label for="description"><?= t('models.note.description') ?>:</label>
     <input type="text" class="form-control" id="description" name="note[description]"  value="<?= $note->getDescription() ?>">
+    <div class="error-title error-box"></div>
   </div>
   <div class="inner-box">
-    <?= select("Stav","note[state]", false, stateOptions($note->getState()), true) ?>
+    <?= select(t('models.note.state'),"note[state]", false, stateOptions($note->getState()), true) ?>
   </div>
-  <input type="submit" value="Uložit" class="btn btn-primary btn-full">
+  <input type="submit" value="<?= t('btn.save') ?>" class="btn btn-primary btn-full">
 </form>

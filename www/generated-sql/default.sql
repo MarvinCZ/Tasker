@@ -25,7 +25,7 @@ CREATE TABLE `user`
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- note
@@ -49,7 +49,9 @@ CREATE TABLE `note`
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
-    FULLTEXT `note_i_87945f` (`title`, `description`),
+    FULLTEXT INDEX `note_i_87945f` (`title`, `description`),
+    FULLTEXT INDEX `note_i_639136` (`title`),
+    FULLTEXT INDEX `note_i_fdba4e` (`description`),
     INDEX `note_fi_29554a` (`user_id`),
     INDEX `note_fi_904832` (`category_id`),
     CONSTRAINT `note_fk_29554a`
@@ -58,7 +60,7 @@ CREATE TABLE `note`
     CONSTRAINT `note_fk_904832`
         FOREIGN KEY (`category_id`)
         REFERENCES `category` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- sub_note
@@ -80,7 +82,7 @@ CREATE TABLE `sub_note`
     CONSTRAINT `sub_note_fk_b85003`
         FOREIGN KEY (`note_id`)
         REFERENCES `note` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- file
@@ -100,7 +102,7 @@ CREATE TABLE `file`
     CONSTRAINT `file_fk_b85003`
         FOREIGN KEY (`note_id`)
         REFERENCES `note` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- category
@@ -112,8 +114,8 @@ CREATE TABLE `category`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
-    `name` VARCHAR(20),
-    `color` VARCHAR(6) NOT NULL,
+    `name` VARCHAR(20) NOT NULL,
+    `color` VARCHAR(6),
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
@@ -121,7 +123,7 @@ CREATE TABLE `category`
     CONSTRAINT `category_fk_29554a`
         FOREIGN KEY (`user_id`)
         REFERENCES `user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- notification
@@ -145,7 +147,7 @@ CREATE TABLE `notification`
     CONSTRAINT `notification_fk_29554a`
         FOREIGN KEY (`user_id`)
         REFERENCES `user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- comment
@@ -170,7 +172,7 @@ CREATE TABLE `comment`
     CONSTRAINT `comment_fk_b85003`
         FOREIGN KEY (`note_id`)
         REFERENCES `note` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- identity
@@ -183,7 +185,7 @@ CREATE TABLE `identity`
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
     `provider` VARCHAR(15) NOT NULL,
-    `uid` INTEGER NOT NULL,
+    `uid` VARCHAR(25) NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
@@ -191,22 +193,22 @@ CREATE TABLE `identity`
     CONSTRAINT `identity_fk_29554a`
         FOREIGN KEY (`user_id`)
         REFERENCES `user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
--- group
+-- group_of_users
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `group`;
+DROP TABLE IF EXISTS `group_of_users`;
 
-CREATE TABLE `group`
+CREATE TABLE `group_of_users`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(50),
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- user_group
@@ -220,14 +222,14 @@ CREATE TABLE `user_group`
     `group_id` INTEGER NOT NULL,
     `rights` INTEGER DEFAULT 0 NOT NULL,
     PRIMARY KEY (`user_id`,`group_id`),
-    INDEX `user_group_fi_0278b4` (`group_id`),
+    INDEX `user_group_fi_3a4cbf` (`group_id`),
     CONSTRAINT `user_group_fk_29554a`
         FOREIGN KEY (`user_id`)
         REFERENCES `user` (`id`),
-    CONSTRAINT `user_group_fk_0278b4`
+    CONSTRAINT `user_group_fk_3a4cbf`
         FOREIGN KEY (`group_id`)
-        REFERENCES `group` (`id`)
-) ENGINE=InnoDB;
+        REFERENCES `group_of_users` (`id`)
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- shared
@@ -248,7 +250,7 @@ CREATE TABLE `shared`
     PRIMARY KEY (`id`),
     INDEX `shared_fi_8413c1` (`what_type`, `what_id`),
     INDEX `shared_fi_8b8af1` (`to_type`, `to_id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
 
 -- ---------------------------------------------------------------------
 -- link_action
@@ -262,7 +264,32 @@ CREATE TABLE `link_action`
     `name` VARCHAR(50),
     `params` VARCHAR(50),
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci';
+
+CREATE VIEW user_note AS
+SELECT note.id as note_id, user.id as user_id,
+  CASE WHEN note.user_id = user.id
+               THEN 3
+               ELSE MAX(shared.rights)
+       END as rights
+  FROM user
+LEFT JOIN user_group ON (user.id=user_group.user_id)
+LEFT JOIN group_of_users ON (group_of_users.id=user_group.group_id)
+LEFT JOIN shared ON
+  ((shared.to_id=user.id) AND (shared.to_type="user"))
+  OR
+  ((shared.to_id=group_of_users.id) AND (shared.to_type="group"))
+LEFT JOIN category ON
+  (shared.what_id=category.id)
+  AND
+  (shared.what_type="category")
+LEFT JOIN note ON 
+  (note.category_id=category.id)
+  OR
+  ((shared.what_id=note.id) AND (shared.what_type="note"))
+  OR
+  (note.user_id=user.id)
+GROUP BY note_id, user_id;
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

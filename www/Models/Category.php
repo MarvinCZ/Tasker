@@ -3,6 +3,7 @@
 namespace Models;
 
 use Models\Base\Category as BaseCategory;
+use Propel\Runtime\Connection\ConnectionInterface;
 use Models\Shared;
 
 /**
@@ -17,6 +18,11 @@ use Models\Shared;
  */
 class Category extends BaseCategory
 {
+	public function preSave(ConnectionInterface $con = null)
+	{
+		return $this->validate();
+	}
+
 	/**
 	 * Return path to category's show page
 	 * @return string path to show

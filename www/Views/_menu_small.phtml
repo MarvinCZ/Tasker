@@ -1,0 +1,14 @@
+<a href="<?= $user->getPath() ?>" class="nounderline">
+	<div class="inner-box">
+		<img src="<?= $user->getAvatarPath() ?>" class="menu-img">
+		<div class="title"><?= $user->getDisplayName() ?></div>
+	</div>
+</a>
+<div class="inner-box no-padding">
+	<nav>
+		<ul>
+			<a href="options"><li>OPTIONS</li></a>
+			<a href="logout"><li>LOG OUT</li></a>
+		</ul>
+	</nav>
+</div>

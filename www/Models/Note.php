@@ -4,6 +4,7 @@ namespace Models;
 
 use Models\Base\Note as BaseNote;
 use Propel\Runtime\Propel;
+use Propel\Runtime\Connection\ConnectionInterface;
 use \DateTime;
 use \PDO;
 /**
@@ -18,6 +19,11 @@ use \PDO;
  */
 class Note extends BaseNote
 {
+	public function preSave(ConnectionInterface $con = null)
+	{
+		return $this->validate();
+	}
+
 	/**
 	 * Formats \DateTime into string
 	 * @return string deadline

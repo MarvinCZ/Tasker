@@ -2,7 +2,7 @@ models:
   user:
     validation:
       nick:
-        uniq: 'Nick muí být unikátní'
+        uniq: 'Nick musí být unikátní'
         not_blank: 'Nick nesmí být prázdný'
       email:
         uniq: 'Email musí být unikátní'
@@ -11,6 +11,16 @@ models:
       password:
         min_length: 'Heslo musí být dlouhé alespoň 8 znaků'
   note:
+    category: 'Kategorie'
+    deadline: 'Termín'
+    title: 'Titulek'
+    description: 'Popisek'
+    state: "Stav"
+    states:
+      opened: 'otevřený'
+      done: 'dokončený'
+      wip: 'rozpracovaný'
+      closed: 'ukončený'
     validation:
       title:
         not_blank: 'Titulek nesmí být prázdný'
@@ -26,6 +36,7 @@ models:
       name:
         not_blank: 'Název nesmí být prázdný'
         max_length: 'Název nesmí přesáhnout 20 znaků'
+        uniq: 'Název musí být unikátní'
   comment:
     validation:
       text:
@@ -35,9 +46,21 @@ controllers:
   usercontroller:
     user_not_match: 'Nenalezen uživatel se zadaným jménem nebo heslem'
     password_not_match: 'Hesla se neschodují'
+  categorycontroller:
+    category:
+      added: 'Kategorie byla přidána'
+      removed: 'Kategorie byla odebrána'
 
 view:
   HomePage:
     index:
       what_is_h: 'Co je to Tasker'
       what_is_p: 'Tasker je sluzbou, ktera spravuje vase poznamky a umoznuje je mit na jednom miste a vzdy k dispozici.'
+  Settings:
+    category:
+      color: 'Barva'
+      name: 'Název'
+      action: 'Akce'
+btn:
+  add: 'Přidat'
+  save: 'Uložit'

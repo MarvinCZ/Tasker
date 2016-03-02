@@ -316,4 +316,11 @@ $(document).ready(function(){
 
 	});
 
+	$('.color-select .small-block').click(function(){
+		var parent = $(this).closest('.color-select');
+		parent.find('.small-block').removeClass('block-selected');
+		$(this).addClass('block-selected');
+		parent.find('input[name="category_color"]').val($(this).data('color'));
+	});
+
 });

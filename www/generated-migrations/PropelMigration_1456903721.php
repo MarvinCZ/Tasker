@@ -2,10 +2,10 @@
 
 /**
  * Data object containing the SQL and PHP code to migrate the database
- * up to version 1451931977.
- * Generated on 2016-01-04 19:26:17 by marvin
+ * up to version 1456903721.
+ * Generated on 2016-03-02 08:28:41 by marvin
  */
-class PropelMigration_1451931977
+class PropelMigration_1456903721
 {
     public $comment = '';
 
@@ -43,9 +43,15 @@ class PropelMigration_1451931977
 # It "suspends judgement" for fkey relationships until are tables are set.
 SET FOREIGN_KEY_CHECKS = 0;
 
-ALTER TABLE `identity`
+ALTER TABLE `category`
 
-  CHANGE `uid` `uid` BIGINT NOT NULL;
+  DROP INDEX `category_fi_29554a`,
+
+  ADD INDEX `category_i_db2f7c` (`id`),
+
+  ADD INDEX `category_i_6ca017` (`user_id`),
+
+  ADD UNIQUE INDEX `category-index` (`user_id`, `name`);
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
@@ -67,9 +73,15 @@ SET FOREIGN_KEY_CHECKS = 1;
 # It "suspends judgement" for fkey relationships until are tables are set.
 SET FOREIGN_KEY_CHECKS = 0;
 
-ALTER TABLE `identity`
+ALTER TABLE `category`
 
-  CHANGE `uid` `uid` INTEGER NOT NULL;
+  DROP INDEX `category_i_db2f7c`,
+
+  DROP INDEX `category_i_6ca017`,
+
+  DROP INDEX `category-index`,
+
+  ADD INDEX `category_fi_29554a` (`user_id`);
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
