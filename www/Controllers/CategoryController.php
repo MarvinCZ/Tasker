@@ -17,6 +17,7 @@ use Models\UserGroup;
 use Models\UserGroupQuery;
 use Models\Group;
 use Models\GroupQuery;
+use Propel\Runtime\Collection\Collection;
 use Propel\Runtime\Exception\PropelException;
 
 class CategoryController extends ApplicationController{
@@ -26,14 +27,32 @@ class CategoryController extends ApplicationController{
 	}
 
 	protected function remove($id){
-		$category = CategoryQuery::create()->findPK($id);
-		$category->remove();
-		$this->addFlash("success", t('.category_removed'));
+		$category = CategoryQuery::create()->
+				filterByUser($this->params['user'])->
+				filterById($id)->
+				findOne();
+		if($category){
+			NoteQuery::create()->filterByCategory($category)->delete();
+			$category->delete();
+			$this->addFlash("success", t('.category_removed'));
+		}
+		else{
+			$this->addFlash("error", t('common.not_found'));
+		}
+		redirectBack();
 	}
 
 	protected function add(){
-		$category = new Category();
-		$category->setUser($this->params['user']);
+		if(empty($_POST['id'])){
+			$category = new Category();
+			$category->setUser($this->params['user']);			
+		}
+		else{
+			$category = CategoryQuery::create()->
+				filterByUser($this->params['user'])->
+				filterById($_POST['id'])->
+				findOne();
+		}
 		$category->setName($_POST['category_name']);
 		$category->setColor($_POST['category_color']);
 		$success = false;

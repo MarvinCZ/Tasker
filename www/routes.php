@@ -32,3 +32,4 @@ $router->addGet('Settings.index', '/settings');
 $router->addGet('Settings.category', '/settings/category');
 
 $router->addPost('Category.add', '/category/add');
+$router->addGet('Category.remove', '/category/{id}/remove');

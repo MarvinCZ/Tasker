@@ -5,8 +5,9 @@
 	<td><?= $category->getName() ?></td>
 	<td>
 		<div class="btn-group">
-			<div class="btn btn-primary"><i class="fa fa-pencil"></i></div>
-			<div class="btn btn-danger"><i class="fa fa-trash"></i></div>
+			<div class="btn btn-primary edit-category" data-id="<?= $category->getId() ?>" data-name="<?= $category->getName() ?>" data-color="<?= $category->getColor() ?>"><i class="fa fa-pencil"></i></div>
+			<a href="category/<?= $category->getId() ?>/share" class="btn btn-primary"><i class="fa fa-share-alt"></i></a>
+			<a href="category/<?= $category->getId() ?>/remove" class="btn btn-danger"><i class="fa fa-trash"></i></a>
 		</div>
 	</td>
 </tr>

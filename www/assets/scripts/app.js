@@ -322,5 +322,29 @@ $(document).ready(function(){
 		$(this).addClass('block-selected');
 		parent.find('input[name="category_color"]').val($(this).data('color'));
 	});
+	$('.edit-category').click(function(){
+		var form = $(this).closest('.categories').siblings('.category-form');
+		form.find('input[name="id"]').val($(this).data('id'));
+		form.find('input[name="category_name"]').val($(this).data('name'));
+		form.find('.small-block').removeClass('block-selected');
+		var color = $(this).data('color');
+		form.find('.block-' + color).addClass('block-selected');
+		form.find('input[name="category_color"]').val(color);
+		form.find('.new-category, .category-edit').show();
+		form.find('.category-new').hide();
+	});
+
+	$('.new-category').click(function(){
+		var form = $(this).closest('form');
+		form.find('input[name="id"]').val('');
+		form.find('input[name="category_name"]').val('');
+		form.find('.small-block').removeClass('block-selected');
+		form.find('.block-none').addClass('block-selected');
+		form.find('input[name="category_color"]').val('');
+		form.find('.new-category, .category-edit').hide();
+		form.find('.category-new').show();
+	});
+
+	$('.new-category, .category-edit').hide();
 
 });

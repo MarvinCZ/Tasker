@@ -8,7 +8,8 @@
 		<?php includeFile('Views/Settings/_category_entry.phtml', array('category'=>$cat)) ?>
 	<?php endforeach ?>
 </table>
-<form action="category/add" class="remote" method="POST">
+<form action="category/add" class="remote category-form" method="POST">
+	<input type="hidden" name="id">
 	<div class="form-group">
 		<label for="category_name"><?= t('.name') ?></label>
 		<input type="text" class="form-control" name="category_name" id="category_name">
@@ -22,5 +23,7 @@
 		<input type="hidden" name="category_color">
 		<div class="error-color error-box"></div>
 	</div>
-	<input type="submit" class="btn btn-primary" value="<?= t('btn.add') ?>">
+	<div class="btn btn-primary new-category"><?= t('.new.category') ?></div>
+	<input type="submit" class="btn btn-primary category-edit" value="<?= t('btn.edit') ?>">
+	<input type="submit" class="btn btn-primary category-new" value="<?= t('btn.add') ?>">
 </form>

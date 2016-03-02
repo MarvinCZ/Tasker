@@ -61,6 +61,10 @@ view:
       color: 'Barva'
       name: 'Název'
       action: 'Akce'
+      new_category: 'Nová kategorie'
 btn:
   add: 'Přidat'
   save: 'Uložit'
+  edit: 'Upravit'
+common:
+  not_found: 'Záznam nebyl nalezen'

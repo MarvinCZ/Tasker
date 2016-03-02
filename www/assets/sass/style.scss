@@ -380,10 +380,19 @@ a{
 		width: 90%;
 	}
 }
-$category_colors: ('red', #FF7373),
+$category_colors: ('red', #F84758),
 		('blue', #4957C0),
 		('green', #77D593),
-		('yellow', #FFE773);
+		('darkgreen', #04A220),
+		('yellow', #FFE773),
+		('violet', #C638AB),
+		('purple', #890389),
+		('pink', #E24182),
+		('lightorange', #FF9149),
+		('darkorange', #FF7A23),
+		('limet', #B8F245),
+		('aqua', #33A9AF),
+		('sand', #FFC249);
 .block{
 	border-radius: 2px;
 	width: 100%;
@@ -715,7 +724,7 @@ table.categories{
 		width: 30px;
 	}
 	td:last-child, th:last-child{
-		width: 90px;
+		width: 130px;
 	}
 	tbody{
 		tr{
@@ -733,4 +742,10 @@ table.categories{
 	.btn{
 		border-color: #a94442;
 	}
+}
+.profile-pic{
+	width: 100%;
+	max-width: 150px;
+	margin-left: auto;
+	margin-right: auto;
 }
