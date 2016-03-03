@@ -1,0 +1,14 @@
+<h2>
+	<?= $group->getName() ?>
+</h2>
+<table class="table users">
+	<tr>
+		<th></th>
+		<th><?= t('.name') ?></th>
+		<th><?= t('.rights') ?></th>
+		<th><?= t('.action') ?></th>
+	</tr>
+<?php foreach ($group->getUserGroupsJoinUser() as $rel): ?>
+	<?php includeFile('Views/Settings/_user_entry.phtml', array('relation'=>$rel, 'rights' => $relation->getRights())) ?>
+<?php endforeach ?>
+</table>

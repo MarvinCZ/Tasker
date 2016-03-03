@@ -29,19 +29,21 @@ class NoteController extends ApplicationController{
 
 		$note_query = NoteQuery::create()->
 			leftJoinWith('Note.Category');
-		$relation = isset($_GET['relation']) ? $_GET['relation'] : 'mine';
-		switch ($relation) {
-			case 'mine':
-				$note_query = $note_query->filterByUser($this->params['user']);
-				break;
-			case 'editable':
-				$note_query = $note_query->filterNotesForUser($this->params['user'], 1);
-				break;
-			default:
-				$note_query = $note_query->filterNotesForUser($this->params['user']);
-				break;
+		if(!isset($category)){
+			$relation = isset($_GET['relation']) ? $_GET['relation'] : 'mine';
+			switch ($relation) {
+				case 'mine':
+					$note_query = $note_query->filterByUser($this->params['user']);
+					break;
+				case 'editable':
+					$note_query = $note_query->filterNotesForUser($this->params['user'], 1);
+					break;
+				default:
+					$note_query = $note_query->filterNotesForUser($this->params['user']);
+					break;
+			}
+			$this->params['relation'] = options_names_for_select(array('mine'=>'moje', 'editable'=>'mohu upravit', 'all'=>'vše'), $relation);
 		}
-
 		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
 			$note_query = $note_query->filterByDeadline(array('max' => $_GET['deadline_to']));
 			$this->params['deadline_to'] = $_GET['deadline_to'];
@@ -97,7 +99,7 @@ class NoteController extends ApplicationController{
 					break;
 			}
 		}
-		$note_query = $note_query->addAscendingOrderByColumn("note.created_at");
+		$note_query = $note_query->addDescendingOrderByColumn("note.created_at");
 		$page = 1;
 		if(isset($_GET['page']) && $_GET['page'] > 0){
 			$page = $_GET['page'];
@@ -119,7 +121,6 @@ class NoteController extends ApplicationController{
 		$this->params['states'] = options_names_for_select(array('opened' => 'otevřený', 'done'=>'hotový', 'wip'=>'rozpracovaný', 'closed'=>'uzavřený'), $selected);
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
 		$this->params['sort_by'] = options_names_for_select(array('created_at'=>'datum vytvoření', 'deadline'=>'termín', 'relevance'=>'souvislost', 'importance'=>'důležitost', 'category'=>'kategorie', 'state'=>'stav'), $selected);
-		$this->params['relation'] = options_names_for_select(array('mine'=>'moje', 'editable'=>'mohu upravit', 'all'=>'vše'), $relation);
 		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
 			$this->renderType('js.phtml');
 		}

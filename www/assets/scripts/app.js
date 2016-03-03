@@ -202,13 +202,19 @@ $(document).ready(function(){
 	}
 	if($('.page-middle').length > 0){
 		var middle = new Hammer($('.page-middle')[0]);
-		middle.on( "swipeleft", show_right );
-		middle.on( "swiperight", show_left );
+		if($('.page-right').length > 0){
+			middle.on( "swipeleft", show_right );
+		}
+		if($('.page-left').length > 0){
+			middle.on( "swiperight", show_left );
+		}
 	}
 	if($('.page-right').length > 0){
 		var right = new Hammer($('.page-right')[0]);
 		right.on( "swiperight", show_middle );
-		right.on( "swipeleft", show_right_2 );
+		if($('.page-right-2').length > 0){
+			right.on( "swipeleft", show_right_2 );
+		}
 	}
 	if($('.page-right-2').length > 0){
 		var right = new Hammer($('.page-right-2')[0]);

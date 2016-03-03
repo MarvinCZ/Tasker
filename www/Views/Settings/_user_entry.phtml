@@ -1,0 +1,20 @@
+<tr>
+	<td>
+		<img src="<?= $relation->getUser()->getAvatarPath() ?>" class="img-circle">
+	</td>
+	<td>
+		<?= $relation->getUser()->getNick() ?>
+	</td>		
+	<td>
+		<?= $relation->getTranslatedRights() ?>
+	</td>
+	<td>
+		<div class="btn-group">
+			<a href="<?= $relation->getUser()->getPath() ?>" class="btn btn-warning"><i class="fa fa-eye"></i></a>
+			<?php if($rights >= 2 && $relation->getRights() != 3): ?>
+				<div class="btn btn-primary edit-user" data-rights="<?= $relation->getRights() ?>" data-id="<?= $relation->getUser()->getId() ?>" data-name="<?= $relation->getUser()->getNick() ?>"><i class="fa fa-pencil"></i></div>
+				<a href="group/<?= $relation->getUser()->getId() ?>/remove" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+			<?php endif ?>
+		</div>
+	</td>
+</tr>

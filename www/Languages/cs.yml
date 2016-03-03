@@ -17,10 +17,10 @@ models:
     description: 'Popisek'
     state: "Stav"
     states:
-      opened: 'otevřený'
-      done: 'dokončený'
-      wip: 'rozpracovaný'
-      closed: 'ukončený'
+      opened: 'otevřené'
+      done: 'dokončené'
+      wip: 'rozpracované'
+      closed: 'ukončené'
     validation:
       title:
         not_blank: 'Titulek nesmí být prázdný'
@@ -62,9 +62,28 @@ view:
       name: 'Název'
       action: 'Akce'
       new_category: 'Nová kategorie'
+    groups:
+      name: 'Název'
+      action: 'Akce'
+      rights: 'Práva'
+    group:
+      name: 'Název'
+      action: 'Akce'
+      rights: 'Práva'
+  Note:
+    show_all:
+      share_not_found: 'Nenalezeno sdílení'
+    show:
+      no_comment: 'Jeste to nikdo nekomentoval. Budte prvni.'
+      comments: 'Komentáře'
 btn:
   add: 'Přidat'
   save: 'Uložit'
   edit: 'Upravit'
 common:
   not_found: 'Záznam nebyl nalezen'
+rights:
+  0: 'Čtení'
+  1: 'Editace'
+  2: 'Správa'
+  3: 'Vlastník'

@@ -31,6 +31,8 @@ $router->addPost('Group.add', '/group/add');
 
 $router->addGet('Settings.index', '/settings');
 $router->addGet('Settings.category', '/settings/category');
+$router->addGet('Settings.groups', '/settings/groups');
+$router->addGet('Settings.group', '/settings/group/{id}');
 
 $router->addPost('Category.add', '/category/add');
 $router->addGet('Category.remove', '/category/{id}/remove');

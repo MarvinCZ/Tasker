@@ -730,6 +730,39 @@ table.categories{
 		}
 	}
 }
+table.groups{
+	td:first-child, th:first-child{
+		width: 100%;
+	}
+	td:nth-child(2){
+		vertical-align: middle;
+		text-align: center;
+	}
+	td{
+		.btn-group{
+			width: 80px;
+		}
+	}
+}
+table.users{
+	td:first-child, th:first-child{
+		img{
+			width: 50px;
+		}
+	}
+	td:nth-child(2){
+		width: 100%;
+	}
+	td:nth-child(3){
+		text-align: center;
+	}
+	&>tbody>tr>td{
+		vertical-align: middle;
+		.btn-group{
+			width: 120px;
+		}
+	}
+}
 .error-box{
 	color: #A94442;
 }

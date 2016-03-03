@@ -35,7 +35,9 @@
 	<div class="header row text-center visible-xs">
 		<div class="header-btn page-show-left pull-left"><i class="fa fa-bars"></i></div>
 		Ůkoly<?= $category_only ? ' - '.$category->getName() : ''?>
-		<div class="header-btn page-show-right-2 pull-right"><i class="fa fa-share-alt"></i></div>
+		<?php if($category_only): ?>
+			<div class="header-btn page-show-right-2 pull-right"><i class="fa fa-share-alt"></i></div>
+		<?php endif ?>
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-search"></i></div>
 	</div>
 	<div class="container container-lg-large">
@@ -64,7 +66,9 @@
 		<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-home"></i></div>
 		<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
 		Filtr
-		<div class="header-btn page-show-right-2 pull-right visible-xs"><i class="fa fa-share-alt"></i></div>
+		<?php if($category_only): ?>
+			<div class="header-btn page-show-right-2 pull-right visible-xs"><i class="fa fa-share-alt"></i></div>
+		<?php endif ?>
 	</div>
 	<div class="container btn-down">
 		<form class="search-form">
@@ -101,9 +105,11 @@
 			<div class="inner-box">
 				<?= select("Seřadit dle","sort_by", false, $sort_by, true) ?>
 			</div>
-			<div class="inner-box">
-				<?= select("Vztah","relation", false, $relation, true) ?>
-			</div>
+			<?php if(!$category_only): ?>
+				<div class="inner-box">
+					<?= select("Vztah","relation", false, $relation, true) ?>
+				</div>
+			<?php endif ?>
 		</form>
 	</div>
 </div>
@@ -117,11 +123,17 @@
 		<div class="container">
 			<div class="inner-box">
 				<h3>Existující sdílení:</h3>
-				<?php foreach ($shared_to as $shared): ?>
-					<?php if($shared['what_type'] == "category"): ?>
-						<?= sharedToForm($shared, $rights) ?>
-					<?php endif ?>
-				<?php endforeach ?>
+				<?php if(empty($shared_to)): ?>
+					<div class="alert-box">
+						<?= t('.share_not_found') ?>
+					</div>
+				<?php else: ?>
+					<?php foreach ($shared_to as $shared): ?>
+						<?php if($shared['what_type'] == "category"): ?>
+							<?= sharedToForm($shared, $rights) ?>
+						<?php endif ?>
+					<?php endforeach ?>
+				<?php endif ?>
 			</div>
 			<div class="inner-box">
 				<h3>Přidat uživatele - skupinu</h3>

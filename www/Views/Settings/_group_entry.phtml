@@ -1,0 +1,14 @@
+<tr>
+	<td>
+		<?= $group->getGroup()->getName() ?>
+	</td>		
+	<td>
+		<?= $group->getTranslatedRights() ?>
+	</td>
+	<td>
+		<div class="btn-group">
+			<a href="<?= $group->getGroup()->getShowPath() ?>" class="btn btn-warning"><i class="fa fa-eye"></i></a>
+			<a href="group/<?= $group->getGroup()->getId() ?>/remove" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+		</div>
+	</td>
+</tr>

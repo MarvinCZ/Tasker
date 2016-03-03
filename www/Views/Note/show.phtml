@@ -49,13 +49,13 @@
 				</div>
 				<?php endif ?>
 				<div class="inner-box" id="comments">
-					<h3>Komentáře</h3>
+					<h3><?= t('.comments') ?></h3>
 					<div class="comments">
 						<?php foreach ($note->getComments() as $c): ?>
 							<?php includeFile("Views/Note/_comment.phtml", array('comment' => $c)) ?>
 						<?php endforeach ?>
 						<?php if($note->getComments()->count() == 0): ?>
-							<p>Jste to nikdo nekomentoval. Budte prvni.</p>
+							<p><?= t('.no_comment') ?></p>
 						<?php endif ?>
 					</div>
 					<form action="/notes/<?= $note->getId() ?>/comment" class="remote" method="post">

@@ -28,4 +28,8 @@ class Group extends BaseGroup
 		$this->addUserGroup($usergroup);
 	}
 
+	public function getShowPath(){
+		return "/settings/group/".$this->getId();
+	}
+
 }

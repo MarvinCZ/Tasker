@@ -1,0 +1,10 @@
+<table class="table groups">
+	<tr>
+		<th><?= t('.name') ?></th>
+		<th><?= t('.rights') ?></th>
+		<th><?= t('.action') ?></th>
+	</tr>
+<?php foreach ($groups as $value): ?>
+	<?php includeFile('Views/Settings/_group_entry.phtml', array('group'=>$value)) ?>
+<?php endforeach ?>
+</table>
