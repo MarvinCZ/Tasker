@@ -79,7 +79,12 @@
 					<span class="input-group-addon clear-input"><i class="fa fa-trash"></i></span>
 				</div>
 			</div>
-			<?= datetime_picker('Termín do', 'deadline_to', false, array('value' => $deadline_to)) ?>
+			<div class="inner-box">
+				<?= datetime_picker('Termín od', 'deadline_from', false, array('value' => $deadline_from)) ?>
+			</div>
+			<div class="inner-box">
+				<?= datetime_picker('Termín do', 'deadline_to', false, array('value' => $deadline_to)) ?>
+			</div>
 			<div class="inner-box">
 				<label for="importance_from">Důležitost od</label>
 				<div class="row">

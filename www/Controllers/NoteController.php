@@ -24,6 +24,7 @@ class NoteController extends ApplicationController{
 
 	protected function show_category($category){
 		$this->params['deadline_to'] = null;
+		$this->params['deadline_from'] = null;
 		$this->params['fulltext'] = "";
 		$this->params['importance'] = "0";
 
@@ -44,9 +45,17 @@ class NoteController extends ApplicationController{
 			}
 			$this->params['relation'] = options_names_for_select(array('mine'=>'moje', 'editable'=>'mohu upravit', 'all'=>'vše'), $relation);
 		}
+		$deadline_params = array();
 		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
-			$note_query = $note_query->filterByDeadline(array('max' => $_GET['deadline_to']));
+			$deadline_params['max'] = $_GET['deadline_to'];
 			$this->params['deadline_to'] = $_GET['deadline_to'];
+		}
+		if(isset($_GET['deadline_from']) && !empty($_GET['deadline_from'])){
+			$deadline_params['min'] = $_GET['deadline_from'];
+			$this->params['deadline_from'] = $_GET['deadline_from'];
+		}
+		if(!empty($deadline_params)){
+			$note_query = $note_query->filterByDeadline($deadline_params);
 		}
 		$this->params['category_only'] = false;
 		if($category != null){

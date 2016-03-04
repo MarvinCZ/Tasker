@@ -53,19 +53,9 @@ function datetime_picker($title, $name, $required, $options = array()){
 		($required ?
 			new DateTime():
 			null);
-	$year = $value == null ? null : $value->format('Y');
-	$month = $value == null ? null : $value->format('m');
-	$day = $value == null ? null : $value->format('d');
-	$hour = $value == null ? null : $value->format('H');
-	$minute = $value == null ? null : $value->format('i');
 	$val = $value == null ? null : $value->format('Y-m-d h:i');
 	$params = array('name' => strtolower($name),
 					'display_name' => $title,
-					'year' => $year,
-					'month' => $month,
-					'day' => $day,
-					'hour' => $hour,
-					'minute' => $minute,
 					'value' => $val,
 					'required' => $required);
 	return renderToString('Views/Components/datetime_picker.phtml',$params);

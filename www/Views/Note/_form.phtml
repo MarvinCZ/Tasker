@@ -11,7 +11,9 @@
     </div>
   </div>
   <div class="form-group">
-    <?= datetime_picker(t('models.note.deadline'), 'note[deadline]', false, array('value' => $note->getDeadline())) ?>
+    <div class="inner-box">
+      <?= datetime_picker(t('models.note.deadline'), 'note[deadline]', false, array('value' => $note->getDeadline())) ?>
+    </div>
   </div>
   <div class="form-group inner-box">
     <label for="description"><?= t('models.note.description') ?>:</label>

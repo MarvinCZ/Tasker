@@ -189,6 +189,7 @@ var move_state = function(){
 }
 
 $(document).ready(function(){
+	moment.locale('cs');
 	countdown_count();
 	countdown();
 	middle_done();
@@ -428,5 +429,55 @@ $(document).ready(function(){
 	});
 
 	$('.new-category, .category-edit').hide();
+
+	$('.datetime-picker').each(function(i, e){
+		var date = $(this).data('date');
+		$(this).datetimepicker({
+			inline: true,
+			sideBySide: true
+		});
+		if(!date || 0 === date.length || date === "null"){
+			date = null;
+		}
+		else{
+			date = moment(date, 'Y-M-D H:m');
+		}
+		$(this).data("DateTimePicker").date(date);
+	});
+
+	$('.datetime-picker').on("dp.change", function(e){
+		var parent = $(this).closest('.datetime_picker');
+		var date = e.date;
+		if (date){
+			date = date.format('Y-M-D H:m');
+		}
+		else{
+			date = null
+		}
+		parent.find('input').val(date);
+	});
+
+	$('.clear_date').click(function(){
+		var parent = $(this).closest('.datetime_picker');
+		parent.find('.datetime-picker').data("DateTimePicker").date(null);
+	});
+
+	$('input[name="deadline_from"]').closest('.datetime_picker').find('.datetime-picker').on("dp.change", function(e){
+		var picker = $('input[name="deadline_to"]').closest('.datetime_picker').find('.datetime-picker').data("DateTimePicker");
+		var prev = picker.date();
+		picker.minDate(e.date);
+		if(prev == null){
+			picker.date(null);
+		}
+	});
+
+	$('input[name="deadline_to"]').closest('.datetime_picker').find('.datetime-picker').on("dp.change", function(e){
+		var picker = $('input[name="deadline_from"]').closest('.datetime_picker').find('.datetime-picker').data("DateTimePicker");
+		var prev = picker.date();
+		picker.maxDate(e.date);
+		if(prev == null){
+			picker.date(null);
+		}
+	});
 
 });
