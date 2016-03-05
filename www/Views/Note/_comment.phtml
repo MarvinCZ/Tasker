@@ -1,7 +1,7 @@
 <div class="comment">
 	<div class="comment-header">
 		<a href="<?= $comment->getUser()->getPath() ?>">
-			<img src="<?= $comment->getUser()->getAvatarPath() ?>" alt="$comment->getUser()->getName()" class="comment-user-img">
+			<img src="<?= $comment->getUser()->getAvatarPath() ?>" alt="<?= $comment->getUser()->getNick() ?>" class="comment-user-img">
 			<?= $comment->getUser()->getNick() ?>
 		</a>
 		<div class="pull-right comment-time">

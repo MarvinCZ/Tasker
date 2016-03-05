@@ -22,6 +22,7 @@ class SettingsController extends ApplicationController{
 
 	protected function groups(){
 		$this->params['groups'] = $this->params["user"]->getUserGroupsJoinGroup();
+		$this->params['rights_select'] = options_names_for_select(shareOptionsForSelect());
 	}
 
 	protected function group($id){
@@ -31,6 +32,7 @@ class SettingsController extends ApplicationController{
 		if($group){
 			$this->params['group'] = $group->getGroup();
 			$this->params['relation'] = $group;
+			$this->params['rights_select'] = options_names_for_select(shareOptionsForSelect($group->getRights()));
 		}
 		else{
 			$this->addFlash('error', t('common.not_found'));

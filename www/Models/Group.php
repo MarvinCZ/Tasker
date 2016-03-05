@@ -4,6 +4,7 @@ namespace Models;
 
 use Models\Base\Group as BaseGroup;
 use Models\UserGroup;
+use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
  * Skeleton subclass for representing a row from the 'group' table.
@@ -26,6 +27,23 @@ class Group extends BaseGroup
 		$usergroup->setUser($user);
 		$usergroup->setRights($rights);
 		$this->addUserGroup($usergroup);
+	}
+
+	public function canManage($user){
+		return $this->getRightsForUser($user) >= 2;
+	}
+
+	public function isOwner($user){
+		return $this->getRightsForUser($user) >= 3;
+	}
+
+	public function getRightsForUser($user){
+		$criteria = new Criteria();
+		$criteria->add('user_group.user_id', $user->getId(), Criteria::EQUAL);
+		$relation = $this->getUserGroupsJoinUser($criteria)->getFirst();
+		if(!$relation)
+			return 0;
+		return $relation->getRights();
 	}
 
 	public function getShowPath(){

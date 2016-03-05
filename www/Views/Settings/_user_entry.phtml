@@ -11,9 +11,9 @@
 	<td>
 		<div class="btn-group">
 			<a href="<?= $relation->getUser()->getPath() ?>" class="btn btn-warning"><i class="fa fa-eye"></i></a>
-			<?php if($rights >= 2 && $relation->getRights() != 3): ?>
+			<?php if($rights >= 2 && $relation->getRights() <= $rights && $relation->getUser() != $me): ?>
 				<div class="btn btn-primary edit-user" data-rights="<?= $relation->getRights() ?>" data-id="<?= $relation->getUser()->getId() ?>" data-name="<?= $relation->getUser()->getNick() ?>"><i class="fa fa-pencil"></i></div>
-				<a href="group/<?= $relation->getUser()->getId() ?>/remove" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+				<a href="group/<?= $relation->getGroup()->getId() ?>/removeuser/<?= $relation->getUser()->getId() ?>" class="btn btn-danger"><i class="fa fa-trash"></i></a>
 			<?php endif ?>
 		</div>
 	</td>

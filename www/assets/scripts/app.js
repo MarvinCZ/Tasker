@@ -382,14 +382,18 @@ $(document).ready(function(){
 		parent.find('.form').hide();
 	});
 
-	$('.complete-user').autocomplete({
+	$('.complete-user-group').autocomplete({
 		serviceUrl: "/share/possible"
+	});
+
+	$('.complete-user').autocomplete({
+		serviceUrl: "/users/auto-complete"
 	});
 
 	$('div[data-newuser]').click(function(){
 		var id = $(this).data('newuser');
 		$(this).data('newuser', id+1);
-		$(this).closest('.row').before('<div class="input-group"><input type="text" class="form-control" name="user[' + id + ']" placeholder="Jméno uživatele"><span class="input-group-btn"><span class="btn btn-danger remove-user-field"><i class="fa fa-trash"></i></span></span></div>');
+		$(this).closest('.row').before('<div class="input-group"><input type="hidden" name="[' + id + '][rights]" value="0"><input type="text" class="form-control" name="user[' + id + '][name]" placeholder="Jméno uživatele"><span class="input-group-btn"><span class="btn btn-danger remove-user-field"><i class="fa fa-trash"></i></span></span></div>');
 		$(this).closest('.row').prev().find('input').autocomplete({
 			serviceUrl: "/users/auto-complete"
 		});
@@ -480,4 +484,61 @@ $(document).ready(function(){
 		}
 	});
 
+	$('.edit-user').click(function(){
+		$('.add-user-form').hide();
+		var form = $('.edit-user-form');
+		form.show();
+		form.find('input[name="user_name"]').val($(this).data('name'));
+		form.find('input[name="user_id"]').val($(this).data('id'));
+		form.find('.tab-select').trigger('select', $(this).data('rights'));
+
+	});
+
+	$('.add-user').click(function(){
+		$('.edit-user-form').hide();
+		$('.add-user-form').show();
+	});
+	$('.edit-user-form').hide();
+
+	var editentry = function(){
+		var form = $('.edit-user-form');
+		var parent = $(this).closest('tr');
+		$('.add-user-form').hide();
+		form.show();
+		form.find('.tab-select').trigger('select', parent.find('.user-rights').val());
+		form.find('input[name="user_name"]').val(parent.find('.user-name').val());
+		form.find('input[name="entry_id"]').val(parent.data('id'));
+	};
+
+	var removeentry = function(){
+		$(this).closest('tr').remove();
+	}
+
+	$('.editentry').click(editentry);
+
+	$('.edituserentry').click(function(){
+		var parent = $(this).closest('.edit-user-form');
+		var id = parent.find('input[name="entry_id"]').val();
+		var entry = $('table.users tr[data-id=' + id + ']');
+		entry.find('.user-rights').val(parent.find('.tab-select').data('selected'));
+		entry.find('.rights').html(parent.find('.tab-select').data('selectedname'));
+		$('.edit-user-form').hide();
+		$('.add-user-form').show();
+	});
+
+	$('.adduserentry').click(function(){
+		var id = $(this).data('id');
+		$(this).data('id', id + 1);
+		var parent = $(this).closest('.add-user-form');
+		parent.find('.tab-select').trigger('refresh');
+		var rights = parent.find('.tab-select').data('selected');
+		var rightsname = parent.find('.tab-select').data('selectedname');
+		var nick = parent.find('input[name="user"]').val();
+		parent.find('.tab-select').trigger('select', 0);
+		parent.find('input[name="user"]').val('');
+		var html = '<tr data-id="'+id+'"><td>' + nick + '</td><td class="rights">' + rightsname + '</td><td><div class="btn-group"><div class="btn btn-primary editentry"><i class="fa fa-pencil"></i></div><div class="btn btn-danger removeentry"><i class="fa fa-trash"></i></div></div></td><input type="hidden" class="user-name" name="user['+id+'][name]" value="' + nick + '"><input type="hidden" class="user-rights" name="user['+id+'][rights]" value="' + rights + '"></tr>';
+		$('table.users').append(html);
+		$('table.users tr:last-child .editentry').click(editentry);
+		$('table.users tr:last-child .removeentry').click(removeentry);
+	});
 });

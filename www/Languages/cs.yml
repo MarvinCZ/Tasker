@@ -66,13 +66,16 @@ view:
       name: 'Název'
       action: 'Akce'
       rights: 'Práva'
+      user_name: 'Jméno uživatele'
     group:
       name: 'Název'
       action: 'Akce'
       rights: 'Práva'
+      user_name: 'Jméno uživatele'
   Note:
     show_all:
       share_not_found: 'Nenalezeno sdílení'
+      notes: 'Úkoly'
     show:
       no_comment: 'Jeste to nikdo nekomentoval. Budte prvni.'
       comments: 'Komentáře'
@@ -80,8 +83,14 @@ btn:
   add: 'Přidat'
   save: 'Uložit'
   edit: 'Upravit'
+  ok: 'OK'
 common:
   not_found: 'Záznam nebyl nalezen'
+  no_rights: 'Na provedení této akce nemáte dostatečná práva'
+  saved: 'Uloženo'
+  edited: 'Editováno'
+  added: 'Přidáno'
+  removed: 'Odebráno'
 rights:
   0: 'Čtení'
   1: 'Editace'

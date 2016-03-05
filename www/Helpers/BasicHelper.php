@@ -151,9 +151,12 @@ function sharedToForm($to, $rights){
 	return renderToString('Views/Note/_sharedto_form.phtml',$params);
 }
 
-function shareOptionsForSelect($selected = null, $max = 3){
-	$arr = array(0=>'Pouze čtení', 1=>'Čtení, Úprava', 2=>'Správa', 3=>'Majitel');
-	return array_slice($arr, 0, $max);
+function shareOptionsForSelect($max = 3){
+	$arr = [];
+	for ($i = 0; $i <= $max; $i++) { 
+		$arr[$i] = t('rights.' . $i);
+	}
+	return array_slice($arr, 0, $max + 1);
 }
 
 function getFacebook(){

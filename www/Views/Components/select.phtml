@@ -9,20 +9,20 @@
 		<div class="clear"></div>
 	<?php endif ?>
 	<?php foreach ($options as $option): ?>
-			<div class="tab-btn <?= $option['selected'] ? 'tab-active' : ''?>">
-				<?php if($multiple): ?>
-					<input type="checkbox" name="<?= $name ?>[]" value="<?= $option['name'] ?>"  <?= $option['selected'] ? 'checked' : '' ?>/>
-				<?php else: ?>
-					<input type="radio" name="<?= $name ?>" value="<?= $option['name'] ?>" <?= $option['selected'] ? 'checked' : '' ?>/>
-				<?php endif ?>
-				<span class="text">
-					<?= $option['display_name'] ?>
-				</span>
-				<i class="fa fa-check selected"></i>
-				<?php if($multiple): ?>
-					<i class="fa fa-times unselected"></i>
-				<?php endif ?>
-			</div>
+		<div class="tab-btn <?= $option['selected'] ? 'tab-active' : ''?>">
+			<?php if($multiple): ?>
+				<input type="checkbox" name="<?= $name ?>[]" value="<?= $option['name'] ?>"  <?= $option['selected'] ? 'checked="checked"' : '' ?>/>
+			<?php else: ?>
+				<input type="radio" name="<?= $name ?>" value="<?= $option['name'] ?>" <?= $option['selected'] ? 'checked="checked"' : '' ?>/>
+			<?php endif ?>
+			<span class="text">
+				<?= $option['display_name'] ?>
+			</span>
+			<i class="fa fa-check selected"></i>
+			<?php if($multiple): ?>
+				<i class="fa fa-times unselected"></i>
+			<?php endif ?>
+		</div>
 	<?php endforeach ?>
 	</div>
 	<div class="tab-closed">

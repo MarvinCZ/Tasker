@@ -9,6 +9,43 @@
 		<th><?= t('.action') ?></th>
 	</tr>
 <?php foreach ($group->getUserGroupsJoinUser() as $rel): ?>
-	<?php includeFile('Views/Settings/_user_entry.phtml', array('relation'=>$rel, 'rights' => $relation->getRights())) ?>
+	<?php includeFile('Views/Settings/_user_entry.phtml', array('relation'=>$rel, 'rights' => $relation->getRights(), 'me' => $user)) ?>
 <?php endforeach ?>
 </table>
+<?php if($relation->getRights() >= 2): ?>
+<div class="add-user-form">
+	<form action="group/<?= $group->getId() ?>/adduser" class="remote" method="post">
+		<div class="row">
+			<div class="col-md-6">
+				<?= select("Práva","share_rights", false, $rights_select, true) ?>
+			</div>
+			<div class="col-md-6">
+				<div class="form-group">
+					<label for="user-name"><?= t('.user_name') ?></label>
+					<input type="text" class="form-control complete-user" name="user" id="user-name">
+					<div class="error-user error-box"></div>
+				</div>
+				<input type="submit" class="btn btn-primary" value="<?= t('btn.add') ?>">
+			</div>
+		</div>
+	</form>
+</div>
+<div class="edit-user-form">
+	<form action="group/<?= $group->getId() ?>/edituser" class="remote" method="post">
+		<div class="row">
+			<div class="col-md-6">
+				<?= select("Práva","user_rights", false, $rights_select, true) ?>
+			</div>
+			<div class="col-md-6">
+				<div class="form-group">
+					<label for="user-name"><?= t('.user_name') ?></label>
+					<input type="text" class="form-control complete-user" name="user_name" disabled>
+				</div>
+				<input type="hidden" name="user_id">
+				<input type="submit" class="btn btn-primary" value="<?= t('btn.edit') ?>">
+				<div class="btn btn-primary add-user">Přidat nového</div>
+			</div>
+		</div>
+	</form>
+</div>
+<?php endif ?>

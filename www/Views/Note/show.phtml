@@ -128,7 +128,7 @@
 				<h3>Přidat uživatele - skupinu</h3>
 				<form action="share/add/note/<?= $note->getId() ?>" method="POST">
 					<div class="form-group">
-						<input name="name" class="form-control complete-user" placeholder="Jméno uživatele nebo skupiny">
+						<input name="name" class="form-control complete-user-group" placeholder="Jméno uživatele nebo skupiny">
 					</div>
 					<?= select("Práva","share_rights", false, $rights_select, true) ?>
 					<input type="submit" class="btn btn-primary btn-full" value="Přidat">

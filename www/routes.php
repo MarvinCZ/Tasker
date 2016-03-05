@@ -28,6 +28,10 @@ $router->addGet('Shared.possible', '/share/possible');
 $router->addPost('Shared.new_group', '/share/new_group');
 
 $router->addPost('Group.add', '/group/add');
+$router->addPost('Group.add_user', '/group/{id}/adduser');
+$router->addPost('Group.edit_user', '/group/{id}/edituser');
+$router->addGet('Group.remove_user', '/group/{id}/removeuser/{user_id}');
+$router->addGet('Group.remove', '/group/{id}/remove');
 
 $router->addGet('Settings.index', '/settings');
 $router->addGet('Settings.category', '/settings/category');
