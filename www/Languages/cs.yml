@@ -50,6 +50,8 @@ controllers:
     category:
       added: 'Kategorie byla přidána'
       removed: 'Kategorie byla odebrána'
+  groupcontroller:
+    group_leaved: 'Skupina byla opuštěna'
 
 view:
   HomePage:
@@ -62,16 +64,26 @@ view:
       name: 'Název'
       action: 'Akce'
       new_category: 'Nová kategorie'
+      categories: 'Kategorie'
     groups:
       name: 'Název'
       action: 'Akce'
       rights: 'Práva'
       user_name: 'Jméno uživatele'
+      nogroup: 'Nejste v žádné skupině'
+      my_groups: 'Moje skupiny'
+      new_group: 'Nová skupina'
     group:
       name: 'Název'
       action: 'Akce'
       rights: 'Práva'
       user_name: 'Jméno uživatele'
+      group_users: 'Uživatelé'
+      shared_notes: 'Sdílené poznámky'
+      shared_categories: 'Sdílené kategorie'
+      note_name: 'Titulek'
+      category_name: 'Název'
+      category: 'Kategoie'
   Note:
     show_all:
       share_not_found: 'Nenalezeno sdílení'

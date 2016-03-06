@@ -11,7 +11,6 @@ $(document).ready(function(){
 	});
 	$('.tab-select').bind('refresh', function(){
 		var sel = $(this).find('input:checked');
-		console.log($(this));
 		var selected =  sel[0].value;
 		var name = $.trim(sel.closest('.tab-btn').find('.text').html());
 		$(this).data('selected', selected);

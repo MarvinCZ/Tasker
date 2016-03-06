@@ -1,3 +1,12 @@
+function getParameterByName(name) {
+    var url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 var time = 300;
 var left_done = function(){
 	$('.page-right').css("display", "none");
@@ -330,6 +339,14 @@ $(document).ready(function(){
 		}
 	});
 
+	var opened = getParameterByName('selected');
+	if(opened != ""){
+		var tab = $('.tab[data-part="' + opened + '"]');
+		var parent = tab.parent();
+		parent.find('.tab').attr("data-selected", "false");
+		tab.attr("data-selected", "true");
+	}
+
 	$('.tab').click(function(){
 		if ($(this).attr('data-part')) {
 			var parent = $(this).parent();
@@ -339,6 +356,12 @@ $(document).ready(function(){
 			parent.parent().find('.parts>.' + $(this).data('part')).show();
 		}
 	});
+
+	$('.tab').each(function(i, e){
+		if(!$(this).data('selected') && $(this).attr('data-part')){
+			$('.parts>.' + $(this).data('part')).hide();
+		}
+	})
 
 	$('.show-login').click(function(){
 		$('.over').show();
@@ -417,8 +440,8 @@ $(document).ready(function(){
 		var color = $(this).data('color');
 		form.find('.block-' + color).addClass('block-selected');
 		form.find('input[name="category_color"]').val(color);
-		form.find('.new-category, .category-edit').show();
-		form.find('.category-new').hide();
+		$('.new-category, .category-edit').show();
+		$('.category-new').hide();
 	});
 
 	$('.new-category').click(function(){
@@ -428,8 +451,8 @@ $(document).ready(function(){
 		form.find('.small-block').removeClass('block-selected');
 		form.find('.block-none').addClass('block-selected');
 		form.find('input[name="category_color"]').val('');
-		form.find('.new-category, .category-edit').hide();
-		form.find('.category-new').show();
+		$('.new-category, .category-edit').hide();
+		$('.category-new').show();
 	});
 
 	$('.new-category, .category-edit').hide();
@@ -519,7 +542,7 @@ $(document).ready(function(){
 	$('.edituserentry').click(function(){
 		var parent = $(this).closest('.edit-user-form');
 		var id = parent.find('input[name="entry_id"]').val();
-		var entry = $('table.users tr[data-id=' + id + ']');
+		var entry = $('table.new-group-users tr[data-id=' + id + ']');
 		entry.find('.user-rights').val(parent.find('.tab-select').data('selected'));
 		entry.find('.rights').html(parent.find('.tab-select').data('selectedname'));
 		$('.edit-user-form').hide();
@@ -537,8 +560,8 @@ $(document).ready(function(){
 		parent.find('.tab-select').trigger('select', 0);
 		parent.find('input[name="user"]').val('');
 		var html = '<tr data-id="'+id+'"><td>' + nick + '</td><td class="rights">' + rightsname + '</td><td><div class="btn-group"><div class="btn btn-primary editentry"><i class="fa fa-pencil"></i></div><div class="btn btn-danger removeentry"><i class="fa fa-trash"></i></div></div></td><input type="hidden" class="user-name" name="user['+id+'][name]" value="' + nick + '"><input type="hidden" class="user-rights" name="user['+id+'][rights]" value="' + rights + '"></tr>';
-		$('table.users').append(html);
-		$('table.users tr:last-child .editentry').click(editentry);
-		$('table.users tr:last-child .removeentry').click(removeentry);
+		$('table.new-group-users').append(html);
+		$('table.new-group-users tr:last-child .editentry').click(editentry);
+		$('table.new-group-users tr:last-child .removeentry').click(removeentry);
 	});
 });

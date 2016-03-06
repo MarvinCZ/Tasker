@@ -25,7 +25,7 @@ class GroupController extends ApplicationController{
 		}
 		$group->addUserWithRights($this->params['user'], 3);
 		$group->save();
-		redirectBack();
+		$this->redirectBack();
 	}
 
 	protected function add_user($id){
@@ -82,7 +82,7 @@ class GroupController extends ApplicationController{
 			$criteria = new Criteria();
 			$criteria->add('user_group.user_id', $user->getId(), Criteria::EQUAL);
 			$relation = $group->getUserGroups($criteria)->getFirst();
-			$relation->setRights($_POST['share_rights']);
+			$relation->setRights($_POST['user_rights']);
 			$relation->save();
 			$this->addFlash("success", t('common.edited'));
 			$this->renderString(json_encode(['redirect'=>$_SERVER['HTTP_REFERER']]));
@@ -98,17 +98,17 @@ class GroupController extends ApplicationController{
 		$group = GroupQuery::create()->findPK($id);
 		if(!$group || !$user){
 			$this->addFlash("error", t('common.not_found'));
-			redirectTo('/');
+			$this->redirectTo('/');
 		}		
 		if($group->canManage($this->params["user"])){
 			$relation = $user->getUserGroupsJoinGroup($criteria)->getFirst();
 			$relation->delete();
 			$this->addFlash("success", t('common.removed'));
-			redirectBack();
+			$this->redirectBack();
 		}
 		else{
 			$this->addFlash("error", t('common.no_rights'));
-			redirectTo('/');
+			$this->redirectTo('/');
 		}
 	}
 
@@ -116,7 +116,7 @@ class GroupController extends ApplicationController{
 		$group = GroupQuery::create()->findPK($id);
 		if(!$group){
 			$this->addFlash("error", t('common.not_found'));
-			redirectTo('/');
+			$this->redirectTo('/');
 		}		
 		if($group->isOwner($this->params["user"])){
 			UserGroupQuery::create()->
@@ -126,11 +126,22 @@ class GroupController extends ApplicationController{
 				filterByGroup($group)->
 				delete();
 			$group->delete();
-			redirectBack();
+			$this->redirectBack();
 		}
 		else{
 			$this->addFlash("error", t('common.no_rights'));
-			redirectTo('/');
+			$this->redirectTo('/');
 		}		
+	}
+
+	protected function leave($id){
+		$group = GroupQuery::create()->findPK($id);
+		if(!$group){
+			$this->addFlash("error", t('common.not_found'));
+			$this->redirectTo('/');
+		}
+		$group->leave($this->params["user"]);
+		$this->addFlash("success", t('.group_leaved'));
+		$this->redirectBack();
 	}
 }

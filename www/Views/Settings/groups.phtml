@@ -1,58 +1,83 @@
-<h2>Skupiny</h2>
-<table class="table groups">
-	<tr>
-		<th><?= t('.name') ?></th>
-		<th><?= t('.rights') ?></th>
-		<th><?= t('.action') ?></th>
-	</tr>
-<?php foreach ($groups as $value): ?>
-	<?php includeFile('Views/Settings/_group_entry.phtml', array('group'=>$value)) ?>
-<?php endforeach ?>
-</table>
-<h2>Nová skupina</h2>
-<form action="group/add" method="post" id="add-group">
-	<div class="form-group">
-		<label for="group_name">Name</label>
-		<input type="text" class="form-control" name="name">
+<div class="tabs clearfix">
+	<div class="tab-6 tab" data-selected="true" data-part="part-groups">
+		<?= t('.my_groups') ?>
 	</div>
-<h3>Uživatelé</h3>
-<table class="table users">
-	<tr>
-		<th><?= t('.name') ?></th>
-		<th><?= t('.rights') ?></th>
-		<th><?= t('.action') ?></th>
-	</tr>
-</table>
-</form>
-<div class="add-user-form">
-	<div class="row">
-		<div class="col-md-6">
-			<?= select("Práva","user_add_rights", false, $rights_select, true) ?>
-		</div>
-		<div class="col-md-6">
-			<div class="form-group">
-				<label for="user-name"><?= t('.user_name') ?></label>
-				<input type="text" class="form-control complete-user" name="user" id="user-name">
-				<div class="error-user error-box"></div>
-			</div>
-			<div class="btn btn-primary adduserentry" data-id="0"><?= t('btn.add') ?></div>
-		</div>
+	<div class="tab-6 tab" data-part="part-new">
+		<?= t('.new_group') ?>
 	</div>
 </div>
-<div class="edit-user-form">
-	<div class="row">
-		<div class="col-md-6">
-			<?= select("Práva","user_rights", false, $rights_select, true) ?>
-		</div>
-		<div class="col-md-6">
+<div class="parts">
+	<div class="part-groups">
+		<h2>Skupiny</h2>
+		<table class="table groups">
+			<tr>
+				<th><?= t('.name') ?></th>
+				<th><?= t('.rights') ?></th>
+				<th><?= t('.action') ?></th>
+			</tr>
+		<?php foreach ($groups as $value): ?>
+			<?php includeFile('Views/Settings/_group_entry.phtml', array('group'=>$value)) ?>
+		<?php endforeach ?>
+		<?php if($groups->count() == 0): ?>
+			<tr>
+				<td colspan="3"><?= t('.nogroup') ?></td>
+			</tr>
+		<?php endif ?>
+		</table>
+	</div>
+	<div class="part-new">
+		<h2>Nová skupina</h2>
+		<form action="group/add" method="post" id="add-group">
 			<div class="form-group">
-				<label for="user-name"><?= t('.user_name') ?></label>
-				<input type="text" class="form-control complete-user" name="user_name" disabled>
+				<label for="group_name"><?= t('.name') ?></label>
+				<input type="text" class="form-control" name="name">
 			</div>
-			<input type="hidden" name="entry_id">
-			<div class="btn btn-primary edituserentry"><?= t('btn.ok') ?></div>
-			<div class="btn btn-primary add-user">Přidat nového</div>
+		<h3>Uživatelé</h3>
+		<table class="table new-group-users">
+			<tr>
+				<th><?= t('.user_name') ?></th>
+				<th><?= t('.rights') ?></th>
+				<th><?= t('.action') ?></th>
+			</tr>
+		</table>
+		</form>
+		<div class="add-user-form">
+			<div class="row">
+				<div class="col-md-6 col-md-push-6">
+					<div class="form-group">
+						<label for="user-name"><?= t('.user_name') ?></label>
+						<input type="text" class="form-control complete-user" name="user" id="user-name">
+						<div class="error-user error-box"></div>
+					</div>
+					<div class="btn btn-primary btn-full adduserentry" data-id="0"><?= t('btn.add') ?></div>
+				</div>
+				<div class="col-md-6 col-md-pull-6">
+					<?= select(t('.rights'),"user_add_rights", false, $rights_select, true) ?>
+				</div>
+			</div>
 		</div>
+		<div class="edit-user-form">
+			<div class="row">
+				<div class="col-md-6 col-md-push-6">
+					<div class="form-group">
+						<label for="user-name"><?= t('.user_name') ?></label>
+						<input type="text" class="form-control complete-user" name="user_name" disabled>
+					</div>
+					<input type="hidden" name="entry_id">
+					<div class="row">
+						<div class="col-xs-6">
+							<div class="btn btn-primary btn-full edituserentry"><?= t('btn.ok') ?></div>
+						</div>
+						<div class="col-xs-6">
+							<div class="btn btn-primary btn-full add-user">Přidat nového</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6 col-md-pull-6">
+					<?= select(t('.rights'),"user_rights", false, $rights_select, true) ?>
+				</div>
+			</div>
+		</div>
+		<input type="submit" value="<?= t('btn.save') ?>" class="btn btn-primary btn-full" form="add-group">
 	</div>
 </div>
-<input type="submit" value="<?= t('btn.save') ?>" class="btn btn-primary btn-full" form="add-group">

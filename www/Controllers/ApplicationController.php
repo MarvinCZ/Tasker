@@ -63,7 +63,7 @@ abstract class ApplicationController{
 	 */
 	protected function is_logged(){
 		if(!$this->params['user_logged']){
-			redirectTo('/');
+			$this->redirectTo('/');
 		}
 	}
 
@@ -261,7 +261,7 @@ abstract class ApplicationController{
 				$filter[$name][$way] = $what;
 		}
 		else{
-			throw new Exception("Filter does not exists");
+			throw new \Exception("Filter does not exists");
 		}
 	}
 
@@ -283,5 +283,26 @@ abstract class ApplicationController{
 	protected function addFlashNow($type, $message){
 		$type = $type == "error" ? "danger" : $type;
 		array_push($this->params['flashes'], ['type' => $type, 'message' => $message]);
+	}
+
+	protected function saveFlashes(){
+		$_SESSION['flashes'] = isset($this->params["flashes"]) ? $this->params["flashes"] : array();
+	}
+
+	protected function redirectTo($location){
+		header("Location: " . $location);
+		saveFlashes();
+		die();
+	}
+
+	protected function redirectBack(){
+		if(!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == $_SERVER['REQUEST_URI']){
+			header('Location: /');
+		}
+		else{
+			header('Location: '.$_SERVER['HTTP_REFERER']);
+		}
+		saveFlashes();
+		die();
 	}
 }

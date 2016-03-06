@@ -28,4 +28,7 @@ class Shared extends BaseShared
 
 	}
 
+	public function getTranslatedRights(){
+		return t('rights.'.$this->getRights());
+	}
 }

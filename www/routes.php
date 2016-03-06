@@ -19,6 +19,7 @@ $router->addPost('Note.save', '/notes/edit/{id}');
 $router->addPost('Note.create', '/notes/add');
 $router->addGet('Note.change_state', '/note/{id}/state/');
 $router->addPost('Note.comment', '/notes/{id}/comment');
+$router->addGet('Note.remove', '/notes/{id}/remove');
 
 $router->addPost('Shared.update', '/share/update/{id}');
 $router->addPost('Shared.add_to_note', '/share/add/note/{id}');
@@ -32,6 +33,7 @@ $router->addPost('Group.add_user', '/group/{id}/adduser');
 $router->addPost('Group.edit_user', '/group/{id}/edituser');
 $router->addGet('Group.remove_user', '/group/{id}/removeuser/{user_id}');
 $router->addGet('Group.remove', '/group/{id}/remove');
+$router->addGet('Group.leave', '/group/{id}/leave');
 
 $router->addGet('Settings.index', '/settings');
 $router->addGet('Settings.category', '/settings/category');

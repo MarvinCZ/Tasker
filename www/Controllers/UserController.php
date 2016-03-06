@@ -64,7 +64,7 @@ class UserController extends ApplicationController{
 
 	protected function logout(){
 		$_SESSION['user'] = null;
-		redirectTo("/");
+		$this->redirectTo("/");
 	}
 	
 	protected function auto_complete(){
@@ -123,7 +123,7 @@ class UserController extends ApplicationController{
 				$identity->save();
 			}
 			$_SESSION['user'] = $identity->getUser()->getId();
-			redirectTo("/notes");
+			$this->redirectTo("/notes");
 		} catch(Facebook\Exceptions\FacebookResponseException $e) {
 			echo 'Graph returned an error: ' . $e->getMessage();
 			exit;
@@ -167,7 +167,7 @@ class UserController extends ApplicationController{
 				$identity->save();
 			}
 			$_SESSION['user'] = $identity->getUser()->getId();
-			redirectTo("/notes");
+			$this->redirectTo("/notes");
 		}
 	}
 }

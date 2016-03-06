@@ -24,12 +24,12 @@ class HomePageController extends ApplicationController{
 		parent::__construct();
 		$this->addBeforeFilter("redirect_if_logged");
 		$this->addBeforeFilterExeption("is_logged", "index");
-		$this->addBeforeFilterExeption("redirect_if_logged", "test");
 	}
 
 	protected function redirect_if_logged(){
-		if($this->params['user_logged'])
-			redirectTo("/notes");
+		if($this->params['user_logged']){
+			$this->redirectTo("/notes");
+		}
 	}
 
 	protected function index(){

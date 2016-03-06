@@ -5,6 +5,7 @@ namespace Models;
 use Models\Base\Category as BaseCategory;
 use Propel\Runtime\Propel;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Models\Shared;
 use \PDO;
 
@@ -53,5 +54,30 @@ class Category extends BaseCategory
 		$stmt = $con->prepare($sql);
 		$stmt->execute(array($this->getId()));
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+
+	public function getRightsForUser($user){
+		if($this->getUser() == $user)
+			return 3;
+		$criteria = new Criteria();
+		$criteria->add('user_category.user_id', $user->getId(), Criteria::EQUAL);
+		$criteria->addDescendingOrderByColumn('user_category.rights');
+		$acc = $this->getUserCategories($criteria)->getFirst();
+		return $acc == null ? 0 : $acc ->getRights();
+	}
+
+	public function delete(ConnectionInterface $con = null){
+        if ($this->isDeleted()) {
+            throw new PropelException("This object has already been deleted.");
+        }
+
+        if ($con === null) {
+            $con = Propel::getServiceContainer()->getWriteConnection(Map\NoteTableMap::DATABASE_NAME);
+        }
+
+		NoteQuery::create()->filterByCategory($this)->delete();
+		ShareQuery::create()->filterByCategory($this)->delete();
+
+		parent::delete();
 	}
 }

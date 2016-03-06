@@ -1,9 +1,4 @@
 <?php
-//redirect to location has to be called befor rendering (before controllers action ends, or before action calls render)
-function redirectTo($location){
-	header("Location: " . $location);
-	die();
-}
 
 //Extract params to be available for included file
 function includeFile($file, $params = array()){
@@ -122,7 +117,7 @@ function optionsForSelect($options, $selected = ''){
 }
 
 function sharedToForm($to, $rights){
-	if($to['rights']>=$rights)
+	if($to['rights']>$rights)
 		return;
 	$params = array();
 	$params['target_link'] = $to['to_type'] == "user" ? 'users/' : 'groups/';
@@ -191,11 +186,6 @@ function getUserRightsCategory($user, $category){
 	$criteria->addDescendingOrderByColumn('user_category.rights');
 	$acc = $category->getUserCategories($criteria)->getFirst();
 	return $acc == null ? 0 : $acc ->getRights();	
-}
-
-function redirectBack(){
-		header('Location: '.$_SERVER['HTTP_REFERER']);
-		die();
 }
 
 function t($path, $params = array()){

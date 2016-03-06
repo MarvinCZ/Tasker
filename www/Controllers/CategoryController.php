@@ -28,18 +28,22 @@ class CategoryController extends ApplicationController{
 
 	protected function remove($id){
 		$category = CategoryQuery::create()->
-				filterByUser($this->params['user'])->
 				filterById($id)->
 				findOne();
-		if($category){
-			NoteQuery::create()->filterByCategory($category)->delete();
-			$category->delete();
-			$this->addFlash("success", t('.category_removed'));
+		$rights = $category->getRightsForUser($this->params['user']);
+		if($rights >= 3){
+			if($category){
+				$category->delete();
+				$this->addFlash("success", t('.category_removed'));
+			}
+			else{
+				$this->addFlash("error", t('common.not_found'));
+			}
 		}
 		else{
-			$this->addFlash("error", t('common.not_found'));
+			$this->addFlash("error", t('common.no_rights'));
 		}
-		redirectBack();
+		$this->redirectBack();
 	}
 
 	protected function add(){

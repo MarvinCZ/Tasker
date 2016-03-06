@@ -60,6 +60,10 @@ class NoteController extends ApplicationController{
 		$this->params['category_only'] = false;
 		if($category != null){
 			$this->params['category'] = CategoryQuery::create()->findPK($category);
+			if(!$this->params['category']){
+				$this->addFlash('error', t('common.not_found'));
+				$this->redirectTo('/');
+			}
 			$note_query = $note_query->
 				filterByCategoryId($category);
 			$this->params['category_only'] = true;
@@ -163,7 +167,7 @@ class NoteController extends ApplicationController{
 		}
 		else{
 			$this->addFlash("error", "This note doesnt exists");
-			redirectTo('/notes');
+			$this->redirectTo('/notes');
 		}
 	}
 
@@ -251,19 +255,39 @@ class NoteController extends ApplicationController{
 	}
 
 	protected function comment($id){
-		//TODO: check rights
 		$note = NoteQuery::create()->
 			findPK($id);
-		$comment = new Comment();
-		$comment->setUser($this->params['user']);
-		$comment->setNote($note);
-		$comment->setText($_POST['message']);
-		if($comment->save()){
-			$this->renderString(json_encode(['redirect'=>'/notes/'.$id]));
+		$rights = $note->getRightsForUser($this->params['user']);
+		if($rights > 0){
+			$comment = new Comment();
+			$comment->setUser($this->params['user']);
+			$comment->setNote($note);
+			$comment->setText($_POST['message']);
+			if($comment->save()){
+				$this->renderString(json_encode(['redirect'=>'/notes/'.$id]));
+			}
+			else{
+				$this->renderString(json_encode($comment->getValidationFailuresI18n()));
+			}
 		}
 		else{
-			$this->renderString(json_encode($comment->getValidationFailuresI18n()));
+			$this->addFlash("error", t('common.no_rights'));
+			$this->renderString(json_encode(['redirect'=>'/']));
 		}
+	}
+
+	protected function remove($id){
+		$note = NoteQuery::create()->
+			findPK($id);
+		$rights = $note->getRightsForUser($this->params['user']);
+		if($rights >= 3){
+			$note->delete();
+			$this->addFlash("success", "removed");
+		}
+		else{
+			$this->addFlash("error", t('common.no_rights'));
+		}
+		$this->redirectBack();
 	}
 
 	protected function getAllowedKeysForCreate(){

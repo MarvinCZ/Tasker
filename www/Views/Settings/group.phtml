@@ -1,51 +1,128 @@
-<h2>
-	<?= $group->getName() ?>
-</h2>
-<table class="table users">
-	<tr>
-		<th></th>
-		<th><?= t('.name') ?></th>
-		<th><?= t('.rights') ?></th>
-		<th><?= t('.action') ?></th>
-	</tr>
-<?php foreach ($group->getUserGroupsJoinUser() as $rel): ?>
-	<?php includeFile('Views/Settings/_user_entry.phtml', array('relation'=>$rel, 'rights' => $relation->getRights(), 'me' => $user)) ?>
-<?php endforeach ?>
-</table>
-<?php if($relation->getRights() >= 2): ?>
-<div class="add-user-form">
-	<form action="group/<?= $group->getId() ?>/adduser" class="remote" method="post">
-		<div class="row">
-			<div class="col-md-6">
-				<?= select("Práva","share_rights", false, $rights_select, true) ?>
-			</div>
-			<div class="col-md-6">
-				<div class="form-group">
-					<label for="user-name"><?= t('.user_name') ?></label>
-					<input type="text" class="form-control complete-user" name="user" id="user-name">
-					<div class="error-user error-box"></div>
-				</div>
-				<input type="submit" class="btn btn-primary" value="<?= t('btn.add') ?>">
-			</div>
-		</div>
-	</form>
+<div class="tabs clearfix">
+	<div class="tab-4 tab" data-selected="true" data-part="part-group-users">
+		<?= t('.group_users') ?>
+	</div>
+	<div class="tab-4 tab" data-part="part-notes">
+		<?= t('.shared_notes') ?>
+	</div>
+	<div class="tab-4 tab" data-part="part-categories">
+		<?= t('.shared_categories') ?>
+	</div>
 </div>
-<div class="edit-user-form">
-	<form action="group/<?= $group->getId() ?>/edituser" class="remote" method="post">
-		<div class="row">
-			<div class="col-md-6">
-				<?= select("Práva","user_rights", false, $rights_select, true) ?>
-			</div>
-			<div class="col-md-6">
-				<div class="form-group">
-					<label for="user-name"><?= t('.user_name') ?></label>
-					<input type="text" class="form-control complete-user" name="user_name" disabled>
+<div class="parts">
+	<div class="part-group-users">
+		<h2>
+			<?= $group->getName() ?>
+		</h2>
+		<table class="table users">
+			<tr>
+				<th></th>
+				<th><?= t('.name') ?></th>
+				<th><?= t('.rights') ?></th>
+				<th><?= t('.action') ?></th>
+			</tr>
+		<?php foreach ($group->getUserGroupsJoinUser() as $rel): ?>
+			<?php includeFile('Views/Settings/_user_entry.phtml', array('relation'=>$rel, 'rights' => $relation->getRights(), 'me' => $user)) ?>
+		<?php endforeach ?>
+		</table>
+		<?php if($relation->getRights() >= 2): ?>
+		<div class="add-user-form">
+			<form action="group/<?= $group->getId() ?>/adduser" class="remote" method="post">
+				<div class="row">
+					<div class="col-md-6 col-md-push-6">
+						<div class="form-group">
+							<label for="user-name"><?= t('.user_name') ?></label>
+							<input type="text" class="form-control complete-user" name="user" id="user-name">
+							<div class="error-user error-box"></div>
+						</div>
+						<input type="submit" class="btn btn-primary btn-full" value="<?= t('btn.add') ?>">
+					</div>
+					<div class="col-md-6 col-md-pull-6">
+						<?= select("Práva","share_rights", false, $rights_select, true) ?>
+					</div>
 				</div>
-				<input type="hidden" name="user_id">
-				<input type="submit" class="btn btn-primary" value="<?= t('btn.edit') ?>">
-				<div class="btn btn-primary add-user">Přidat nového</div>
-			</div>
+			</form>
 		</div>
-	</form>
+		<div class="edit-user-form">
+			<form action="group/<?= $group->getId() ?>/edituser" class="remote" method="post">
+				<div class="row">
+					<div class="col-md-6 col-md-push-6">
+						<div class="form-group">
+							<label for="user-name"><?= t('.user_name') ?></label>
+							<input type="text" class="form-control complete-user" name="user_name" disabled>
+						</div>
+						<input type="hidden" name="user_id">
+						<div class="row">
+							<div class="col-md-6">
+								<input type="submit" class="btn btn-primary btn-full" value="<?= t('btn.edit') ?>">
+							</div>
+							<div class="col-md-6">
+								<div class="btn btn-primary btn-full add-user">Přidat nového</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-md-pull-6">
+						<?= select(t('.rights'),"user_rights", false, $rights_select, true) ?>
+					</div>
+				</div>
+			</form>
+		</div>
+		<?php endif ?>
+	</div>
+	<div class="part-notes">
+		<table class="table">
+			<tr>
+				<th><?= t('.note_name') ?></th>
+				<th><?= t('.category') ?></th>
+				<th><?= t('.rights') ?></th>
+				<th><?= t('.action') ?></th>
+			</tr>
+			<?php foreach ($group->getSharedNotes() as $relation): ?>
+				<tr>
+					<td><?= $relation->getNote()->getTitle() ?></td>
+					<td><?= $relation->getNote()->getCategory() ? $relation->getNote()->getCategory()->getName() : '' ?></td>
+					<td><?= $relation->getTranslatedRights() ?></td>
+					<td>
+						<div class="btn-group">
+							<a href="<?= $relation->getNote()->getShowPath() ?>" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+							<a href="/share/remove/<?= $relation->getId() ?>" class="btn btn-danger"><i class="fa fa-reply"></i></a>
+							<?php if($relation->getRights() >= 3): ?>
+								<a href="/notes/<?= $relation->getNote()->getId() ?>/remove" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+							<?php endif ?>
+						</div>
+					</td>
+				</tr>
+			<?php endforeach ?>
+		</table>
+	</div>
+	<div class="part-categories">
+		<table class="table">
+			<tr>
+				<th></th>
+				<th><?= t('.category_name') ?></th>
+				<th><?= t('.rights') ?></th>
+				<th><?= t('.action') ?></th>
+			</tr>
+			<?php foreach ($group->getSharedCategories() as $relation): ?>
+				<tr>
+					<td>
+						<div class="block block-<?= $relation->getCategory()->getColor() ?>"></div>
+					</td>
+					<td><?= $relation->getCategory()->getName() ?></td>
+					<td><?= $relation->getTranslatedRights() ?></td>
+					<td>
+						<div class="btn-group">
+							<a href="<?= $relation->getCategory()->getShowPath() ?>" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+							<a href="/share/remove/<?= $relation->getId() ?>" class="btn btn-danger"><i class="fa fa-reply"></i></a>
+							<?php if($relation->getRights() >= 3): ?>
+								<a href="/category/<?= $relation->getCategory()->getId() ?>/remove" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+							<?php endif ?>
+						</div>
+					</td>
+				</tr>
+			<?php endforeach ?>
+		</table>
+	</div>
 </div>
-<?php endif ?>
+
+

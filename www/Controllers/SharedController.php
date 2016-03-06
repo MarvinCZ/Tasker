@@ -26,7 +26,7 @@ class SharedController extends ApplicationController{
 			$s->setRights($_POST['share_rights']);
 			$s->save();
 		}
-		redirectBack();
+		$this->redirectBack();
 	}
 	
 	protected function add_to_note($id){
@@ -68,7 +68,7 @@ class SharedController extends ApplicationController{
 		else{
 			//note neexistuje
 		}
-		redirectTo('/notes/'.$id);	
+		$this->redirectTo('/notes/'.$id);
 	}
 	
 	protected function add_to_category($id){
@@ -110,7 +110,7 @@ class SharedController extends ApplicationController{
 		else{
 			//note neexistuje
 		}
-		redirectTo('/category/'.$id);	
+		$this->redirectTo('/category/'.$id);
 	}
 
 	protected function new_group(){
@@ -146,7 +146,7 @@ class SharedController extends ApplicationController{
 			$share->setGroup($group);
 			$share->save();
 		}
-		redirectBack();
+		$this->redirectBack();
 	}
 	
 	protected function remove($id){
@@ -154,7 +154,7 @@ class SharedController extends ApplicationController{
 		if($this->can_change($shared)){
 			$shared->delete();
 		}
-		redirectBack();
+		$this->redirectBack();
 	}
 
 	protected function possible(){
@@ -168,11 +168,11 @@ class SharedController extends ApplicationController{
 			$this->renderString(json_encode(array('suggestions' =>$pos)));
 	}
 
-	private function can_change($s){
+	private function can_change($s, $rights = 2){
 		if($s->getWhatType() == "note"){
 			$note = NoteQuery::create()->
 				filterById($s->getWhatId())->
-				filterNotesForUser($this->params['user'], 2);
+				filterNotesForUser($this->params['user'], $rights);
 			if($note){
 				return true;
 			}
@@ -180,7 +180,7 @@ class SharedController extends ApplicationController{
 		if($s->getWhatType() == "category"){
 			$category = CategoryQuery::create()->
 				filterById($s->getWhatId())->
-				filterCategoriesForUser($this->params['user'], 2);
+				filterCategoriesForUser($this->params['user'], $rights);
 			if($category){
 				return true;
 			}

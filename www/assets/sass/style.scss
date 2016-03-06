@@ -146,6 +146,7 @@ body{
 .btn-full{
 	width: 100%;
 	margin-top: 5px;
+	margin-bottom: 5px;
 }
 .inner-box{
 	position: relative;
@@ -158,6 +159,16 @@ body{
 		margin-top: 0;
 		font-size: 2.2em;
 		font-weight: bold;
+	}
+	h2{
+		font-weight: bold;
+		font-size: 2.4em;
+		border-top: 1px solid #BBB;
+		padding-top: 15px;
+		&:first-child{
+			border-top: 0;
+			padding-top: 0;
+		}
 	}
 	.big-label{
 		margin-top: 0;
@@ -555,7 +566,7 @@ $category_colors: ('red', #F84758),
 		}
 	}
 }
-.part-register{
+.par-tregister{
 	display: none;
 }
 .user-menu{
@@ -740,7 +751,7 @@ table.groups{
 	}
 	td{
 		.btn-group{
-			width: 80px;
+			width: 120px;
 		}
 	}
 }

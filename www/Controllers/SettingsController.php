@@ -36,7 +36,7 @@ class SettingsController extends ApplicationController{
 		}
 		else{
 			$this->addFlash('error', t('common.not_found'));
-			redirectTo('/settings/groups');
+			$this->redirectTo('/settings/groups');
 		}
 	}
 }

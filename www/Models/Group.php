@@ -38,16 +38,57 @@ class Group extends BaseGroup
 	}
 
 	public function getRightsForUser($user){
-		$criteria = new Criteria();
-		$criteria->add('user_group.user_id', $user->getId(), Criteria::EQUAL);
-		$relation = $this->getUserGroupsJoinUser($criteria)->getFirst();
+		$relation = $this->getRelationWithUser($user);
 		if(!$relation)
 			return 0;
 		return $relation->getRights();
+	}
+
+	public function getRelationWithUser($user){
+		$criteria = new Criteria();
+		$criteria->add('user_group.user_id', $user->getId(), Criteria::EQUAL);
+		return $this->getUserGroupsJoinUser($criteria)->getFirst();
 	}
 
 	public function getShowPath(){
 		return "/settings/group/".$this->getId();
 	}
 
+	public function getSharedNotes(){
+		$criteria = new Criteria();
+		$criteria->add('shared.what_type', 'note', Criteria::EQUAL);
+		$criteria->addJoin('shared.what_id', 'note.id');
+		$criteria->addJoin('note.category_id', 'category.id', Criteria::LEFT_JOIN);
+		return $this->getShareds($criteria);
+	}
+
+	public function getSharedCategories(){
+		$criteria = new Criteria();
+		$criteria->add('shared.what_type', 'category', Criteria::EQUAL);
+		return $this->getSharedsJoinCategory($criteria);
+	}
+
+	public function leave($user){
+		$relation = $this->getRelationWithUser($user);
+		if(!$relation){
+			return;
+		}
+		$relation->delete();
+		$criteria = new Criteria();
+		$criteria->addDescendingOrderByColumn('user_group.rights');
+		$relation = $this->getUserGroups($criteria)->getFirst();
+		if(!$relation){
+			UserGroupQuery::create()->
+				filterByGroup($group)->
+				delete();
+			SharedQuery::create()->
+				filterByGroup($group)->
+				delete();
+			$group->delete();
+		}
+		elseif($relation->getRights() != 3){
+			$relation->setRights(3);
+			$relation->save();
+		}
+	}
 }
