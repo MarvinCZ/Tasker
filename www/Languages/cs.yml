@@ -1,5 +1,9 @@
 models:
   user:
+    nick: 'Uživatelské jméno'
+    password: 'Heslo'
+    password2: 'Heslo znova'
+    email: 'E-mail'
     validation:
       nick:
         uniq: 'Nick musí být unikátní'
@@ -16,6 +20,13 @@ models:
     title: 'Titulek'
     description: 'Popisek'
     state: "Stav"
+    deadline_from: 'Termín od'
+    deadline_to: 'Termín do'
+    deadline: 'Termín'
+    importance_from: 'Důležitos od'
+    importance: 'Důležitos'
+    created_at: 'Datum vytvoření'
+    relevance: 'Souvislost'
     states:
       opened: 'otevřené'
       done: 'dokončené'
@@ -42,6 +53,8 @@ models:
       text:
         not_blank: 'Text nesmí být prázdný'
         max_length: 'Text nesmí přesáhnout 150 znaků'
+  group:
+    new: 'Nová skupina'
 controllers:
   usercontroller:
     user_not_match: 'Nenalezen uživatel se zadaným jménem nebo heslem'
@@ -56,8 +69,12 @@ controllers:
 view:
   HomePage:
     index:
-      what_is_h: 'Co je to Tasker'
-      what_is_p: 'Tasker je sluzbou, ktera spravuje vase poznamky a umoznuje je mit na jednom miste a vzdy k dispozici.'
+      what_is:
+        head: 'Co je to Tasker'
+        body: '<p>Tasker je sluzbou, ktera spravuje vase poznamky a umoznuje je mit na jednom miste a vzdy k dispozici.</p>'
+      offer:
+        head: 'Co nabizi'
+        body: '<ul><li>Spravovat ukoly</li><li>Jednoduchou registraci (fb/g+)</li><li>Kategorizaci ukolu</li><li>Sdileni ukolu</li><li>Diskuze u ukolu</li></ul>'
   Settings:
     category:
       color: 'Barva'
@@ -88,14 +105,24 @@ view:
     show_all:
       share_not_found: 'Nenalezeno sdílení'
       notes: 'Úkoly'
+      filter: 'Filtr'
+      fulltext: 'Fulltextové vyhledávání'
+      sort_by: 'Seřadit dle'
     show:
       no_comment: 'Jeste to nikdo nekomentoval. Budte prvni.'
       comments: 'Komentáře'
+    _note:
+      no_category: 'Bez kategorie'
+  _menu:
+    profile: 'Profil'
+    settings: 'Nastavení'
 btn:
   add: 'Přidat'
   save: 'Uložit'
   edit: 'Upravit'
   ok: 'OK'
+  all: 'Vše'
+  nothing: 'Nic'
 common:
   not_found: 'Záznam nebyl nalezen'
   no_rights: 'Na provedení této akce nemáte dostatečná práva'
@@ -103,8 +130,28 @@ common:
   edited: 'Editováno'
   added: 'Přidáno'
   removed: 'Odebráno'
+  login: 'Přihlásit se'
+  register: 'Registrovat se'
+  logout: 'Odhlásit se'
+  menu: 'Menu'
+  notification: 'Notifikace'
+  load_more: 'Načti další'
+  relation: 'Vztah'
+share:
+  share: 'Sdílet'
+  existing: 'Existující sdílení'
+  add_user_group: 'Přidat uživatele - skupinu'
+  rights: 'Práva'
+  add_user: 'Přidat uživatele'
+app:
+  name: 'Tasker'
+  author: 'Martin Bruna'
 rights:
   0: 'Čtení'
   1: 'Editace'
   2: 'Správa'
   3: 'Vlastník'
+relations:
+  mine: 'Moje'
+  editable: 'Mohu upravit'
+  all: 'Vše'

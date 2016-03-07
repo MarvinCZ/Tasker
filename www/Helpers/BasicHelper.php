@@ -200,7 +200,12 @@ function t($path, $params = array()){
 		if(isset($back[2]['function']) && $back[2]['function'] == 'includeFile'){
 			//from view
 			$data = explode('/', $back[2]['args'][0]);
-			$path = 'view_' . $data[1] . '_' . substr($data[2], 0, strpos($data[2], '.')) . $path;
+			if(!isset($data[2])){
+				$path = 'view_' . substr($data[1], 0, strpos($data[1], '.')) . $path;
+			}
+			else{
+				$path = 'view_' . $data[1] . '_' . substr($data[2], 0, strpos($data[2], '.')) . $path;
+			}
 		}
 	}
 	$s = L::__callStatic($path, null);
@@ -208,4 +213,12 @@ function t($path, $params = array()){
 		$s = str_replace('#'.$i, $params[$i], $s);
 	}
 	return $s;
+}
+
+function translateArray($array, $base){
+	$arr = [];
+	foreach ($array as $value) {
+		$arr[$value] = t($base . '.' . $value);
+	}
+	return $arr;
 }

@@ -3,7 +3,7 @@
 		<div class="note">
 			<div class="title"><?= $note->getTitle() ?></div>
 			<div class="info <?= $note->getCategory() ? "category-".$note->getCategory()->getColor() : "" ?>">
-				<?= $note->getCategory() ? $note->getCategory()->getName() : "Not in Category" ?>
+				<?= $note->getCategory() ? $note->getCategory()->getName() : t('.no_category') ?>
 				<div class="pull-right">
 					<?= $note->getStateText() ?>
 				</div>

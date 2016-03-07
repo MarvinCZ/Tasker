@@ -43,7 +43,7 @@ class NoteController extends ApplicationController{
 					$note_query = $note_query->filterNotesForUser($this->params['user']);
 					break;
 			}
-			$this->params['relation'] = options_names_for_select(array('mine'=>'moje', 'editable'=>'mohu upravit', 'all'=>'vše'), $relation);
+			$this->params['relation'] = options_names_for_select(translateArray(['mine', 'editable', 'all'],'relations'), $relation);
 		}
 		$deadline_params = array();
 		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
@@ -131,9 +131,9 @@ class NoteController extends ApplicationController{
 			$this->params['categories'] = options_for_select($categories, $selected);
 		}
 		$selected  = isset($_GET['state']) ? $_GET['state'] : null;
-		$this->params['states'] = options_names_for_select(array('opened' => 'otevřený', 'done'=>'hotový', 'wip'=>'rozpracovaný', 'closed'=>'uzavřený'), $selected);
+		$this->params['states'] = options_names_for_select(translateArray(['opened', 'done', 'wip', 'closed'],'models.note.states'), $selected);
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
-		$this->params['sort_by'] = options_names_for_select(array('created_at'=>'datum vytvoření', 'deadline'=>'termín', 'relevance'=>'souvislost', 'importance'=>'důležitost', 'category'=>'kategorie', 'state'=>'stav'), $selected);
+		$this->params['sort_by'] = options_names_for_select(translateArray(['created_at', 'deadline', 'relevance', 'importance', 'category', 'state'], 'models.note'), $selected);
 		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
 			$this->renderType('js.phtml');
 		}
