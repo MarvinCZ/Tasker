@@ -25,11 +25,11 @@
 					<div class="btn btn-success close-edit-share">
 						<i class="fa fa-arrow-left"></i>
 					</div>
-					<input type="submit" class="btn btn-primary" value="Uložit">
+					<input type="submit" class="btn btn-primary" value="<?= t('btn.save') ?>">
 				</div>
 			</div>
 			<div class="clear"></div>
-			<?= select("Práva","share_rights", false, $options, true) ?>
+			<?= select(t('share.rights'),"share_rights", false, $options, true) ?>
 		</form>
 	</div>
 </div>

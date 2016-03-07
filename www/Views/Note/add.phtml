@@ -1,10 +1,10 @@
 <div class="page page-middle">
   <header class="header hidden-xs">
-    <a href="/notes"><h1>Add Note</h1></a>
+    <a href="/notes"><h1><?= t('.add_note') ?></h1></a>
   </header>
   <div class="header row text-center visible-xs">
     <div class="header-btn pull-left"><a href="/notes"><i class="fa fa-home"></i></a></div>
-    Add Note
+    <?= t('.add_note') ?>
   </div>
   <div class="container">
     <?php includeFile("Views/Note/_form.phtml", array('note' => $note, 'categories' => $categories)) ?>

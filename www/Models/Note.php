@@ -40,17 +40,7 @@ class Note extends BaseNote
 	 * @return string state
 	 */
 	public function getStateText(){
-		switch ($this->getState()) {
-			case 'opened':
-				return 'otevřené';
-			case 'done':
-				return 'hotové';
-			case 'wip':
-				return 'rozpracované';
-			case 'closed':
-				return 'uzavřené';
-		}
-		return $this->getState();
+		return t('models.note.states.' . $this->getState());
 	}
 
 	/**
@@ -132,5 +122,9 @@ class Note extends BaseNote
         CommentQuery::create()->filterByNote($this)->delete();
 
         parent::delete($con);
+	}
+
+	public static function getTranslatedStates(){
+		return translateArray(['opened', 'done', 'wip', 'closed'],'models.note.states');
 	}
 }

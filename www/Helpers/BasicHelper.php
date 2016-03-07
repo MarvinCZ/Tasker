@@ -81,29 +81,15 @@ function stateOptions($selected){
 function sharedToHTML($to){
 	$html = '<div class="pull-left">';
 	if($to['to_type'] == 'user'){
-		$html .= '<a class="user-link" href="users/' . $to['to_id'] . '">' . $to['name'] . '</a>';
+		$html .= '<a class="user-link" href="users/' . $to['to_id'] . '">' . $to['name'] . '</a> ';
 	}
 	else{
-		$html .= '<a class="user-link" href="groups/' . $to['to_id'] . '">' . $to['name'] . ' (' . $to['user_count'] . ')' . '</a>' ;
+		$html .= '<a class="user-link" href="groups/' . $to['to_id'] . '">' . $to['name'] . ' (' . $to['user_count'] . ')' . '</a> ' ;
 	}
-	$html .= ' přes ';
-	$html .= $to['what_type'] == "category" ? 'kategorii' : 'úkol';
+	$html .= $to['what_type'] == "category" ? t('common.via_category') : t('common.via_note');
 	$html .= '</div>';
 	$html .= '<div class="pull-right">';
-	switch ($to['rights']) {
-		case '0':
-			$html .= 'pouze čtení';
-			break;
-		case '1':
-			$html .= 'čtení, úprava';
-			break;
-		case '2':
-			$html .= 'správa';
-			break;
-		case '3':
-			$html .= 'majitel';
-			break;
-	}
+	$html .= t('rights.' . $to['rights']);
 	$html .= '</div>';
 	return $html;
 }
@@ -124,21 +110,7 @@ function sharedToForm($to, $rights){
 	$params['target_link'] .= $to['to_id'];
 	$params['form_link'] = 'share/update/' . $to['id'];
 	$params['options'] = options_names_for_select(shareOptionsForSelect($rights), $to['rights']);
-	$params['rights'] = '';
-	switch ($to['rights']) {
-		case '0':
-			$params['rights'] = 'pouze čtení';
-			break;
-		case '1':
-			$params['rights'] = 'čtení, úprava';
-			break;
-		case '2':
-			$params['rights'] = 'správa';
-			break;
-		case '3':
-			$params['rights'] = 'majitel';
-			break;
-	}
+	$params['rights'] = t('rights.' . $to['rights']);
 	$params['name'] = $to['name'];
 	if($to['to_type'] == 'group')
 		$params['name'] .= ' (' . $to['user_count'] . ')';

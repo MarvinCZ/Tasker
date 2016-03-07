@@ -1,6 +1,6 @@
 <div class="page page-middle">
 	<header class="header hidden-xs">
-		<a href="/notes"><h1>Note - <?= $note->getTitle() ?></h1></a>
+		<a href="/notes"><h1><?= t('models.note.name') ?> - <?= $note->getTitle() ?></h1></a>
 		<div class="header-right">
 			<?php if($rights >= 1): ?>
 				<div class="header-btn-large pull-left"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
@@ -14,7 +14,7 @@
 	</header>
 	<div class="header row text-center visible-xs">
 		<div class="header-btn pull-left"><a href="/notes"><i class="fa fa-home"></i></a></div>
-		Note
+		<?= t('models.note.name') ?>
 		<div class="header-btn page-show-right pull-right"><i class="fa fa-share-alt"></i></div>
 		<?php if($rights >= 1): ?>
 			<div class="header-btn pull-right"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
@@ -28,14 +28,14 @@
 				</div>
 				<?php if(!empty($note->getDescription())): ?>
 					<div class="inner-box">
-						<h3>Popis</h3>
+						<h3><?= t('models.note.description') ?></h3>
 						<?= $note->getDescription() ?>
 					</div>
 				<?php endif ?>
 				<?php if($note->getCategoryId()): ?>
 					<a href="<?= $note->getCategory()->getShowPath() ?>">
 						<div class="inner-box">
-							<h3>Kategorie</h3>
+							<h3><?= t('models.note.category') ?></h3>
 							<?= $note->getCategory()->getName() ?>
 							<div class="cat-stripe cat-stripe-<?= $note->getCategory()->getColor() ?>" title="<?= $note->getCategory()->getName() ?>"></div>
 						</div>
@@ -43,13 +43,13 @@
 				<?php endif ?>
 				<?php if($note->getDeadline()): ?>
 				<div class="inner-box" id="deadline">
-					<h3>Termín</h3>
+					<h3><?= t('models.note.deadline') ?></h3>
 					<?= $note->getDeadline()->format('d. m. Y  H:i') ?>
 					<div class="pull-right countdown" data-to="<?= $note->getDeadline()->format('d.m.Y.H.i') ?>"></div>
 				</div>
 				<?php endif ?>
 				<div class="inner-box" id="comments">
-					<h3><?= t('.comments') ?></h3>
+					<h3><?= t('models.note.comments') ?></h3>
 					<div class="comments">
 						<?php foreach ($note->getComments() as $c): ?>
 							<?php includeFile("Views/Note/_comment.phtml", array('comment' => $c)) ?>
@@ -63,7 +63,7 @@
 							<div class="input-group">
 								<input type="text" name="message" class="form-control">
 								<span class="input-group-btn">
-									<input type="submit" class="btn btn-primary" type="button" value="Odeslat"/>
+									<input type="submit" class="btn btn-primary" type="button" value="<?= t('btn.send') ?>"/>
 								</span>
 							</div>
 							<div class="error-text error-box"></div>
@@ -75,17 +75,17 @@
 				<div class="select-state">
 				<?php if($rights >= 1): ?>
 					<div class="inner-box">
-						<?= select("Stav","state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
+						<?= select(t('models.note.state'),"state", false, $states, true, 'note/'.$note->getId().'/state/') ?>
 					</div>
 				<?php else: ?>
 					<div class="inner-box">
-						<h3>Stav</h3>
+						<h3><?= t('models.note.comments') ?></h3>
 						<?= $note->getState() ?>
 					</div>
 				<?php endif ?>
 				</div>
 				<div class="inner-box" id="shared-with">
-					<h3>Sdíleno s</h3>
+					<h3><?= t('.shared_with') ?></h3>
 					<?php foreach ($shared_to as $shared): ?>
 						<div class="row side-padding">
 							<?= sharedToHTML($shared) ?>
@@ -93,12 +93,12 @@
 					<?php endforeach ?>
 					<?php if(empty($shared_to)): ?>
 						<div class="row side-padding">
-							Tento úkol máte k dispozici jen vy. Pokud chcete sdílet přístup klikněte na <i class="fa fa-share-alt"></i>
+							<?= t('.no_share') ?><i class="fa fa-share-alt"></i>
 						</div>
 					<?php endif ?>
 				</div>
 				<div class="inner-box">
-					<h3>Files</h3>
+					<h3><?= t('models.note.files') ?></h3>
 					<div class="file">
 						<i class="fa fa-paperclip"></i>
 						photo.jpeg
@@ -113,11 +113,11 @@
 		<div class="header row text-center">
 			<div class="header-btn page-show-middle pull-left visible-xs"><i class="fa fa-reply"></i></div>
 			<div class="header-btn page-hide-right pull-left hidden-xs"><i class="fa fa-reply"></i></div>
-			Share
+			<?= t('share.share') ?>
 		</div>
 		<div class="container">
 			<div class="inner-box">
-				<h3>Existující sdílení:</h3>
+				<h3><?= t('share.existing') ?>:</h3>
 				<?php foreach ($shared_to as $shared): ?>
 					<?php if($shared['what_type'] == "note"): ?>
 						<?= sharedToForm($shared, $rights) ?>
@@ -125,25 +125,25 @@
 				<?php endforeach ?>
 			</div>
 			<div class="inner-box">
-				<h3>Přidat uživatele - skupinu</h3>
+				<h3><?= t('share.add_user_group') ?></h3>
 				<form action="share/add/note/<?= $note->getId() ?>" method="POST">
 					<div class="form-group">
-						<input name="name" class="form-control complete-user-group" placeholder="Jméno uživatele nebo skupiny">
+						<input name="name" class="form-control complete-user-group" placeholder="<?= t('share.user_group_placeholder') ?>">
 					</div>
-					<?= select("Práva","share_rights", false, $rights_select, true) ?>
-					<input type="submit" class="btn btn-primary btn-full" value="Přidat">
+					<?= select(t('share.rights'),"share_rights", false, $rights_select, true) ?>
+					<input type="submit" class="btn btn-primary btn-full" value="<?= t('btn.add') ?>">
 				</form>
 				<div class="clearfix"></div>
 			</div>
 			<div class="inner-box">
-				<h3>Nová skupina</h3>
+				<h3><?= t('models.group.new') ?></h3>
 				<form action="/share/new_group" method="POST" class="new-group">
 					<input type="hidden" value="<?= $note->getId() ?>" name="note_id">
-					<input type="text" class="form-control" name="name" placeholder="Jméno skupiny">
-					<?= select("Práva","share_rights", false, $rights_select, true) ?>
+					<input type="text" class="form-control" name="name" placeholder="<?= t('share.group_placeholder') ?>">
+					<?= select(t('share.rights'),"share_rights", false, $rights_select, true) ?>
 					<div class="row">
-						<div class="col-xs-6"><div class="btn btn-success btn-full" data-newuser="1">Přidat uzivatele</div></div>
-						<div class="col-xs-6"><input type="submit" class="btn btn-primary btn-full" value="Uložit"/></div>
+						<div class="col-xs-6"><div class="btn btn-success btn-full" data-newuser="1"><?= t('share.add_user') ?></div></div>
+						<div class="col-xs-6"><input type="submit" class="btn btn-primary btn-full" value="<?= t('btn.save') ?>"/></div>
 					</div>
 				</form>
 			</div>

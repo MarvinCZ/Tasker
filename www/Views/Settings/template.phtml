@@ -28,7 +28,7 @@
 	<body>
 		<div class="page page-middle">
 			<header class="header hidden-xs">
-				<a href="/notes"><h1>Nastavení</h1></a>
+				<a href="/notes"><h1><?= t('.title') ?></h1></a>
 				<div class="header-right">
 					<span class="user-name"><?= $params['user']->getNick() ?></span>
 					<img src="<?= $params['user']->getAvatarPath() ?>" class="header-img img-circle">
@@ -36,7 +36,7 @@
 			</header>
 			<div class="header row text-center visible-xs">
 				<div class="header-btn pull-left"><a href="/notes"><i class="fa fa-home"></i></a></div>
-				Nastavení
+				<?= t('.title') ?>
 				<div class="header-btn page-show-right pull-right"><i class="fa fa-share-alt"></i></div>
 			</div>
 			<div class="container">
@@ -51,9 +51,9 @@
 								<?= $params['user']->getDisplayName() ?>
 							</div>
 							<ul class="settings-menu">
-								<a href="/settings"><li><i class="fa fa-user fa-fw"></i>Obecné</li></a>
-								<a href="/settings/category"><li><i class="fa fa-tags fa-fw"></i>Kategorie</li></a>
-								<a href="/settings/groups"><li><i class="fa fa-user fa-fw"></i>Skupiny</li></a>
+								<a href="/settings"><li><i class="fa fa-user fa-fw"></i><?= t('.common') ?></li></a>
+								<a href="/settings/category"><li><i class="fa fa-tags fa-fw"></i><?= t('.categories') ?></li></a>
+								<a href="/settings/groups"><li><i class="fa fa-user fa-fw"></i><?= t('.groups') ?></li></a>
 							</ul>
 						</div>
 					</div>

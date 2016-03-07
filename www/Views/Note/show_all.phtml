@@ -102,7 +102,7 @@
 				</div>
 			<?php endif ?>
 			<div class="filter_submit container-width">
-				<input type="submit" value="Search" class="big-btn"/>
+				<input type="submit" value="<?= t('.search') ?>" class="big-btn"/>
 			</div>
 			<div class="inner-box">
 				<?= select(t('models.note.state'),"state", true, $states, false) ?>
@@ -144,10 +144,10 @@
 				<h3><?= t('share.add_user_group') ?></h3>
 				<form action="share/add/category/<?= $category->getId() ?>" method="POST">
 					<div class="form-group">
-						<input name="name" class="form-control complete-user-group" placeholder="Jméno uživatele nebo skupiny">
+						<input name="name" class="form-control complete-user-group" placeholder="<?= t('share.user_group_placeholder') ?>">
 					</div>
 					<?= select(t('share.rights'),"share_rights", false, $rights_select, true) ?>
-					<input type="submit" class="btn btn-primary btn-full" value="Přidat">
+					<input type="submit" class="btn btn-primary btn-full" value="<?= t('btn.add') ?>">
 				</form>
 				<div class="clearfix"></div>
 			</div>
@@ -155,11 +155,11 @@
 				<h3><?= t('models.group.new') ?></h3>
 				<form action="/share/new_group" method="POST" class="new-group">
 					<input type="hidden" value="<?= $category->getId() ?>" name="category_id">
-					<input type="text" class="form-control" name="name" placeholder="Jméno skupiny">
+					<input type="text" class="form-control" name="name" placeholder="<?= t('share.group_placeholder') ?>">
 					<?= select(t('share.rights'),"share_rights", false, $rights_select, true) ?>
 					<div class="row">
 						<div class="col-xs-6"><div class="btn btn-success btn-full" data-newuser="1"><?= t('share.add_user') ?></div></div>
-						<div class="col-xs-6"><input type="submit" class="btn btn-primary btn-full" value="Uložit"/></div>
+						<div class="col-xs-6"><input type="submit" class="btn btn-primary btn-full" value="<?= t('btn.save') ?>"/></div>
 					</div>
 				</form>
 			</div>

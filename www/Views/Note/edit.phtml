@@ -1,10 +1,10 @@
 <div class="page page-middle">
 	<header class="header hidden-xs">
-		<a href="/notes"><h1>Note Edit - <?= $note->getTitle() ?></h1></a>
+		<a href="/notes"><h1><?= t('.edit_note') ?> - <?= $note->getTitle() ?></h1></a>
 	</header>
 	<div class="header row text-center visible-xs">
 		<div class="header-btn pull-left"><a href="<?= $note->getShowPath() ?>"><i class="fa fa-chevron-left"></i></a></div>
-		Note Edit
+		<?= t('.edit_note') ?>
 	</div>
 	<div class="container">
 		<?php includeFile("Views/Note/_form.phtml", array('note' => $note, 'categories' => $categories)) ?>

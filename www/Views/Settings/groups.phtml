@@ -26,13 +26,13 @@
 		</table>
 	</div>
 	<div class="part-new">
-		<h2>Nová skupina</h2>
+		<h2><?= t('.new_group') ?></h2>
 		<form action="group/add" method="post" id="add-group">
 			<div class="form-group">
 				<label for="group_name"><?= t('.name') ?></label>
 				<input type="text" class="form-control" name="name">
 			</div>
-		<h3>Uživatelé</h3>
+		<h3><?= t('.users') ?></h3>
 		<table class="table new-group-users">
 			<tr>
 				<th><?= t('.user_name') ?></th>
@@ -69,7 +69,7 @@
 							<div class="btn btn-primary btn-full edituserentry"><?= t('btn.ok') ?></div>
 						</div>
 						<div class="col-xs-6">
-							<div class="btn btn-primary btn-full add-user">Přidat nového</div>
+							<div class="btn btn-primary btn-full add-user"><?= t('.add_new') ?></div>
 						</div>
 					</div>
 				</div>

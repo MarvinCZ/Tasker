@@ -131,7 +131,7 @@ class NoteController extends ApplicationController{
 			$this->params['categories'] = options_for_select($categories, $selected);
 		}
 		$selected  = isset($_GET['state']) ? $_GET['state'] : null;
-		$this->params['states'] = options_names_for_select(translateArray(['opened', 'done', 'wip', 'closed'],'models.note.states'), $selected);
+		$this->params['states'] = options_names_for_select(Note::getTranslatedStates(), $selected);
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
 		$this->params['sort_by'] = options_names_for_select(translateArray(['created_at', 'deadline', 'relevance', 'importance', 'category', 'state'], 'models.note'), $selected);
 		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
@@ -166,7 +166,7 @@ class NoteController extends ApplicationController{
 			$this->params['states'] = stateOptions($this->params['note']->getState());
 		}
 		else{
-			$this->addFlash("error", "This note doesnt exists");
+			$this->addFlash("error", t('common.not_found'));
 			$this->redirectTo('/notes');
 		}
 	}
@@ -209,7 +209,7 @@ class NoteController extends ApplicationController{
 		if($category != null)
 			$note->setCategory($category);
 		if($note->save()){
-			$this->addFlash("success", "edited");
+			$this->addFlash("success", t('common.edited'));
 			$this->renderString(json_encode(['redirect'=> $note->getShowPath()]));
 		}
 		else{
@@ -230,7 +230,7 @@ class NoteController extends ApplicationController{
 		$note->setCategory($category);
 		$note->setUser($this->params['user']);
 		if($note->save()){
-			$this->addFlash("success", "edited");
+			$this->addFlash("success", t('common.added'));
 			$this->renderString(json_encode(['redirect'=> $note->getShowPath()]));
 		}
 		else{
@@ -238,6 +238,7 @@ class NoteController extends ApplicationController{
 		}
 	}
 
+	//TODO handle fail more ....
 	protected function change_state($id){
 		$note = NoteQuery::create()->
 			filterNotesForUser($this->params['user'], 1)->
@@ -245,7 +246,6 @@ class NoteController extends ApplicationController{
 		if($note){
 			$note->setState($_GET['selected']);
 			$note->save();
-			$log->addInfo('CHANGE: "status changed to ' . $note->getState());
 			$this->renderString("status changed to " . $note->getState());
 		}
 		else{
@@ -282,7 +282,7 @@ class NoteController extends ApplicationController{
 		$rights = $note->getRightsForUser($this->params['user']);
 		if($rights >= 3){
 			$note->delete();
-			$this->addFlash("success", "removed");
+			$this->addFlash("success", t('common.removed'));
 		}
 		else{
 			$this->addFlash("error", t('common.no_rights'));
