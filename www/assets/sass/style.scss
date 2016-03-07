@@ -135,6 +135,11 @@ body{
 		width: 750px;		
 	}
 }
+@media (max-width: $screen-sm-max) {
+	.container-sm-full{
+		width: 100%;
+	}
+}
 .big-btn{
 	box-shadow: $default-box-shadow;
 	background-color: white;
@@ -456,7 +461,7 @@ $category_colors: ('red', #F84758),
 	color: #333;
 	&:hover{
 		box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.1);
-		.deadline{
+		.note-status{
 			box-shadow: -2px 2px 5px rgba(0,0,0,0.2);
 		}
 	}
@@ -470,31 +475,35 @@ $category_colors: ('red', #F84758),
 			border-bottom: 3px solid $color;
 		}
 	}
-	.deadline{
+	.note-status{
 		position: absolute;
 		bottom: -15px;
 		right: 8px;
 		padding: 6px 10px;
 		font-size: 0.9em;
 		word-spacing: -1px;
-		background: #EEE;
+		background: #f7f7f7;
 		box-shadow: -4px 4px 5px rgba(0,0,0,0.2);
 		border-bottom: 3px solid black;
 		font-weight: bold;
 	}
-	.deadline-ok{
+	.note-status-done{
 		border-color: #4D9749;
 		color: #4D9749;
 	}
-	.deadline-closed{
+	.note-status-opened{
+		border-color: #EB8432;
+		color: #EB8432;
+	}
+	.note-status-wip{
+		border-color: #FFC249;
+		color: #FFC249;		
+	}
+	.note-status-closed{
 		border-color: #525251;
 		color: #525251;
 	}
-	.deadline-soon{
-		border-color: #CAC700;
-		color: #CAC700;
-	}
-	.deadline-late{
+	.note-status-late{
 		border-color: #A94442;
 		color: #A94442;
 	}
@@ -509,6 +518,10 @@ $category_colors: ('red', #F84758),
 		background: #EEE;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 		font-weight: bold;
+		.deadline{
+			font-size: 0.8em;
+			margin-top: 2px;
+		}
 	}
 }
 .new-note{

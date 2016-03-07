@@ -60,18 +60,18 @@ class Note extends BaseNote
 				return 'closed';
 				break;
 			case 'done':
-				return 'ok';
+				return 'done';
 				break;
 			case 'opened':
 				if(!$deadline || $days > 1)
-					return 'ok';
+					return 'opened';
 				if($days > 0)
-					return 'soon';
+					return 'opened';
 				return 'late';
 				break;
 			case 'wip':
 				if(!$deadline || $days > 0)
-					return 'soon';
+					return 'wip';
 				return 'late';
 				break;
 		}

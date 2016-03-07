@@ -40,13 +40,13 @@ var show_left = function(){
   	}, time);
 	$('.page-middle').animate({
     	left: "100%"
-  	}, time);
+  	}, time, left_done);
 	$('.page-right').animate({
     	left: "100%"
   	}, time);
 	$('.page-right-2').animate({
     	left: "100%"
-  	}, time, left_done);
+  	}, time);
 	$('.page-left .header').animate({
     	left: "0"
   	}, time);
@@ -71,13 +71,13 @@ var show_middle = function(){
   	}, time);
 	$('.page-middle').animate({
     	left: "0"
-  	}, time);
+  	}, time, middle_done);
 	$('.page-right').animate({
     	left: "100%"
   	}, time);
 	$('.page-right-2').animate({
     	left: "100%"
-  	}, time, middle_done);
+  	}, time);
 	$('.page-left .header').animate({
     	left: "-100%"
   	}, time);
@@ -102,13 +102,13 @@ var show_right = function(){
   	}, time);
 	$('.page-middle').animate({
     	left: "-100%"
-  	}, time);
+  	}, time, right_done);
 	$('.page-right').animate({
     	left: "0"
   	}, time);
 	$('.page-right-2').animate({
     	left: "100%"
-  	}, time, right_done);
+  	}, time);
 	$('.page-left .header').animate({
     	left: "-100%"
   	}, time);
@@ -133,13 +133,13 @@ var show_right_2 = function(){
   	}, time);
 	$('.page-middle').animate({
     	left: "-200%"
-  	}, time);
+  	}, time, right_2_done);
 	$('.page-right').animate({
     	left: "-100%"
   	}, time);
 	$('.page-right-2').animate({
     	left: "0"
-  	}, time, right_2_done);
+  	}, time);
 	$('.page-left .header').animate({
     	left: "-300%"
   	}, time);

@@ -4,15 +4,15 @@
 			<div class="title"><?= $note->getTitle() ?></div>
 			<div class="info <?= $note->getCategory() ? "category-".$note->getCategory()->getColor() : "" ?>">
 				<?= $note->getCategory() ? $note->getCategory()->getName() : t('.no_category') ?>
-				<div class="pull-right">
-					<?= $note->getStateText() ?>
-				</div>
+				<?php if($note->getDeadline()): ?>
+					<div class="pull-right deadline">
+						<span title="<?= t('models.note.deadline') ?>"><i class="fa fa-clock-o"></i> <?= $note->getFormatedDeadline() ?></span>
+					</div>
+				<?php endif ?>	
 			</div>
-			<?php if($note->getDeadline()): ?>
-				<div class="deadline deadline-<?= $note->getStateClass() ?>">
-					<span title="deadline"><i class="fa fa-clock-o"></i> <?= $note->getFormatedDeadline() ?></span>
-				</div>
-			<?php endif ?>				
+			<div class="note-status note-status-<?= $note->getStateClass() ?>">
+				<?= $note->getStateText() ?>
+			</div>
 		</div>
 	</a>
 </div>
