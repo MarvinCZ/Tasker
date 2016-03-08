@@ -47,11 +47,13 @@ class CategoryController extends ApplicationController{
 	}
 
 	protected function add(){
+		$success_message = t('.category_added');
 		if(empty($_POST['id'])){
 			$category = new Category();
 			$category->setUser($this->params['user']);			
 		}
 		else{
+			$success_message = t('.category_edited');
 			$category = CategoryQuery::create()->
 				filterByUser($this->params['user'])->
 				filterById($_POST['id'])->
@@ -72,7 +74,7 @@ class CategoryController extends ApplicationController{
 			}			
 		}
 		if($success){
-			$this->addFlash("success", t('.category_added'));
+			$this->addFlash("success", $success_message);
 			$this->renderString(json_encode(['redirect'=>$_SERVER['HTTP_REFERER']]));
 		}
 		else{

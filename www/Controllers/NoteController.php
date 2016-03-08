@@ -287,7 +287,8 @@ class NoteController extends ApplicationController{
 		else{
 			$this->addFlash("error", t('common.no_rights'));
 		}
-		$this->redirectBack();
+		$pos = $this->getCallStackPositionWithout('/^[\/]notes[\/][0-9]+$/');
+		$this->redirectBack($pos);
 	}
 
 	protected function getAllowedKeysForCreate(){

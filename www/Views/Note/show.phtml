@@ -1,7 +1,10 @@
 <div class="page page-middle">
 	<header class="header hidden-xs">
-		<a href="/notes"><h1><?= t('models.note.name') ?> - <?= $note->getTitle() ?></h1></a>
+		<a href="/notes"><h1><?= t('models.note.name') ?></h1></a>
 		<div class="header-right">
+			<?php if($rights >= 3): ?>
+				<a href="/notes/<?= $note->getId() ?>/remove"><div class="header-btn-large pull-left space-right"><i class="fa fa-trash"></i></div></a>
+			<?php endif ?>
 			<?php if($rights >= 1): ?>
 				<div class="header-btn-large pull-left"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
 			<?php endif ?>
@@ -15,15 +18,20 @@
 	<div class="header row text-center visible-xs">
 		<div class="header-btn pull-left"><a href="/notes"><i class="fa fa-home"></i></a></div>
 		<?= t('models.note.name') ?>
-		<div class="header-btn page-show-right pull-right"><i class="fa fa-share-alt"></i></div>
+		<?php if($rights >= 2): ?>
+			<div class="header-btn page-show-right pull-right"><i class="fa fa-share-alt"></i></div>
+		<?php endif ?>
 		<?php if($rights >= 1): ?>
 			<div class="header-btn pull-right"><a href="<?= $note->getEditPath() ?>"><i class="fa fa-pencil"></i></a></div>
+		<?php endif ?>
+		<?php if($rights >= 3): ?>
+			<a href="/notes/<?= $note->getId() ?>/remove"><div class="header-btn pull-right space-right"><i class="fa fa-trash"></i></div></a>
 		<?php endif ?>
 	</div>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-8">
-				<div class="inner-box visible-xs">
+				<div class="inner-box">
 					<h3><?= $note->getTitle() ?></h3>
 				</div>
 				<?php if(!empty($note->getDescription())): ?>

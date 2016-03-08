@@ -26,7 +26,8 @@ abstract class ApplicationController{
 	private $rendered = false;
 
 	public function __construct(){
-		$this->params['title'] = "Tasker";
+		$this->params['title'] = t('app.name');
+		$this->addBeforeFilter("add_request_to_call_stack");
 		$this->addBeforeFilter("init_flashes");
 		$this->addBeforeFilter("load_user");
 		$this->addBeforeFilter("is_logged");
@@ -54,8 +55,14 @@ abstract class ApplicationController{
 		$this->params['user_logged'] = false;
 	}
 
-	private function save_backpage(){
-		$_SESSION['backpage'] = "";
+	private function add_request_to_call_stack(){
+		if(!isset($_SESSION['call_stack'])){
+			$_SESSION['call_stack'] = [];
+		}
+		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') === FALSE){
+			array_unshift($_SESSION['call_stack'], $_SERVER['REQUEST_URI']);
+			$_SESSION['call_stack'] = array_slice($_SESSION['call_stack'], 0, 5);
+		}
 	}
 
 	/**
@@ -295,14 +302,37 @@ abstract class ApplicationController{
 		die();
 	}
 
-	protected function redirectBack(){
-		if(!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == $_SERVER['REQUEST_URI']){
-			header('Location: /');
+	protected function redirectBack($step = 1){
+		$length = count($_SESSION['call_stack']);
+		if($step <= $length){
+			header('Location: ' . $_SESSION['call_stack'][$step]);
 		}
 		else{
-			header('Location: '.$_SERVER['HTTP_REFERER']);
+			header('Location: ' . $_SERVER['HTTP_REFERER']);
 		}
 		saveFlashes();
 		die();
+	}
+
+	protected function getCallStackPositionWithout($regex){
+		foreach ($_SESSION['call_stack'] as $index => $address) {
+			if($index == 0)
+				continue;
+			if(!preg_match($regex, $address)){
+				return $index;
+			}
+		};
+		return -1;
+	}
+
+	protected function getCallStackPositionWith($regex){
+		foreach ($_SESSION['call_stack'] as $index => $address) {
+			if($index == 0)
+				continue;
+			if(preg_match($regex, $address)){
+				return $index;
+			}
+		};
+		return -1;
 	}
 }

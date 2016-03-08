@@ -19,7 +19,7 @@ models:
     category: 'Kategorie'
     deadline: 'Termín'
     title: 'Titulek'
-    description: 'Popisek'
+    description: 'Další info'
     state: "Stav"
     deadline_from: 'Termín od'
     deadline_to: 'Termín do'
@@ -40,7 +40,7 @@ models:
         not_blank: 'Titulek nesmí být prázdný'
         max_length: 'Titulek nesmí přesáhnout 25 znaků'
       description:
-        max_length: 'Popisek nesmí přesáhnout 300 znaků'
+        max_length: 'Další info nesmí přesáhnout 300 znaků'
   sub_note:
     validation:
       text:
@@ -66,6 +66,7 @@ controllers:
     category:
       added: 'Kategorie byla přidána'
       removed: 'Kategorie byla odebrána'
+      edited: 'Kategorie byla upravena'
   groupcontroller:
     group_leaved: 'Skupina byla opuštěna'
 
@@ -125,7 +126,8 @@ view:
       no_share: 'Tento úkol máte k dispozici jen vy. Pokud chcete sdílet přístup klikněte na '
     add:
       add_note: 'Přidat úkol'
-    edit: 'Upravit úkol'
+    edit:
+      edit_note: 'Upravit úkol'
     _note:
       no_category: 'Bez kategorie'
   _menu:
@@ -144,8 +146,8 @@ common:
   no_rights: 'Na provedení této akce nemáte dostatečná práva'
   saved: 'Zaznam uložen'
   edited: 'Záznam editován'
-  added: 'Záznam přidáno'
-  removed: 'Záznam odebráno'
+  added: 'Záznam přidán'
+  removed: 'Záznam odebrán'
   login: 'Přihlásit se'
   register: 'Registrovat se'
   logout: 'Odhlásit se'
