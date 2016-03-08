@@ -39,7 +39,7 @@ class Category extends BaseCategory
 	 * @param  mixed(Models\Group, Models\User) to who should it be shared
 	 * @param  integer level of access (0 - read, 1 - 0 + write, 2 - 1 + manage, 3 - owner)
 	 */
-	public function share($to, $rights = 0){
+	public function shareTo($to, $rights = 0){
 		$s = new Shared();
 		if(is_a($to, "Models\Group"))
 			$s->setGroup($to);

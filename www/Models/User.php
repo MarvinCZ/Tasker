@@ -3,6 +3,7 @@
 namespace Models;
 
 use Models\Base\User as BaseUser;
+use Propel\Runtime\Propel;
 use Propel\Runtime\Connection\ConnectionInterface;
 
 /**
@@ -62,5 +63,15 @@ class User extends BaseUser
 	 */
 	public function checkPassword($password){
 		return $this->getPassword() == sha1($password);
+	}
+
+	public function getPossibleToNames($part){
+		$sql =  'SELECT id as data, nick as value FROM user WHERE nick LIKE :name
+				UNION
+				SELECT id as data, name as value FROM group_of_users LEFT JOIN user_group ON group_of_users.id = user_group.group_id WHERE user_id = :user_id AND user_group.rights >= 1 AND name LIKE :name';
+		$con = Propel::getWriteConnection(\Models\Map\UserTableMap::DATABASE_NAME);
+		$stmt = $con->prepare($sql);
+		$stmt->execute(array('name' => $part.'%', 'user_id' => $this->getId()));
+		return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 	}
 }

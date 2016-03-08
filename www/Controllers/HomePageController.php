@@ -33,11 +33,9 @@ class HomePageController extends ApplicationController{
 	}
 
 	protected function index(){
-		$fb = getFacebook();
-		$helper = $fb->getRedirectLoginHelper();
-		$permissions = ['email', 'public_profile'];
-		$this->params['fblogin'] = $helper->getLoginUrl('http://' . $_SERVER['HTTP_HOST'] . '/fb-login-callback', $permissions);
-		$google_client = getGoogle();
-		$this->params['glogin'] = $google_client->createAuthUrl();
+		$this->params['fblogin'] = getFacebook()->
+			getRedirectLoginHelper()->
+			getLoginUrl('http://' . $_SERVER['HTTP_HOST'] . '/fb-login-callback', ['email', 'public_profile']);
+		$this->params['glogin'] = getGoogle()->createAuthUrl();
 	}
 }

@@ -30,18 +30,17 @@ class CategoryController extends ApplicationController{
 		$category = CategoryQuery::create()->
 				filterById($id)->
 				findOne();
-		$rights = $category->getRightsForUser($this->params['user']);
-		if($rights >= 3){
-			if($category){
+		if($category){
+			if($category->getRightsForUser($this->params['user']) >= 3){
 				$category->delete();
 				$this->addFlash("success", t('.category_removed'));
 			}
 			else{
-				$this->addFlash("error", t('common.not_found'));
+				$this->addFlash("error", t('common.no_rights'));
 			}
 		}
 		else{
-			$this->addFlash("error", t('common.no_rights'));
+			$this->addFlash("error", t('common.not_found'));
 		}
 		$this->redirectBack();
 	}
@@ -55,31 +54,38 @@ class CategoryController extends ApplicationController{
 		else{
 			$success_message = t('.category_edited');
 			$category = CategoryQuery::create()->
-				filterByUser($this->params['user'])->
 				filterById($_POST['id'])->
 				findOne();
+			if($category->getRightsForUser($this->params['user']) < 2){
+				$category = 0;
+			}
 		}
-		$category->setName($_POST['category_name']);
-		$category->setColor($_POST['category_color']);
-		$success = false;
-		$errors = array();
-		try {
-			$success = $category->save();
-		} catch (PropelException $e) {
-			if($e->getPrevious()->getCode() == 23000){
-				array_push($errors, ['path' => 'name', 'message' => t('models.category.validation.name.uniq')]);
+		if($category){
+			$category->setName($_POST['category_name']);
+			$category->setColor($_POST['category_color']);
+			$success = false;
+			$errors = array();
+			try {
+				$success = $category->save();
+			} catch (PropelException $e) {
+				if($e->getPrevious()->getCode() == 23000){
+					array_push($errors, ['path' => 'name', 'message' => t('models.category.validation.name.uniq')]);
+				}
+				else{
+					throw $e;
+				}			
+			}
+			if($success){
+				$this->addFlash("success", $success_message);
+				$this->renderString(json_encode(['redirect'=>$_SERVER['HTTP_REFERER']]));
 			}
 			else{
-				throw $e;
-			}			
-		}
-		if($success){
-			$this->addFlash("success", $success_message);
-			$this->renderString(json_encode(['redirect'=>$_SERVER['HTTP_REFERER']]));
+				$errors = array_merge($errors, $category->getValidationFailuresI18n());
+				$this->renderString(json_encode($errors));
+			}
 		}
 		else{
-			$errors = array_merge($errors, $category->getValidationFailuresI18n());
-			$this->renderString(json_encode($errors));
+			$this->renderString(json_encode([['path' => 'common', 'message' => t('common.no_rights')]]]));
 		}
 	}
 }

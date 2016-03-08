@@ -85,7 +85,7 @@ view:
       common: 'Obecné'
       categories: 'Kategorie'
       groups: 'Skupiny'
-    category:
+    categories:
       color: 'Barva'
       name: 'Název'
       action: 'Akce'
@@ -159,6 +159,7 @@ common:
   via_note: 'přes úkol'
 share:
   share: 'Sdílet'
+  shared: 'Sdíleno'
   existing: 'Existující sdílení'
   add_user_group: 'Přidat uživatele - skupinu'
   rights: 'Práva'

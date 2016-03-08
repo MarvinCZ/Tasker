@@ -31,4 +31,28 @@ class Shared extends BaseShared
 	public function getTranslatedRights(){
 		return t('rights.'.$this->getRights());
 	}
+
+	public function canChange($user){
+		return $this->hasRights($user, 2);
+	}
+
+	public function hasRights($user, $rights){
+		if($this->getWhatType() == "note"){
+			$note = NoteQuery::create()->
+				filterById($this->getWhatId())->
+				filterNotesForUser($user, $rights);
+			if($note){
+				return true;
+			}
+		}
+		if($this->getWhatType() == "category"){
+			$category = CategoryQuery::create()->
+				filterById($this->getWhatId())->
+				filterCategoriesForUser($user, $rights);
+			if($category){
+				return true;
+			}
+		}
+		return false;		
+	}
 }

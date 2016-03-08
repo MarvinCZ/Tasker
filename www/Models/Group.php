@@ -4,6 +4,8 @@ namespace Models;
 
 use Models\Base\Group as BaseGroup;
 use Models\UserGroup;
+use Propel\Runtime\Propel;
+use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\ActiveQuery\Criteria;
 
 /**
@@ -90,5 +92,32 @@ class Group extends BaseGroup
 			$relation->setRights(3);
 			$relation->save();
 		}
+	}
+
+	public function delete(ConnectionInterface $con = null){		
+        if ($this->isDeleted()) {
+            throw new PropelException("This object has already been deleted.");
+        }
+
+        if ($con === null) {
+            $con = Propel::getServiceContainer()->getWriteConnection(Map\GroupTableMap::DATABASE_NAME);
+        }
+
+		UserGroupQuery::create()->
+			filterByGroup($this)->
+			delete();
+		SharedQuery::create()->
+			filterByGroup($this)->
+			delete();
+
+		parent::delete($con);
+	}
+
+	public static function getTranslatedRights($max = 3){
+		$arr = [];
+		for ($i = 0; $i <= $max; $i++) { 
+			$arr[$i] = t('rights.' . $i);
+		}
+		return $arr;
 	}
 }

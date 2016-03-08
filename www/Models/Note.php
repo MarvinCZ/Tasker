@@ -124,6 +124,16 @@ class Note extends BaseNote
         parent::delete($con);
 	}
 
+	public function shareTo($to, $rights = 0){
+		$share = new Shared();
+		$share->setRights($rights);
+		if(is_a($to, "Models\Group"))
+			$share->setGroup($to);
+		if(is_a($to, "Models\User"))
+			$share->setUser($to);
+		$this->addShared($share);		
+	}
+
 	public static function getTranslatedStates(){
 		return translateArray(['opened', 'done', 'wip', 'closed'],'models.note.states');
 	}

@@ -2,7 +2,7 @@
 
 $router->addGet('HomePage.index', '/');
 
-$router->addGet('User.auto_complete', '/users/auto-complete');
+$router->addGet('User.auto_complete', '/js/users/auto-complete');
 $router->addGet('User.show', '/users/{id}');
 $router->addGet('User.logout', '/logout');
 $router->addPost('User.create', '/register');
@@ -25,7 +25,7 @@ $router->addPost('Shared.update', '/share/update/{id}');
 $router->addPost('Shared.add_to_note', '/share/add/note/{id}');
 $router->addPost('Shared.add_to_category', '/share/add/category/{id}');
 $router->addGet('Shared.remove', '/share/remove/{id}');
-$router->addGet('Shared.possible', '/share/possible');
+$router->addGet('Shared.possible', '/js/share/possible');
 $router->addPost('Shared.new_group', '/share/new_group');
 
 $router->addPost('Group.add', '/group/add');
@@ -36,7 +36,7 @@ $router->addGet('Group.remove', '/group/{id}/remove');
 $router->addGet('Group.leave', '/group/{id}/leave');
 
 $router->addGet('Settings.index', '/settings');
-$router->addGet('Settings.category', '/settings/category');
+$router->addGet('Settings.categories', '/settings/category');
 $router->addGet('Settings.groups', '/settings/groups');
 $router->addGet('Settings.group', '/settings/group/{id}');
 

@@ -79,9 +79,8 @@ class GroupController extends ApplicationController{
 			die();
 		}
 		if($group->canManage($this->params["user"])){
-			$criteria = new Criteria();
-			$criteria->add('user_group.user_id', $user->getId(), Criteria::EQUAL);
-			$relation = $group->getUserGroups($criteria)->getFirst();
+			$relation = $group->getRelationWithUser($user);
+			//TODO check if relation exists
 			$relation->setRights($_POST['user_rights']);
 			$relation->save();
 			$this->addFlash("success", t('common.edited'));
@@ -101,8 +100,8 @@ class GroupController extends ApplicationController{
 			$this->redirectTo('/');
 		}		
 		if($group->canManage($this->params["user"])){
-			$relation = $user->getUserGroupsJoinGroup($criteria)->getFirst();
-			$relation->delete();
+			$group->removeUser($user);
+			$group->save();
 			$this->addFlash("success", t('common.removed'));
 			$this->redirectBack();
 		}
@@ -119,12 +118,6 @@ class GroupController extends ApplicationController{
 			$this->redirectTo('/');
 		}		
 		if($group->isOwner($this->params["user"])){
-			UserGroupQuery::create()->
-				filterByGroup($group)->
-				delete();
-			SharedQuery::create()->
-				filterByGroup($group)->
-				delete();
 			$group->delete();
 			$this->redirectBack();
 		}

@@ -2,6 +2,7 @@
 
 namespace Models;
 
+use Models\Group;
 use Models\Base\UserGroup as BaseUserGroup;
 
 /**
@@ -18,5 +19,9 @@ class UserGroup extends BaseUserGroup
 {
 	public function getTranslatedRights(){
 		return t('rights.'.$this->getRights());
+	}
+
+	public function getPossibleTranslatedRights(){
+		return Group::getTranslatedRights($this->getRights());
 	}
 }
