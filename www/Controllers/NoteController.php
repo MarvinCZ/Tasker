@@ -135,7 +135,7 @@ class NoteController extends ApplicationController{
 		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
 		$this->params['sort_by'] = options_names_for_select(translateArray(['created_at', 'deadline', 'relevance', 'importance', 'category', 'state'], 'models.note'), $selected);
 		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
-			$this->renderType('js.phtml');
+			$this->renderFile('Note/show_all.js.phtml');
 		}
 		else{
 			$this->renderFileToTemplate('Note/show_all.phtml');

@@ -3,7 +3,7 @@
 		<div class="note">
 			<div class="title"><?= $note->getTitle() ?></div>
 			<div class="info <?= $note->getCategory() ? "category-".$note->getCategory()->getColor() : "" ?>">
-				<?= $note->getCategory() ? $note->getCategory()->getName() : t('.no_category') ?>
+				<?= $note->getCategory() ? $note->getCategory()->getName() : t('view.Note._note.no_category') ?>
 				<?php if($note->getDeadline()): ?>
 					<div class="pull-right deadline">
 						<span title="<?= t('models.note.deadline') ?>"><i class="fa fa-clock-o"></i> <?= $note->getFormatedDeadline() ?></span>

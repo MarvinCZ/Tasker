@@ -469,6 +469,7 @@ $category_colors: ('red', #F84758),
 		font-size: 1.6em;
 		padding-right: 5px;
 		text-decoration: none;
+		word-break: normal;
 	}
 	@each $name, $color in $category_colors {
 		.category-#{$name} {

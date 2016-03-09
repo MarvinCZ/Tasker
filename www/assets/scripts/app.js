@@ -307,8 +307,8 @@ $(document).ready(function(){
 		});
 	}
 
-	$(window).scroll(function() {
-		if(($(document).height() - $(window).height() - $(window).scrollTop()) > 200 && $('.next_page').length > 0 && $('.next_page').data().nextpage != page) {
+	var load_more = function(){
+		if(($(document).height() - $(window).height() - $(window).scrollTop()) < 200 && $('.next_page').length > 0 && $('.next_page').data().nextpage != page) {
 			page = $('.next_page').data().nextpage;
 			$.ajax({
 				url: window.location.href,
@@ -316,7 +316,10 @@ $(document).ready(function(){
 				dataType: 'script'
 			});
 		}
-	});
+	}
+
+	$(window).scroll(load_more);
+	load_more();
 
 	$('.go-back').click(function(){
 		window.history.back();
