@@ -194,3 +194,7 @@ function translateArray($array, $base){
 	}
 	return $arr;
 }
+
+function get($index){
+	return isset($_GET[$index]) ? $_GET[$index] : null;
+}

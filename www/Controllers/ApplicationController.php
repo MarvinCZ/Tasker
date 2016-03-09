@@ -59,7 +59,7 @@ abstract class ApplicationController{
 		if(!isset($_SESSION['call_stack'])){
 			$_SESSION['call_stack'] = [];
 		}
-		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') === FALSE && !preg_match('/^[\/]js[\/]/', $_SERVER['REQUEST_URI'])){
+		if(!$this->isAJAXRequest()){
 			array_unshift($_SESSION['call_stack'], $_SERVER['REQUEST_URI']);
 			$_SESSION['call_stack'] = array_slice($_SESSION['call_stack'], 0, 5);
 			LogHelper::logMessage('ADD TO CALL_BACK: ' . $_SERVER['REQUEST_URI']);
@@ -335,5 +335,9 @@ abstract class ApplicationController{
 			}
 		};
 		return -1;
+	}
+
+	protected function isAJAXRequest(){
+		return (strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE || preg_match('/^[\/]js[\/]/', $_SERVER['REQUEST_URI']));
 	}
 }

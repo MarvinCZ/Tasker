@@ -313,7 +313,8 @@ $(document).ready(function(){
 			$.ajax({
 				url: window.location.href,
 				data: {page: $('.next_page').data().nextpage},
-				dataType: 'script'
+				dataType: 'script',
+				success: load_more
 			});
 		}
 	}

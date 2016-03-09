@@ -7,6 +7,7 @@ use Models\User;
 use Models\UserQuery;
 use Models\Note;
 use Models\NoteQuery;
+use Models\NoteFilter;
 use Models\Category;
 use Models\CategoryQuery;
 use Models\Notification;
@@ -23,118 +24,29 @@ class NoteController extends ApplicationController{
 	}
 
 	protected function show_category($category){
-		$this->params['deadline_to'] = null;
-		$this->params['deadline_from'] = null;
-		$this->params['fulltext'] = "";
-		$this->params['importance'] = "0";
+		$filter = new NoteFilter($this->params['user'], true);
+		$filter->sortBy(get('sort_by'))->
+			filterByCategory($category)->
+			filterByState(get('state'))->
+			filterByFulltext(get('fulltext'))->
+			filterByDeadline(get('deadline_from'), get('deadline_to'))->
+			filterByImportanceFrom(get('importance_from'))->
+			setPage(get('page'));
 
-		$note_query = NoteQuery::create()->
-			leftJoinWith('Note.Category');
-		if(!isset($category)){
-			$relation = isset($_GET['relation']) ? $_GET['relation'] : 'mine';
-			switch ($relation) {
-				case 'mine':
-					$note_query = $note_query->filterByUser($this->params['user']);
-					break;
-				case 'editable':
-					$note_query = $note_query->filterNotesForUser($this->params['user'], 1);
-					break;
-				default:
-					$note_query = $note_query->filterNotesForUser($this->params['user']);
-					break;
+		if($filter->hasErrors()){
+			foreach ($filter->getErrors() as $error) {
+				$this->addFlash('error', $error);
 			}
-			$this->params['relation'] = options_names_for_select(translateArray(['mine', 'editable', 'all'],'relations'), $relation);
-		}
-		$deadline_params = array();
-		if(isset($_GET['deadline_to']) && !empty($_GET['deadline_to'])){
-			$deadline_params['max'] = $_GET['deadline_to'];
-			$this->params['deadline_to'] = $_GET['deadline_to'];
-		}
-		if(isset($_GET['deadline_from']) && !empty($_GET['deadline_from'])){
-			$deadline_params['min'] = $_GET['deadline_from'];
-			$this->params['deadline_from'] = $_GET['deadline_from'];
-		}
-		if(!empty($deadline_params)){
-			$note_query = $note_query->filterByDeadline($deadline_params);
-		}
-		$this->params['category_only'] = false;
-		if($category != null){
-			$this->params['category'] = CategoryQuery::create()->findPK($category);
-			if(!$this->params['category']){
-				$this->addFlash('error', t('common.not_found'));
-				$this->redirectTo('/');
-			}
-			$note_query = $note_query->
-				filterByCategoryId($category);
-			$this->params['category_only'] = true;
-			$this->params['shared_to'] = $this->params['category']->getSharedTo();
-			$rights = getUserRightsCategory($this->params['user'], $this->params['category']);
-			$this->params['rights_select'] = options_names_for_select(shareOptionsForSelect($rights));
-			$this->params['rights'] = $rights;
-		}
-		else if(isset($_GET['category']) && is_array($_GET['category'])){
-			$note_query = $note_query->
-			  	useCategoryQuery()->
-    				filterByName($_GET['category'])->
-  				endUse();
-		}
-		if(isset($_GET['state']) && is_array($_GET['state'])){
-			$note_query = $note_query->
-				filterByState($_GET['state']);
-		}
-		if(isset($_GET['importance_from']) && $_GET['importance_from'] > 0){
-			$note_query = $note_query->
-				filterByImportance(array('min' => $_GET['importance_from']));
-			$this->params['importance'] = $_GET['importance_from'];
-		}
-		if(isset($_GET['fulltext']) && !empty($_GET['fulltext'])){
-			$note_query = $note_query->
-				filterByText($_GET['fulltext']);
-			$this->params['fulltext'] = $_GET['fulltext'];
+			$this->redirectTo('/');
 		}
 
-		if(isset($_GET['sort_by'])){
-			switch ($_GET['sort_by']) {
-				case 'deadline':
-					$note_query = $note_query->addAscendingOrderByColumn("deadline");
-					break;
-				case 'relevance':
-					$note_query = $note_query->orderByRelevance();
-					break;
-				case 'importance':
-					$note_query = $note_query->addDescendingOrderByColumn("importance");
-					break;
-				case 'category':
-					$note_query = $note_query->addAscendingOrderByColumn("category.name");
-					break;
-				case 'state':
-					$note_query = $note_query->addAscendingOrderByColumn("state");
-					break;
-			}
-		}
-		$note_query = $note_query->addDescendingOrderByColumn("note.created_at");
-		$page = 1;
-		if(isset($_GET['page']) && $_GET['page'] > 0){
-			$page = $_GET['page'];
-		}
-		$per_page = 32;
-		$this->params['notes'] = $note_query->paginate($page = $page, $maxPerPage = $per_page);
-		$this->params['notifications'] = NotificationQuery::create()->
-			filterByUser($this->params['user'])->
-			find();
-		if(!$this->params['category_only']){
-			$categories = CategoryQuery::create()->
-				select('name')->
-				filterByUser($this->params['user'])->
-				find();
-			$selected  = isset($_GET['category']) ? $_GET['category'] : null;
-			$this->params['categories'] = options_for_select($categories, $selected);
-		}
-		$selected  = isset($_GET['state']) ? $_GET['state'] : null;
-		$this->params['states'] = options_names_for_select(Note::getTranslatedStates(), $selected);
-		$selected  = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'relevance';
-		$this->params['sort_by'] = options_names_for_select(translateArray(['created_at', 'deadline', 'relevance', 'importance', 'category', 'state'], 'models.note'), $selected);
-		if(strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE){
+		$this->params = array_merge($this->params, $filter->getData());
+
+		$this->params['shared_to'] = $this->params['category']->getSharedTo();
+		$this->params['rights'] = $this->params['category']->getRightsForUser($this->params['user']);
+		$this->params['rights_select'] = options_names_for_select(shareOptionsForSelect($this->params['rights']));
+
+		if($this->isAJAXRequest()){
 			$this->renderFile('Note/show_all.js.phtml');
 		}
 		else{
@@ -143,7 +55,21 @@ class NoteController extends ApplicationController{
 	}
 
 	protected function show_all(){
-		$this->show_category(null);
+		$filter = new NoteFilter($this->params['user']);
+		$filter->sortBy(get('sort_by'))->
+			filterByState(get('state'))->
+			filterByFulltext(get('fulltext'))->
+			filterByDeadline(get('deadline_from'), get('deadline_to'))->
+			filterByRelation(get('relation'))->
+			filterByCategories(get('category'))->
+			filterByImportanceFrom(get('importance_from'))->
+			setPage(get('page'));
+
+		$this->params = array_merge($this->params, $filter->getData());
+
+		if($this->isAJAXRequest()){
+			$this->renderFile('Note/show_all.js.phtml');
+		}
 	}
 
 	protected function show($id){
