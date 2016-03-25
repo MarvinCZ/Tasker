@@ -6,6 +6,7 @@ www/propel.yml
 www/propel_tasker.log
 www/app.log
 www/Uploads/Avatars
+www/Uploads/Files
 www/Config/default.php
 www/cache
 vendor

@@ -198,3 +198,14 @@ function translateArray($array, $base){
 function get($index){
 	return isset($_GET[$index]) ? $_GET[$index] : null;
 }
+
+function token($length) {
+    $key = '';
+    $keys = array_merge(range(0, 9), range('a', 'z'));
+
+    for ($i = 0; $i < $length; $i++) {
+        $key .= $keys[array_rand($keys)];
+    }
+
+    return $key;
+}

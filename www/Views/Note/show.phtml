@@ -31,7 +31,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-8">
-				<div class="inner-box">
+				<div class="inner-box title">
 					<h3><?= $note->getTitle() ?></h3>
 					<?= $note->getDescription() ?>
 				</div>
@@ -101,11 +101,26 @@
 					<?php endif ?>
 				</div>
 				<div class="inner-box">
-					<h3><?= t('models.note.files') ?></h3>
-					<div class="file">
-						<i class="fa fa-paperclip"></i>
-						photo.jpeg
+					<div class="pull-left">
+						<h3><?= t('models.note.files') ?></h3>
 					</div>
+					<div class="pull-right">
+						<a href="notes/<?= $note->getId() ?>/files">
+							<i class="fa fa-cog button"></i>
+						</a>
+					</div>
+					<?php foreach ($files as $f): ?>
+						<div class="file">
+							<a href="<?= $f->getPath() ?>" download="<?= $f->getName() ?>" class="link">
+								<?= $f->getName() ?>
+							</a>
+						</div>
+					<?php endforeach ?>
+					<?php if($files->count() == 0): ?>
+						<div class="clear"></div>
+						<?= t('.no_files') ?>
+						<i class="fa fa-cog"></i>
+					<?php endif ?>
 				</div>
 			</div>
 		</div>

@@ -1,0 +1,12 @@
+<div class="file ">
+      <div class="pull-left">
+            <?= $f->getName() ?>
+      </div>
+      <div class="pull-right">
+            <div class="btn-group">
+                  <a href="<?= $f->getPath() ?>" class="btn btn-warning"><i class="fa fa-eye"></i></a>
+                  <a href="<?= $f->getPath() ?>" class="btn btn-primary" download="<?= $f->getName() ?>"><i class="fa fa-download"></i></a>
+                  <a href="file/<?= $f->getId() ?>/delete" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+            </div>
+      </div>
+</div>

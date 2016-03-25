@@ -14,6 +14,8 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Exception\PropelException;
 
 class GroupController extends ApplicationController{
+
+	//TODO validation check
 	protected function add(){
 		$group = new Group();
 		$group->setName($_POST['name']);

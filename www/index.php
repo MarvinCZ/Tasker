@@ -42,6 +42,8 @@ $i18n->setFilePath('Languages/{LANGUAGE}.yml');
 $i18n->setCachePath('./cache');
 $i18n->init();
 
+$language = $i18n->getAppliedLang();
+
 //Add logger to Propel
 Propel::getServiceContainer()->setLogger('defaultLogger', LogHelper::getLogger());
 
@@ -79,6 +81,8 @@ if (isset($route->params['action'])){
 
 	//Unset action so its not passed as first parameter probably use blacklist because of there can be some other params from route
 	unset($params['action']);
+
+	$instance->addParam('language', $language);
 
 	call_user_func_array(array($instance, $action[1]), $params);
 }

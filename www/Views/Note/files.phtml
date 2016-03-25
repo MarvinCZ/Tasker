@@ -1,0 +1,47 @@
+<div class="page">
+	<header class="header hidden-xs">
+		<a href="/notes"><h1><?= t('models.note.files') ?></h1></a>
+		<div class="header-right">
+			<span class="user-name"><?= $user->getNick() ?></span>
+			<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
+		</div>
+	</header>
+	<div class="header row text-center visible-xs">
+		<div class="header-btn pull-left">
+			<a href="/notes/<?= $note->getId() ?>"><i class="fa fa-reply"></i></a>
+		</div>
+		<?= t('models.note.name') ?>
+	</div>
+	<div class="container">
+		<a href="/notes/<?= $note->getId() ?>">
+			<div class="inner-box title">
+				<h3>
+					<?= $note->getTitle() ?>
+				</h3>
+			</div>
+		</a>
+		<div class="row file-uploader">
+	        <div class="col-md-6">
+	          <div id="drag-and-drop-zone" class="inner-box uploader">
+	            <div><?= t('.drag_here') ?></div>
+	            <div class="browser">
+	              <label>
+	                <span><?= t('.open_file_browser') ?></span>
+	                <input type="file" name="files[]" multiple="multiple" title="<?= t('.open_file_browser') ?>">
+	              </label>
+	            </div>
+	          </div>
+	        </div>
+	        <div class="col-md-6">
+	          <div class="inner-box">
+	            <h3><?= t('.uploaded') ?></h3>
+	            <div id='files-box'>
+	            	<?php foreach ($files as $file): ?>
+						<?php includeFile("Views/Note/_file.phtml", array('f' => $file)) ?>
+	            	<?php endforeach ?>
+	            </div>
+	          </div>
+	        </div>
+	    </div>
+	</div>	
+</div>

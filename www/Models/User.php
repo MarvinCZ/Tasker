@@ -24,6 +24,12 @@ class User extends BaseUser
 		return $this->validate();
 	}
 
+	public function preInsert(ConnectionInterface $con = null)
+	{
+		$this->setEmailConfirmToken(token(50));
+		return true;
+	}
+
 	/**
 	 * @return string path to user's avatar
 	 */

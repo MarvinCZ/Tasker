@@ -305,7 +305,7 @@ abstract class ApplicationController{
 
 	protected function redirectBack($step = 1){
 		$length = count($_SESSION['call_stack']);
-		if($step <= $length){
+		if($step != 1 && $step <= $length){
 			header('Location: ' . $_SESSION['call_stack'][$step]);
 		}
 		else{
@@ -339,5 +339,9 @@ abstract class ApplicationController{
 
 	protected function isAJAXRequest(){
 		return (strpos($_SERVER['HTTP_ACCEPT'], 'text/javascript') !== FALSE || preg_match('/^[\/]js[\/]/', $_SERVER['REQUEST_URI']));
+	}
+
+	public function addParam($name, $value){
+		$this->params[$name] = $value;
 	}
 }

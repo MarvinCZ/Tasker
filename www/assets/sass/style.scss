@@ -103,6 +103,10 @@ $small-border: 1px solid rgba(0, 0, 0, 0.2);
 	margin-bottom: 20px;
 }
 
+.clear{
+	clear: both;
+}
+
 .user-link{
 	font-weight: bold;
 }
@@ -117,8 +121,12 @@ body{
 .img-circle{
 	border-radius: 50%;
 }
-.clear{
+.file{
 	clear: both;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-bottom: 10px;
+	line-height: 30px;
 }
 .container-width{
 	width: 100%;
@@ -160,6 +168,11 @@ body{
 	padding: 10px;
 	margin-top: 20px;
 	margin-bottom: 10px;
+	.button{
+		margin-top: 5px;
+		margin-right: 5px;
+		font-size: 2em;
+	}
 	h3{
 		margin-top: 0;
 		font-size: 2.2em;
@@ -247,6 +260,10 @@ body{
 	.tab-select{
 		margin-bottom: 5px;
 	}
+}
+.title{
+	text-align: center;
+	padding-top: 15px;
 }
 .late{
 	border-bottom: 2px solid #FF7373;
@@ -468,6 +485,7 @@ $category_colors: ('red', #F84758),
 	.title{
 		font-size: 1.6em;
 		padding-right: 5px;
+		padding-top: 0;
 		text-decoration: none;
 		word-break: normal;
 	}
@@ -805,4 +823,55 @@ table.users{
 }
 .space-right{
 	margin-right: 20px;
+}
+
+
+.uploader{
+	text-align: center;
+	vertical-align: middle;
+	padding: 30px 0px;
+	margin-bottom: 10px;
+	font-size: 2em;
+	.browser{
+		label{
+			background-color: #5a7bc2;
+			padding: 5px 15px;
+			color: white;
+			padding: 6px 0px;
+			font-size: 40%;
+			font-weight: bold;
+			cursor: pointer;
+			position: relative;
+			overflow: hidden;
+			display: block;
+			width: 300px;
+			margin: 20px auto 0px auto;
+			box-shadow: 1px 1px 2px #888888;
+			&:hover{
+				background-color: #427fed;				
+			}
+		}
+		span{
+			cursor: pointer;			
+		}
+		input{
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: 0;
+			border: solid transparent;
+			border-width: 0 0 100px 200px;
+			opacity: .0;
+			cursor: pointer;
+		}
+	}
+}
+.link{
+	color: #22A;
+	&:hover{
+		color: red;
+	}
+}
+.error{
+	color: #a94442
 }

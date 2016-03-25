@@ -9,7 +9,8 @@ $router->addPost('User.create', '/register');
 $router->addPost('User.login', '/login');
 $router->addGet('User.fb_login', '/fb-login-callback');
 $router->addGet('User.g_login', '/google-callback');
-$router->addGet('User.confirm_email', '/confirm');
+$router->addGet('User.resend_confirm_email', '/resend_confirm/{id}');
+$router->addGet('User.confirm', '/confirm/{token}');
 
 $router->addGet('Note.show_all', '/notes');
 $router->addGet('Note.add', '/notes/add');
@@ -20,6 +21,9 @@ $router->addPost('Note.create', '/notes/add');
 $router->addGet('Note.change_state', '/note/{id}/state/');
 $router->addPost('Note.comment', '/notes/{id}/comment');
 $router->addGet('Note.remove', '/notes/{id}/remove');
+$router->addGet('Note.files', '/notes/{id}/files');
+$router->addPost('Note.upload_file', '/notes/{id}/files');
+$router->addGet('Note.file_remove', '/file/{id}/delete');
 
 $router->addPost('Shared.update', '/share/update/{id}');
 $router->addPost('Shared.add_to_note', '/share/add/note/{id}');

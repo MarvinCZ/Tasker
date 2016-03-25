@@ -8,19 +8,43 @@ use Models\UserQuery;
 use Models\Identity;
 use Models\IdentityQuery;
 use Helpers\LogHelper;
+use Helpers\Mailer;
 
 class UserController extends ApplicationController{
 	public function __construct(){
 		parent::__construct();
-		$this->addBeforeFilterExeption("is_logged", array('create', 'login', 'fb_login', 'g_login'));
+		$this->addBeforeFilterExeption("is_logged", array('create', 'login', 'fb_login', 'g_login', 'resend_confirm_email', 'confirm'));
 	}
 
 	protected function show($id){
 
 	}
 
-	protected function confirm_email(){
+	protected function confirm($token){
+		$user = UserQuery::create()->
+			filterByEmailConfirmToken($token)->
+			findOne();
+		if($user){
+			$user->setEmailConfirmedAt(new \DateTime());
+			$user->save();
+			$this->addFlash('success', t('.email_confirmed'));
+		}
+		else{
+			$this->addFlash('error', t('common.not_found'));
+		}
+		$this->redirectTo('/');
+	}
 
+	protected function resend_confirm_email($id){
+		$user = UserQuery::create()->findPK($id);
+		if($user){
+			Mailer::sendEmailConfirmMail($user, $this->params['language']);
+			$this->addFlash('success', t('.email_resended'));
+		}
+		else{
+			$this->addFlash('error', t('common.not_found'));
+		}
+		$this->redirectTo('/');
 	}
 
 	protected function create(){
@@ -35,6 +59,7 @@ class UserController extends ApplicationController{
 		$user = new User();
 		$user->fromArray($params);
 		if($user->save() && empty($errors)){
+			Mailer::sendEmailConfirmMail($user, $this->params['language']);
 			$this->addFlash("success", "registered");
 			$_SESSION['user'] = $user->getId();
 			$this->renderString(json_encode(['redirect'=>'/confirm']));
@@ -51,8 +76,17 @@ class UserController extends ApplicationController{
 			filterByPassword($_POST['user']['password'])->
 			findOne();
 		if($user){
-			$_SESSION['user'] = $user->getId();
-			$this->renderString(json_encode(['redirect'=>'/notes']));
+			if(!$user->getEmailConfirmedAt()){
+				$message = t('.not_confirmed') . " <a href='/resend_confirm/" . $user->getId() . "'>" . t('.resend') . "</a>";
+				$this->renderString(json_encode([[
+						'path' => 'common',
+						'message' => $message
+					]]));
+			}
+			else{
+				$_SESSION['user'] = $user->getId();
+				$this->renderString(json_encode(['redirect'=>'/notes']));
+			}
 		}
 		else{
 			$this->renderString(json_encode([[

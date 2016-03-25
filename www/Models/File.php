@@ -16,5 +16,4 @@ use Models\Base\File as BaseFile;
  */
 class File extends BaseFile
 {
-
 }

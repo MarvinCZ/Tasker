@@ -5,7 +5,8 @@
         "monolog/monolog": "^1.17",
         "facebook/php-sdk-v4" : "~5.0",
         "google/apiclient": "1.0.*@beta",
-        "philipp15b/php-i18n": "^3.0"
+        "philipp15b/php-i18n": "^3.0",
+        "swiftmailer/swiftmailer": "^5.4"
     },
     "autoload": {
         "classmap": [
