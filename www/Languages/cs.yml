@@ -66,6 +66,7 @@ controllers:
     password_not_match: 'Hesla se neshodují'
     email_resended: 'Odkaz na ověření byl poslán'
     email_confirmed: 'Email byl ověřen, nyní se můžete přihlásit'
+    registred: 'Jste zarigistrován, ověřte email a můžete začít.'
   categorycontroller:
     category:
       added: 'Kategorie byla přidána'
@@ -130,7 +131,7 @@ view:
       no_comment: 'Jeste to nikdo nekomentoval. Budte prvni.'
       shared_with: 'Sdíleno s'
       no_share: 'Tento úkol máte k dispozici jen vy. Pokud chcete sdílet přístup klikněte na '
-      no_files: 'Nenaleziny žádné soubory. '
+      no_files: 'Nenalezeny žádné soubory. '
       add_files: 'Pro přidání klikněte na '
       share_link: 'Odkaz na sdílení'
     add:

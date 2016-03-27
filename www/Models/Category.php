@@ -86,6 +86,6 @@ class Category extends BaseCategory
 	}
 
 	public function setColor($v){
-		parent::setName(htmlspecialchars($v, ENT_QUOTES, 'UTF-8'));
+		parent::setColor(htmlspecialchars($v, ENT_QUOTES, 'UTF-8'));
 	}
 }

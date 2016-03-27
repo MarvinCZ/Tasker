@@ -60,9 +60,9 @@ class UserController extends ApplicationController{
 		$user->fromArray($params);
 		if($user->save() && empty($errors)){
 			Mailer::sendEmailConfirmMail($user, $this->params['language']);
-			$this->addFlash("success", "registered");
+			$this->addFlash("success", t('.registred'));
 			$_SESSION['user'] = $user->getId();
-			$this->renderString(json_encode(['redirect'=>'/confirm']));
+			$this->renderString(json_encode(['redirect'=>'/']));
 		}
 		else{
 			$errors = array_merge($errors, $user->getValidationFailuresI18n());

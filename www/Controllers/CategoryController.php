@@ -85,7 +85,7 @@ class CategoryController extends ApplicationController{
 			}
 		}
 		else{
-			$this->renderString(json_encode([['path' => 'common', 'message' => t('common.no_rights')]]]));
+			$this->renderString(json_encode([['path' => 'common', 'message' => t('common.no_rights')]]));
 		}
 	}
 }
