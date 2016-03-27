@@ -11,8 +11,10 @@
 			<?php if($rights >= 2): ?>
 				<div class="header-btn-large show-share pull-left"><i class="fa fa-share-alt"></i></div>
 			<?php endif ?>
-			<span class="user-name"><?= $user->getNick() ?></span>
-			<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
+			<?php if(isset($user)): ?>
+				<span class="user-name"><?= $user->getNick() ?></span>
+				<img src="<?= $user->getAvatarPath() ?>" class="header-img img-circle">
+			<?php endif ?>
 		</div>
 	</header>
 	<div class="header row text-center visible-xs">
@@ -61,17 +63,19 @@
 							<p><?= t('.no_comment') ?></p>
 						<?php endif ?>
 					</div>
-					<form action="/notes/<?= $note->getId() ?>/comment" class="remote" method="post">
-						<div class="form-group">
-							<div class="input-group">
-								<input type="text" name="message" class="form-control">
-								<span class="input-group-btn">
-									<input type="submit" class="btn btn-primary" type="button" value="<?= t('btn.send') ?>"/>
-								</span>
+					<?php if($rights >= 0): ?>
+						<form action="/notes/<?= $note->getId() ?>/comment" class="remote" method="post">
+							<div class="form-group">
+								<div class="input-group">
+									<input type="text" name="message" class="form-control">
+									<span class="input-group-btn">
+										<input type="submit" class="btn btn-primary" type="button" value="<?= t('btn.send') ?>"/>
+									</span>
+								</div>
+								<div class="error-text error-box"></div>
 							</div>
-							<div class="error-text error-box"></div>
-						</div>
-					</form>
+						</form>
+					<?php endif ?>
 				</div>
 			</div>
 			<div class="col-md-4">
@@ -82,8 +86,8 @@
 					</div>
 				<?php else: ?>
 					<div class="inner-box">
-						<h3><?= t('models.note.comments') ?></h3>
-						<?= $note->getState() ?>
+						<h3><?= t('models.note.state') ?></h3>
+						<?= $note->getStateText() ?>
 					</div>
 				<?php endif ?>
 				</div>
@@ -99,16 +103,24 @@
 							<?= t('.no_share') ?><i class="fa fa-share-alt"></i>
 						</div>
 					<?php endif ?>
+					<?php if($rights >= 2): ?>
+						<h4 for="share-link">
+							<?= t('.share_link') ?>
+						</h4>
+						<input type="text" value="<?= $note->getShareLink() ?>" class="form-control autoselect" readonly id="share-link">
+					<?php endif ?>
 				</div>
 				<div class="inner-box">
 					<div class="pull-left">
 						<h3><?= t('models.note.files') ?></h3>
 					</div>
-					<div class="pull-right">
-						<a href="notes/<?= $note->getId() ?>/files">
-							<i class="fa fa-cog button"></i>
-						</a>
-					</div>
+					<?php if($rights >= 2): ?>
+						<div class="pull-right">
+							<a href="notes/<?= $note->getId() ?>/files">
+								<i class="fa fa-cog button"></i>
+							</a>
+						</div>
+					<?php endif ?>
 					<?php foreach ($files as $f): ?>
 						<div class="file">
 							<a href="<?= $f->getPath() ?>" download="<?= $f->getName() ?>" class="link">
@@ -119,7 +131,10 @@
 					<?php if($files->count() == 0): ?>
 						<div class="clear"></div>
 						<?= t('.no_files') ?>
-						<i class="fa fa-cog"></i>
+						<?php if($rights >= 2): ?>
+							<?= t('.add_files') ?>
+							<i class="fa fa-cog"></i>
+						<?php endif ?>
 					<?php endif ?>
 				</div>
 			</div>

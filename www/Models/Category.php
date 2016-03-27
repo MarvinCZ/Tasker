@@ -63,7 +63,7 @@ class Category extends BaseCategory
 		$criteria->add('user_category.user_id', $user->getId(), Criteria::EQUAL);
 		$criteria->addDescendingOrderByColumn('user_category.rights');
 		$acc = $this->getUserCategories($criteria)->getFirst();
-		return $acc == null ? 0 : $acc ->getRights();
+		return $acc == null ? -1 : $acc ->getRights();
 	}
 
 	public function delete(ConnectionInterface $con = null){

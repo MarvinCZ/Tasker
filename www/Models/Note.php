@@ -5,9 +5,11 @@ namespace Models;
 use Models\Base\Note as BaseNote;
 use Models\SharedQuery;
 use Models\CommentQuery;
+use Models\FileQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Helpers\ConfigHelper;
 use \DateTime;
 use \PDO;
 /**
@@ -25,6 +27,13 @@ class Note extends BaseNote
 	public function preSave(ConnectionInterface $con = null)
 	{
 		return $this->validate();
+	}
+
+	public function postInsert(ConnectionInterface $con = null)
+	{
+		$this->setLink(md5(uniqid($this->getId(), true)));
+		$this->save();
+		return true;
 	}
 
 	/**
@@ -91,6 +100,14 @@ class Note extends BaseNote
 		return '/notes/edit/' . $this->getId();
 	}
 
+	public function getShareLink(){
+		if($this->getLink() == null){
+			$this->setLink(md5(uniqid($this->getId(), true)));
+			$this->save();
+		}
+		return ConfigHelper::getValue('app.url') . '/shared/note/' . $this->getLink();
+	}
+
 	public function getRightsForUser($user){
 		if($this->getUser() == $user)
 			return 3;
@@ -98,7 +115,7 @@ class Note extends BaseNote
 		$criteria->add('user_note.user_id', $user->getId(), Criteria::EQUAL);
 		$criteria->addDescendingOrderByColumn('user_note.rights');
 		$acc = $this->getUserNotes($criteria)->getFirst();
-		return $acc == null ? 0 : $acc ->getRights();
+		return $acc == null ? -1 : $acc ->getRights();
 	}
 
 	public function getSharedTo(){
@@ -120,6 +137,7 @@ class Note extends BaseNote
 
         SharedQuery::create()->filterByNote($this)->delete();
         CommentQuery::create()->filterByNote($this)->delete();
+        FileQuery::create()->filterByNote($this)->delete();
 
         parent::delete($con);
 	}

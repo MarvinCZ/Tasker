@@ -43,6 +43,7 @@
         <column name="done_at" type="timestamp"/>
         <column name="public" type="boolean"/>
         <column name="description" type="varchar" size="300"/>
+        <column name="link" type="varchar" size="50"/>
 
         <foreign-key foreignTable="user">
             <reference local="user_id" foreign="id"/>
@@ -186,6 +187,7 @@
     <table name="group_of_users" phpName="Group">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="name" type="varchar" size="50"/>
+        <column name="link" type="varchar" size="50"/>
 
         <behavior name="timestampable" />
     </table>
@@ -256,11 +258,5 @@
         <foreign-key foreignTable="category">
             <reference local="category_id" foreign="id" refPhpName="AwailableCategories"/>
         </foreign-key>
-    </table>
-
-    <table name="link_action" phpName="LinkAction">
-        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="name" type="varchar" size="50"/>
-        <column name="params" type="varchar" size="50"/>
     </table>
 </database>

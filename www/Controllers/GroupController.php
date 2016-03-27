@@ -19,11 +19,13 @@ class GroupController extends ApplicationController{
 	protected function add(){
 		$group = new Group();
 		$group->setName($_POST['name']);
-		foreach ($_POST['user'] as $u) {
-			$user = UserQuery::create()->
-				filterByNick($u['name'])->
-				findOne();
-			$group->addUserWithRights($user, $u['rights']);
+		if(isset($_POST['user'])){
+			foreach ($_POST['user'] as $u) {
+				$user = UserQuery::create()->
+					filterByNick($u['name'])->
+					findOne();
+				$group->addUserWithRights($user, $u['rights']);
+			}
 		}
 		$group->addUserWithRights($this->params['user'], 3);
 		$group->save();

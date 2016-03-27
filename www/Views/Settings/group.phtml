@@ -26,6 +26,9 @@
 		<?php endforeach ?>
 		</table>
 		<?php if($relation->getRights() >= 2): ?>
+		<h2>
+			<?= t('.add_user') ?>
+		</h2>
 		<div class="add-user-form">
 			<form action="group/<?= $group->getId() ?>/adduser" class="remote" method="post">
 				<div class="row">

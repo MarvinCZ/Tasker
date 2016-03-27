@@ -5,16 +5,6 @@
 	</div>
 	<div class="container">
 		<?php includeFile("Views/_menu_small.phtml", array('user' => $params['user'])) ?>
-		<div class="inner-box no-side-padding">
-			<h3><?= t('common.notification') ?></h3>
-			<?php foreach ($notifications as $notification): ?>
-				<a href="<?= $notification->getLink() ?>">
-					<div class="notification">
-						<?= $notification->getIcon() ?><div class="text"><?= $notification->getText() ?></div>
-					</div>
-				</a>
-			<?php endforeach ?>
-		</div>
 	</div>
 </div>
 <div class="page page-middle">

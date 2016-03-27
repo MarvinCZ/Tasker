@@ -4,9 +4,12 @@ namespace Models;
 
 use Models\Base\Group as BaseGroup;
 use Models\UserGroup;
+use Models\LinkShareGroup;
+use Models\LinkShareGroupQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Helpers\ConfigHelper;
 
 /**
  * Skeleton subclass for representing a row from the 'group' table.
@@ -20,6 +23,15 @@ use Propel\Runtime\ActiveQuery\Criteria;
  */
 class Group extends BaseGroup
 {
+	public function preInsert(ConnectionInterface $con = null){
+		$this->setLink(md5(time()));
+		return true;
+	}
+
+	public function getJoinLink(){
+		return ConfigHelper::getValue('app.url') . '/share/join/' . $this->getLink();
+	}
+
 	/**
 	 * @param Models\User user
 	 * @param  integer level of access (0 - read, 1 - 0 + write, 2 - 1 + manage, 3 - owner)
@@ -107,6 +119,9 @@ class Group extends BaseGroup
 			filterByGroup($this)->
 			delete();
 		SharedQuery::create()->
+			filterByGroup($this)->
+			delete();
+		LinkShareGroupQuery::create()->
 			filterByGroup($this)->
 			delete();
 

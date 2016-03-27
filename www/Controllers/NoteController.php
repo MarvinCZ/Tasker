@@ -25,6 +25,7 @@ class NoteController extends ApplicationController{
 
 	public function __construct(){
 		parent::__construct();
+		$this->addBeforeFilterExeption("is_logged", "show_shared");
 	}
 
 	protected function show_category($category){
@@ -77,7 +78,6 @@ class NoteController extends ApplicationController{
 	}
 
 	protected function show($id){
-		$this->saveReferer();
 		//TODO group joins in one method
 		$note = NoteQuery::create()->
 			filterNotesForUser($this->params['user'])->
@@ -97,6 +97,42 @@ class NoteController extends ApplicationController{
 			$this->params['shared_to'] = $this->params['note']->getSharedTo();
 			$this->params['states'] = stateOptions($this->params['note']->getState());
 			$this->params['files'] = $note->getFiles();
+		}
+		else{
+			$this->addFlash("error", t('common.not_found'));
+			$this->redirectTo('/');
+		}
+	}
+
+	protected function show_shared($link){
+		//TODO group joins in one method
+		$note = NoteQuery::create()->
+			leftJoinWith('Note.Category')->
+			leftJoinWith('Note.Comment')->
+			leftJoinWith('Comment.User')->
+			leftJoinWith('Note.Shared')->
+			condition('shared_join', '((shared.what_id=note.id) AND (shared.what_type="note")) OR ((shared.what_id=category.id) AND (shared.what_type="category"))')->
+			setJoinCondition('Shared', 'shared_join')->
+			addAscendingOrderByColumn("comment.created_at")->
+			filterByLink($link)->
+			find();
+		if($note->count() > 0){
+			$note = $note[0];
+			$this->params['note'] = $note;
+			if($this->params['user_logged']){
+				if($note->getRightsForUser($this->params['user']) == -1){
+					$note->shareTo($this->params['user'], 0);
+					$note->save();
+				}
+				$this->redirectTo($this->params['note']->getShowPath());
+			}
+			$rights = -1;
+			$this->params['rights_select'] = options_names_for_select(shareOptionsForSelect($rights));
+			$this->params['rights'] = $rights;
+			$this->params['shared_to'] = $this->params['note']->getSharedTo();
+			$this->params['states'] = stateOptions($this->params['note']->getState());
+			$this->params['files'] = $note->getFiles();
+			$this->renderFileToTemplate('Note/show.phtml');
 		}
 		else{
 			$this->addFlash("error", t('common.not_found'));
@@ -181,7 +217,6 @@ class NoteController extends ApplicationController{
 				getNote()->
 				getRightsForUser($this->params['user']);
 			if($rights >= 2){
-				unlink($file->getPath());
 				$file->delete();
 				$this->addFlash("success", t('common.removed'));
 				$this->redirectBack();

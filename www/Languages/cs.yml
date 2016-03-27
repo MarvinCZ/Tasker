@@ -116,6 +116,8 @@ view:
       note_name: 'Titulek'
       category_name: 'Název'
       category: 'Kategoie'
+      link_access: 'Odkaz pro přístup'
+      add_user: 'Přidat uživatele'
   Note:
     show_all:
       share_not_found: 'Nenalezeno sdílení'
@@ -128,7 +130,9 @@ view:
       no_comment: 'Jeste to nikdo nekomentoval. Budte prvni.'
       shared_with: 'Sdíleno s'
       no_share: 'Tento úkol máte k dispozici jen vy. Pokud chcete sdílet přístup klikněte na '
-      no_files: 'Nenaleziny žádné soubory. Pro přidání klikněte na '
+      no_files: 'Nenaleziny žádné soubory. '
+      add_files: 'Pro přidání klikněte na '
+      share_link: 'Odkaz na sdílení'
     add:
       add_note: 'Přidat úkol'
     edit:

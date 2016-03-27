@@ -568,4 +568,8 @@ $(document).ready(function(){
 		$('table.new-group-users tr:last-child .editentry').click(editentry);
 		$('table.new-group-users tr:last-child .removeentry').click(removeentry);
 	});
+
+	$('.autoselect').click(function(){
+	    $(this).select();
+	});
 });

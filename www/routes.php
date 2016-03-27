@@ -15,6 +15,7 @@ $router->addGet('User.confirm', '/confirm/{token}');
 $router->addGet('Note.show_all', '/notes');
 $router->addGet('Note.add', '/notes/add');
 $router->addGet('Note.show', '/notes/{id}');
+$router->addGet('Note.show_shared', '/note/{id}');
 $router->addGet('Note.edit', '/notes/edit/{id}');
 $router->addPost('Note.save', '/notes/edit/{id}');
 $router->addPost('Note.create', '/notes/add');

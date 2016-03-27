@@ -129,6 +129,12 @@ abstract class ApplicationController{
 		$this->rendered = true;
 	}
 
+	protected function renderJSON($array){
+		echo(json_encode($array));
+		LogHelper::logMessage("Rendering JSON: " . var_export($array, true));
+		$this->rendered = true;
+	}
+
 	/**
 	 * Renders default file with extension
 	 * @param  string extension of file

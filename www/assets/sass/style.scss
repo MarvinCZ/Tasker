@@ -209,6 +209,7 @@ body{
 		height: 100px;
 		line-height: 100px;
 		padding-left: 130px;
+		padding-top: 0;
 		color: #333;
 	}
 	.notification{
@@ -747,7 +748,7 @@ $category_colors: ('red', #F84758),
 	padding: 0;
 	list-style-type: none;
 	li{
-		font-size: 1.1em;
+		font-size: 2em;
 		padding: 5px;
 		border-bottom: 1px solid #ddd;
 		&:hover{
@@ -755,6 +756,11 @@ $category_colors: ('red', #F84758),
 		}
 		.fa{
 			margin-right: 5px;
+		}
+		@media (min-width: $screen-md-min) {
+			&{
+				font-size: 1.1em;
+			}
 		}
 	}
 }

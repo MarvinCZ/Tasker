@@ -3,6 +3,8 @@
 namespace Models;
 
 use Models\Base\File as BaseFile;
+use Propel\Runtime\Propel;
+use Propel\Runtime\Connection\ConnectionInterface;
 
 /**
  * Skeleton subclass for representing a row from the 'file' table.
@@ -16,4 +18,17 @@ use Models\Base\File as BaseFile;
  */
 class File extends BaseFile
 {
+	public function delete(ConnectionInterface $con = null){
+        if ($this->isDeleted()) {
+            throw new PropelException("This object has already been deleted.");
+        }
+
+        if ($con === null) {
+            $con = Propel::getServiceContainer()->getWriteConnection(Map\NoteTableMap::DATABASE_NAME);
+        }
+
+		unlink($this->getPath());
+
+        parent::delete($con);
+	}
 }

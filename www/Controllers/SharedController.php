@@ -18,6 +18,8 @@ use Models\Comment;
 use Models\CommentQuery;
 use Models\Shared;
 use Models\SharedQuery;
+use Models\LinkShareGroup;
+use Models\LinkShareGroupQuery;
 
 class SharedController extends ApplicationController{
 	protected function update($id){
