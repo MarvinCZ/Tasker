@@ -21,4 +21,8 @@ class Comment extends BaseComment
 	{
 		return $this->validate();
 	}
+
+	public function setText($v){
+		parent::setText(htmlspecialchars(strip_tags($v), ENT_QUOTES, 'UTF-8'));
+	}
 }

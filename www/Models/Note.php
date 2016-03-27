@@ -155,4 +155,12 @@ class Note extends BaseNote
 	public static function getTranslatedStates(){
 		return translateArray(['opened', 'done', 'wip', 'closed'],'models.note.states');
 	}
+
+	public function setTitle($v){
+		parent::setTitle(htmlspecialchars(strip_tags($v), ENT_QUOTES, 'UTF-8'));
+	}
+
+	public function setDescription($v){
+		parent::setDescription(htmlspecialchars(strip_tags($v), ENT_QUOTES, 'UTF-8'));
+	}
 }

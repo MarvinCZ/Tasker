@@ -135,4 +135,8 @@ class Group extends BaseGroup
 		}
 		return $arr;
 	}
+
+	public function setName($v){
+		parent::setName(htmlspecialchars(strip_tags($v), ENT_QUOTES, 'UTF-8'));
+	}
 }

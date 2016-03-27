@@ -80,4 +80,12 @@ class Category extends BaseCategory
 
 		parent::delete();
 	}
+
+	public function setName($v){
+		parent::setName(htmlspecialchars(strip_tags($v), ENT_QUOTES, 'UTF-8'));
+	}
+
+	public function setColor($v){
+		parent::setName(htmlspecialchars($v, ENT_QUOTES, 'UTF-8'));
+	}
 }

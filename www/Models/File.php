@@ -31,4 +31,12 @@ class File extends BaseFile
 
         parent::delete($con);
 	}
+
+    public function setName($v){
+        parent::setName(htmlspecialchars($v, ENT_QUOTES, 'UTF-8'));
+    }
+
+    public function setPath($v){
+        parent::setPath(htmlspecialchars($v, ENT_QUOTES, 'UTF-8'));
+    }
 }

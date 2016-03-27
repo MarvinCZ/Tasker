@@ -80,4 +80,8 @@ class User extends BaseUser
 		$stmt->execute(array('name' => $part.'%', 'user_id' => $this->getId()));
 		return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 	}
+
+	public function setNick($v){
+		parent::setNick(htmlspecialchars(strip_tags($v), ENT_QUOTES, 'UTF-8'));
+	}
 }
